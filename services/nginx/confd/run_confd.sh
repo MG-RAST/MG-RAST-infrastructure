@@ -10,8 +10,8 @@ set +e
 
 export ETCD_ENDPOINT=$(route|grep default|awk '{print $2}'):4001
 # usually => export ETCD_ENDPOINT=172.17.42.1:4001
-export CONF_DIR="/Skycore/services/nginx/confd"
-export TOML_FILE="/Skycore/services/nginx/confd/conf.d/nginx.toml"
+export CONF_DIR="/MG-RAST-infrastructure/services/nginx/confd"
+export TOML_FILE="/MG-RAST-infrastructure/services/nginx/confd/conf.d/nginx.toml"
 export CONFD_ARGS="-node ${ETCD_ENDPOINT} -confdir=${CONF_DIR} -config-file=${TOML_FILE}"
 
 mkdir -p /etc/nginx/sites-enabled/
