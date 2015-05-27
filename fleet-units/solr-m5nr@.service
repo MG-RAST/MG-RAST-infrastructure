@@ -1,0 +1,32 @@
+[Unit]
+Description=Solr m5nr
+After=docker.service
+Requires=docker.service
+
+[Service]
+# service name:   solr-m5nr
+# image name:     mgrast/solr-m5nr
+# container name: solr-m5nr
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill solr-m5nr 
+ExecStartPre=-/usr/bin/docker rm solr-m5nr 
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:solr-m5nr
+
+# preprocessing: solr loading
+ExecStartPre=/usr/bin/docker run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt mgrast/solr-m5nr:latest bash -c 'cd /myM5NR/ && git pull && /myM5NR/solr/download-solr-index.sh'
+ExecStartPre=-/usr/bin/docker kill solr-m5nr
+ExecStartPre=-/usr/bin/docker rm solr-m5nr
+
+
+ExecStart=/usr/bin/docker    run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-m5nr:latest bash -c 'cd /myM5NR/ && git pull && cd solr && /myM5NR/solr/setup-m5nr-core.sh && /myM5NR/solr/run-solr.sh'
+ExecStop=/usr/bin/docker exec solr-m5nr /opt/solr/bin/solr stop -p 8983
+ExecStop=-/usr/bin/docker stop solr-m5nr
+
+
+[X-Fleet]
+Conflicts=solr-m5nr@*.service
+#MachineMetadata=RAM_GB=47
+MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov

@@ -1,0 +1,13 @@
+[Unit]
+Description=solar-m5nr discovery
+BindsTo=solar-m5nr@.service
+After=solar-m5nr@.service
+
+
+[Service]
+EnvironmentFile=-/etc/environment
+ExecStart=/bin/sh -c "while true; do etcdctl set /services/solar-m5nr/solar-m5nr@.service \'{ \"host\":\"%H\",\"port\": 80,\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60 ; sleep 45 ; done"
+ExecStop=/usr/bin/etcdctl rm /services/solar-m5nr/solar-m5nr
+
+[X-Fleet]
+MachineOf=solar-m5nr@.service

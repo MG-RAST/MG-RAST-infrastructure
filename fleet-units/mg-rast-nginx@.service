@@ -1,0 +1,22 @@
+[Unit]
+Description=MG-RAST Nginx
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mgrast_nginx'
+Environment='IMAGE=mgrast/nginxconfd'
+Environment='SERVICE=mg-rast-nginx'
+
+Restart=always
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PUBLIC_IPV4}:80:80 -v /etc/nginx/sites-enabled/ ${IMAGE}:latest /usr/sbin/nginx -c /Skycore/services/nginx/nginx.conf
+
+ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=mg-rast-nginx@*.service

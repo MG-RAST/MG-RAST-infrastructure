@@ -1,0 +1,24 @@
+[Unit]
+Description=MG-RAST Nginx
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mgrast_confd'
+Environment='IMAGE=mgrast/nginxconfd'
+Environment='SERVICE=mg-rast-confd'
+
+Restart=always
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /Skycore/services/nginx/confd/run_confd.sh
+
+
+ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+
+[X-Fleet]
+MachineOf=mg-rast-nginx@%i.service

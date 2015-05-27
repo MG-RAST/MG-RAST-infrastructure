@@ -1,0 +1,24 @@
+[Unit]
+Description=MG-RAST v4 web frontend
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mg-rast-v4-web-%i'
+Environment='IMAGE=mgrast/v4-web'
+Environment='SERVICE=mg-rast-v4-web'
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
+ExecStartPost=/usr/bin/sleep 5
+ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
+ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=mg-rast-v4-web@*.service
