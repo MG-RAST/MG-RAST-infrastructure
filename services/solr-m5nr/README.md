@@ -4,7 +4,8 @@
 
 Build image:
 ```bash
-docker build --tag=mgrast/solr-m5nr:`date +"%Y%m%d.%H%M"` https://raw.githubusercontent.com/MG-RAST/myM5NR/master/solr/docker/Dockerfile
+docker build --tag=mgrast/solr-m5nr:`date +"%Y%m%d.%H%M"` https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure
+/master/solr/docker/Dockerfile
 ```
 
 After building the image using the Dockerfile in this repo you can start it like this:
@@ -17,16 +18,16 @@ You can either a) load the database using the Makefile or b) use an existing sol
 
 a) Loading from scratch:
 ```bash
-/myM5NR/solr/???
+MG-RAST-infrastructure/services/solr-m5nr/???
 ```
 b) Deploy cached solr database: 
 ```bash
-/myM5NR/solr/download-solr-index.sh
+MG-RAST-infrastructure/services/solr-m5nr/download-solr-index.sh
 ```
 
 Start solr:
 ```bash
-/myM5NR/solr/run-solr.sh
+MG-RAST-infrastructure/services/solr-m5nr/run-solr.sh
 ```
 
 
