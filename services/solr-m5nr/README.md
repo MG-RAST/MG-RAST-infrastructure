@@ -4,8 +4,7 @@
 
 Build image:
 ```bash
-docker build --tag=mgrast/solr-m5nr:`date +"%Y%m%d.%H%M"` https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure
-/master/solr/docker/Dockerfile
+docker build --tag=mgrast/solr-m5nr:`date +"%Y%m%d.%H%M"` https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/solr-m5nr/docker/Dockerfile
 ```
 
 After building the image using the Dockerfile in this repo you can start it like this:
