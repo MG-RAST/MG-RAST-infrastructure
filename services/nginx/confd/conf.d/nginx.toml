@@ -20,4 +20,4 @@ Mode = "0644"
 # valid and to reload the actual service once the new config is in place
 Check_cmd = "/usr/sbin/nginx -t"
 #Reload_cmd = "/usr/sbin/service nginx reload"
-Reload_cmd = "/Skycore/services/nginx/confd/reload_nginx.sh"
+Reload_cmd = "/MG-RAST-infrastructure/services/nginx/confd/reload_nginx.sh"
