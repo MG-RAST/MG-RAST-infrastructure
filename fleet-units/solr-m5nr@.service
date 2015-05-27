@@ -16,13 +16,13 @@ ExecStartPre=-/usr/bin/docker rm solr-m5nr
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:solr-m5nr
 
 # preprocessing: solr loading
-ExecStartPre=/usr/bin/docker run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt mgrast/solr-m5nr:latest /MG-RAST-infrastructure/solr/download-solr-index.sh
+ExecStartPre=/usr/bin/docker run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt mgrast/solr-m5nr:latest /MG-RAST-infrastructure/services/solr-m5nr/download-solr-index.sh
 ExecStartPre=-/usr/bin/docker kill solr-m5nr
 ExecStartPre=-/usr/bin/docker rm solr-m5nr
 
 
-#ExecStart=/usr/bin/docker    run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-m5nr:latest bash -c 'cd /MG-RAST-infrastructure/ && git pull && cd solr && /MG-RAST-infrastructure/solr/setup-m5nr-core.sh && /MG-RAST-infrastructure/solr/run-solr.sh'
-ExecStart=/usr/bin/docker    run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-m5nr:latest /MG-RAST-infrastructure/solr/run-solr.sh
+#ExecStart=/usr/bin/docker    run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-m5nr:latest bash -c 'cd /MG-RAST-infrastructure/ && git pull && cd services/solr-m5nr && /MG-RAST-infrastructure/services/solr-m5nr/setup-m5nr-core.sh && /MG-RAST-infrastructure/services/solr-m5nr/run-solr.sh'
+ExecStart=/usr/bin/docker    run --rm --name solr-m5nr -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-m5nr:latest /MG-RAST-infrastructure/services/solr-m5nr/run-solr.sh
 ExecStop=/usr/bin/docker exec solr-m5nr /opt/solr/bin/solr stop -p 8983
 ExecStop=-/usr/bin/docker stop solr-m5nr
 
