@@ -20,7 +20,7 @@ server {
 		#rewrite /v4/(.*) /$1 permanent; 
         }
 
-	root /Skycore/services/nginx/html;
+	root /MG-RAST-infrastructure/services/nginx/html;
 
 	# Add index.php to the list if you are using PHP
 	index index.html index.htm index.nginx-debian.html;
