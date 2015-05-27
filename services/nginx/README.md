@@ -15,7 +15,7 @@ docker run -d -p 80:80 -v /etc/nginx/sites-enabled/ --name mgrast_nginx mgrast/n
 ```
 Or alternatively with latest git code:
 ```bash
-docker run -d -p 80:80 -v /etc/nginx/sites-enabled/ --name mgrast_nginx mgrast/nginxconfd bash -c 'cd Skycore && git pull && /usr/sbin/nginx -c /MG-RAST-infrastructure/services/nginx/nginx.conf'
+docker run -d -p 80:80 -v /etc/nginx/sites-enabled/ --name mgrast_nginx mgrast/nginxconfd bash -c 'cd MG-RAST-infrastructure && git pull && /usr/sbin/nginx -c /MG-RAST-infrastructure/services/nginx/nginx.conf'
 ```
 
 ### Start confd
@@ -24,7 +24,7 @@ docker run -t -i --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/do
 ```
 Or alternatively with latest git code:
 ```bash
-docker run -t -i --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock --name mgrast_confd mgrast/nginxconfd bash -c 'cd Skycore && git pull && /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh'
+docker run -t -i --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock --name mgrast_confd mgrast/nginxconfd bash -c 'cd MG-RAST-infrastructure && git pull && /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh'
 ```
 
 ### Issues
