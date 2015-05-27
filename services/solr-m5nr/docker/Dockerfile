@@ -15,14 +15,14 @@ RUN rm /bin/sh && ln -s /bin/bash /bin/sh
 
 # install solr
 RUN cd / && \
-  git clone https://github.com/MG-RAST/myM5NR.git && \
-  source /myM5NR/solr/deployment.cfg && \
+  git clone https://github.com/MG-RAST/MG-RAST-infrastructure.git && \
+  source /MG-RAST-infrastructure/services/solr-m5nr/deployment.cfg && \
   mkdir -p /opt && \
   curl -s http://apache.mirrors.hoobly.com/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz | tar -zxvf - -C /opt/ && \
   ln -s /opt/solr-${SOLR_VERSION} /opt/solr
 
 # configure solr
-RUN cd /myM5NR/solr && ./setup-m5nr-core.sh
+RUN cd /MG-RAST-infrastructure/services/solr-m5nr/ && ./setup-m5nr-core.sh
 
 
 
