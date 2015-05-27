@@ -1,0 +1,23 @@
+# expected to be in /etc/confd/conf.d/nginx.toml
+[template]
+
+# The name of the template that will be used to render the application's configuration file
+# Confd will look in `/etc/conf.d/templates` for these files by default
+Src = "nginx.tmpl"
+
+# The location to place the rendered configuration file
+Dest = "/etc/nginx/sites-enabled/mg-rast-v4-web_pool.conf"
+
+# The etcd keys or directory to watch.  This is where the information to fill in
+# the template will come from.
+Keys = [ "/services/mg-rast-v4-web" ]
+
+# File ownership and mode information
+Owner = "root"
+Mode = "0644"
+
+# These are the commands that will be used to check whether the rendered config is
+# valid and to reload the actual service once the new config is in place
+Check_cmd = "/usr/sbin/nginx -t"
+#Reload_cmd = "/usr/sbin/service nginx reload"
+Reload_cmd = "/Skycore/services/nginx/confd/reload_nginx.sh"
