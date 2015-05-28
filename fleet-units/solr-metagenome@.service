@@ -1,0 +1,30 @@
+[Unit]
+Description=Solr metagenome
+After=docker.service
+Requires=docker.service
+
+[Service]
+# service name:   solr-metagenome
+# image name:     mgrast/solr-metagenome
+# container name: solr-metagenome
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill solr-metagenome 
+ExecStartPre=-/usr/bin/docker rm solr-metagenome
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:solr-metagenome
+
+# preprocessing: solr loading
+ExecStartPre=-/usr/bin/docker kill solr-metagenome
+ExecStartPre=-/usr/bin/docker rm solr-metagenome
+
+#ExecStart=/usr/bin/docker    run --rm --name solr-metagenome -v /media/ephemeral/solr-metagenome/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-metagenome:latest bash -c 'cd /MG-RAST-infrastructure/solr-metagenome && /MG-RAST-infrastructure/services/solr-metagenome/setup-metagenome-core.sh && /MG-RAST-infrastructure/services/solr-metagenome/run-solr.sh'
+ExecStart=/usr/bin/docker    run --rm --name solr-metagenome -v /media/ephemeral/solr-metagenome/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 --env SOLR_INCLUDE=/opt/solr/bin/solr.in.sh mgrast/solr-metagenome:latest /MG-RAST-infrastructure/services/solr-metagenome/run-solr.sh
+ExecStop=/usr/bin/docker exec solr-metagenome /opt/solr/bin/solr stop -p 8983
+ExecStop=-/usr/bin/docker stop solr-metagenome
+
+[X-Fleet]
+Conflicts=solr-metagenome@*.service
+#MachineMetadata=RAM_GB=47
+MachineMetadata=HOSTNAME=bio-worker2-10g.mcs.anl.gov
