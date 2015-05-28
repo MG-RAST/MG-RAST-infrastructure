@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# set a default values
+# set default value
 M5NR_VERSIONS="1 10"
 
 # binary location from http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
