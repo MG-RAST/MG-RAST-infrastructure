@@ -121,53 +121,55 @@
      installations. See the <uniqueKey> declaration below where <uniqueKey> is set to "id".
    -->   
 
-   <!-- This field is common to all objects -->
-   <field name="id" type="text_full" indexed="true" stored="true" />
-
-   <!-- These are the fields for md5_annotation objects -->
-   <field name="md5_id" type="int" indexed="true" stored="true" />
-   <field name="md5" type="text_full" indexed="true" stored="true" />
-   <field name="accession" type="text_full" indexed="true" stored="true" />
-   <field name="alias" type="text_general_rev" indexed="true" stored="true" multiValued="true" />
-   <field name="ontology_id" type="int" indexed="true" stored="true" />
-   <field name="function_id" type="int" indexed="true" stored="true" />
-   <field name="function" type="text_general_rev" indexed="true" stored="true" />
-   <field name="organism_id" type="int" indexed="true" stored="true" />
-   <field name="organism" type="text_general_rev" indexed="true" stored="true" />
-   <field name="domain" type="text_general_rev" indexed="true" stored="true" />
-   <field name="phylum" type="text_general_rev" indexed="true" stored="true" />
-   <field name="class" type="text_general_rev" indexed="true" stored="true" />
-   <field name="order" type="text_general_rev" indexed="true" stored="true" />
-   <field name="family" type="text_general_rev" indexed="true" stored="true" />
-   <field name="genus" type="text_general_rev" indexed="true" stored="true" />
-   <field name="species" type="text_general_rev" indexed="true" stored="true" />
-   <field name="ncbi_tax_id" type="int" indexed="true" stored="true" />
-   <field name="source_id" type="int" indexed="true" stored="true" />
-   <field name="source" type="text_full" indexed="true" stored="true" />
-   <field name="type" type="text_full" indexed="true" stored="true" />
-   <field name="organization" type="string" indexed="false" stored="true" />
-   <field name="description" type="string" indexed="false" stored="true" />
-   <field name="url" type="string" indexed="false" stored="true" />
-   <field name="email" type="string" indexed="false" stored="true" />
-   <field name="link" type="string" indexed="false" stored="true" />
-   <field name="title" type="string" indexed="false" stored="true" />
-   <field name="version" type="string" indexed="false" stored="true" />
-   <field name="download_date" type="string" indexed="false" stored="true" />
-   <field name="level1" type="text_general_rev" indexed="true" stored="true" />
-   <field name="level2" type="text_general_rev" indexed="true" stored="true" />
-   <field name="level3" type="text_general_rev" indexed="true" stored="true" />
-   <field name="level4" type="text_general_rev" indexed="true" stored="true" />
-   <field name="object" type="text_full" indexed="true" stored="false" />
+   <!-- These are the fields for metagenome objects -->
+   <field name="id" type="text_general_rev" indexed="true" stored="true" />
+   <field name="job" type="int" indexed="true" stored="true" />
+   <field name="PI_firstname" type="text_general_rev" indexed="true" stored="true" />
+   <field name="PI_lastname" type="text_general_rev" indexed="true" stored="true" />
+   <field name="md5" type="text_general" indexed="true" stored="false" multiValued="true" /> 
+   <field name="function" type="text_general_rev" indexed="true" stored="false" multiValued="true" /> 
+   <field name="organism" type="text_general_rev" indexed="true" stored="false" multiValued="true" /> 
+   <field name="project" type="text_general_rev" indexed="true" stored="true" />
+   <field name="status" type="text_general_rev" indexed="true" stored="true" />
+   <field name="library" type="text_general_rev" indexed="true" stored="true" />
+   <field name="sequence_type" type="text_general_rev" indexed="true" stored="true" />
+   <field name="library_id" type="text_general_rev" indexed="true" stored="true" />
+   <field name="collection_date" type="text_general_rev" indexed="true" stored="true" />
+   <field name="feature" type="text_general_rev" indexed="true" stored="true" />
+   <field name="latitude" type="float" indexed="true" stored="true" />
+   <field name="biome" type="text_general_rev" indexed="true" stored="true" />
+   <field name="sample_name" type="text_general_rev" indexed="true" stored="true" />
+   <field name="url" type="text_general_rev" indexed="true" stored="true" />
+   <field name="sample" type="text_general_rev" indexed="true" stored="true" />
+   <field name="project_name" type="text_general_rev" indexed="true" stored="true" />
+   <field name="project_id" type="text_general_rev" indexed="true" stored="true" />
+   <field name="country" type="text_general_rev" indexed="true" stored="true" />
+   <field name="env_package_type" type="text_general_rev" indexed="true" stored="true" />
+   <field name="longitude" type="float" indexed="true" stored="true" />
+   <field name="location" type="text_general_rev" indexed="true" stored="true" />
+   <field name="version" type="int" indexed="true" stored="true" />
+   <field name="library_name" type="text_general_rev" indexed="true" stored="true" />
+   <field name="name" type="text_general_rev" indexed="true" stored="true" />
+   <field name="env_package_name" type="text_general_rev" indexed="true" stored="true" />
+   <field name="env_package_id" type="text_general_rev" indexed="true" stored="true" />
+   <field name="seq_method" type="text_general_rev" indexed="true" stored="true" />
+   <field name="library_url" type="text_general_rev" indexed="true" stored="true" />
+   <field name="created" type="date" indexed="true" stored="true" />
+   <field name="env_package" type="text_general_rev" indexed="true" stored="true" />
+   <field name="sample_id" type="text_general_rev" indexed="true" stored="true" />
+   <field name="sample_url" type="text_general_rev" indexed="true" stored="true" />
+   <field name="project_url" type="text_general_rev" indexed="true" stored="true" />
+   <field name="material" type="text_general_rev" indexed="true" stored="true" />
 
    <!-- catchall field, containing all other searchable text fields (implemented
         via copyField further on in this schema  -->
    <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
-   <field name="taxonomy" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
-   <field name="ontology" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
 
    <!-- catchall text field that indexes tokens both normally and in reverse for efficient
         leading wildcard queries. -->
-   <!-- <field name="text_rev" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>  -->
+   <field name="metadata" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
+
+   <field name="_version_" type="long" indexed="true" stored="true"/>
 
    <!-- Dynamic field definitions allow using convention over configuration
        for fields via the specification of patterns to match field names. 
@@ -246,24 +248,34 @@
         is added to the index.  It's used either to index the same field differently,
         or to add multiple fields to the same field for easier/faster searching.  -->
 
-   <copyField source="domain" dest="taxonomy"/>
-   <copyField source="phylum" dest="taxonomy"/>
-   <copyField source="class" dest="taxonomy"/>
-   <copyField source="order" dest="taxonomy"/>
-   <copyField source="family" dest="taxonomy"/>
-   <copyField source="genus" dest="taxonomy"/>
-   <copyField source="species" dest="taxonomy"/>
-   <copyField source="organism" dest="taxonomy"/>
-
-   <copyField source="level1" dest="ontology"/>
-   <copyField source="level2" dest="ontology"/>
-   <copyField source="level3" dest="ontology"/>
-   <copyField source="level4" dest="ontology"/>
-
-   <copyField source="accession" dest="accession_sort"/>
-   <copyField source="function" dest="function_sort"/>
-   <copyField source="organism" dest="organism_sort"/>
-   <copyField source="source" dest="source_sort"/>
+   <!-- Text fields from SolrCell to search by default in our catch-all field -->
+   <copyField source="id" dest="metadata"/>
+   <copyField source="project" dest="metadata"/>
+   <copyField source="status" dest="metadata"/>
+   <copyField source="library" dest="metadata"/>
+   <copyField source="sequence_type" dest="metadata"/>
+   <copyField source="library_id" dest="metadata"/>
+   <copyField source="feature" dest="metadata"/>
+   <copyField source="biome" dest="metadata"/>
+   <copyField source="sample_name" dest="metadata"/>
+   <copyField source="url" dest="metadata"/>
+   <copyField source="sample" dest="metadata"/>
+   <copyField source="project_name" dest="metadata"/>
+   <copyField source="project_id" dest="metadata"/>
+   <copyField source="country" dest="metadata"/>
+   <copyField source="env_package_type" dest="metadata"/>
+   <copyField source="location" dest="metadata"/>
+   <copyField source="library_name" dest="metadata"/>
+   <copyField source="name" dest="metadata"/>
+   <copyField source="env_package_name" dest="metadata"/>
+   <copyField source="env_package_id" dest="metadata"/>
+   <copyField source="seq_method" dest="metadata"/>
+   <copyField source="library_url" dest="metadata"/>
+   <copyField source="env_package" dest="metadata"/>
+   <copyField source="sample_id" dest="metadata"/>
+   <copyField source="sample_url" dest="metadata"/>
+   <copyField source="project_url" dest="metadata"/>
+   <copyField source="material" dest="metadata"/>
 
    <!-- Above, multiple source fields are copied to the [text] field. 
 	  Another way to map multiple source fields to the same 
