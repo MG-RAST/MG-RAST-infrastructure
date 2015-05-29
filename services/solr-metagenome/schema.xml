@@ -165,6 +165,10 @@
         leading wildcard queries. -->
    <field name="metadata" type="text_general_rev" indexed="true" stored="false" multiValued="true"/>
 
+   <!-- catchall field, containing all other searchable text fields (implemented
+        via copyField further on in this schema  -->
+   <field name="text" type="text_general" indexed="true" stored="false" multiValued="true"/>
+
    <!-- Dynamic field definitions allow using convention over configuration
        for fields via the specification of patterns to match field names. 
        EXAMPLE:  name="*_i" will match any field ending in _i (like myid_i, z_i)
