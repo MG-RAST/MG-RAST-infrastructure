@@ -20,7 +20,7 @@ write_files:
         # This is the second stage
         coreos:
             update:
-                reboot-strategy: off
+                reboot-strategy: etcd-lock
             etcd:
                 # name this is required because pxe-booting would create new ETCD instance names on boot.
                 name: $ETCD_NAME
@@ -217,6 +217,13 @@ write_files:
         sed -i 's/\$_public/$public/g' /tmp/cconfigtmp
         
         mv /tmp/cconfigtmp /run/cloud-config.yml
+    - path: /home/core/.toolboxrc
+      owner: core
+      content: |
+        TOOLBOX_DOCKER_IMAGE=ubuntu
+        TOOLBOX_DOCKER_TAG=latest
+        TOOLBOX_USER=root
+        TOOLBOX_DIRECTORY=/media/ephemeral/toolbox
 #    - path: /etc/resolv.conf
 #      permissions: 0644
 #      owner: root
