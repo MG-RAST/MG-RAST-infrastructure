@@ -13,7 +13,11 @@ TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
-ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+#echo hello.v4.service | cut -d . -f 2
+ExecStartPre=bash -c "BRANCH=$(echo hello.v4.service | cut -d . -f 2) ; /home/core/skycore pull --tag=latest etcd:${SERVICE}-${BRANCH}"
+
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
 ExecStartPost=/usr/bin/sleep 5
