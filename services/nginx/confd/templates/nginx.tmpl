@@ -16,11 +16,11 @@ server {
     listen 80 ;
     listen [::]:80;
     
-    server_name 140.221.76.70;
+    server_name metagenomics.anl.gov;
 
     #access_log /var/log/nginx/access.log upstreamlog;
     access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
+    error_log /var/log/nginx/error.log notice;
     rewrite_log on;
     
     rewrite  ^/v4(.*)$  $1 break;
