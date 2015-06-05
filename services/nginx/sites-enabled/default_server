@@ -11,14 +11,14 @@ server {
 	# Don't use them in a production server!
 	#
 	# include snippets/snakeoil.conf;
-	location /v4/ {
-		proxy_pass http://metagenomics.anl.gov;
-		proxy_redirect    off;
-		proxy_set_header  Host             $host;
-		proxy_set_header  X-Real-IP        $remote_addr;
-		proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
-		#rewrite /v4/(.*) /$1 permanent; 
-        }
+	#location /v4/ {
+	#	proxy_pass http://metagenomics.anl.gov;
+	#	proxy_redirect    off;
+	#	proxy_set_header  Host             $host;
+	#	proxy_set_header  X-Real-IP        $remote_addr;
+	#	proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
+	#	#rewrite /v4/(.*) /$1 permanent; 
+        #}
 
 	root /MG-RAST-infrastructure/services/nginx/html;
 

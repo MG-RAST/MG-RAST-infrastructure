@@ -16,14 +16,17 @@ server {
     listen 80 ;
     listen [::]:80;
     
-    server_name metagenomics.anl.gov ;
+    server_name v4.metagenomics.anl.gov;
 
     #access_log /var/log/nginx/access.log upstreamlog;
     access_log /var/log/nginx/access.log;
-    error_log /var/log/nginx/error.log;
-
-    location /v4/ {
-    	rewrite  ^/v4/(.*)$  $1  permanent;
+    error_log /var/log/nginx/error.log notice;
+    rewrite_log on;
+    
+    
+    
+    location / {
+        #rewrite  ^/v4(.*)$  $1 break;
         proxy_pass        http://mg-rast-v4-web_pool;
         proxy_redirect    off;
         proxy_set_header  Host             $host;
