@@ -1,9 +1,10 @@
 # expected to be in /etc/confd/templates/nginx.tmpl
 
+{{range $dir := lsdir "/services/mg-rast-v4-web/*"}}
+upstream mg-rast-v4-web-pool-{{base $dir}} {
 
-upstream mg-rast-v4-web_pool {
 {{ range gets "/services/mg-rast-v4-web/*"}}
-	#
+	
 	#instance: {{.Key}}
 	{{$data := json .Value}}
 	#id: {{$data.host}}
@@ -16,7 +17,7 @@ server {
     listen 80 ;
     listen [::]:80;
     
-    server_name v4.metagenomics.anl.gov;
+    server_name {{base $dir}}.metagenomics.anl.gov;
 
     #access_log /var/log/nginx/access.log upstreamlog;
     access_log /var/log/nginx/access.log;
@@ -26,11 +27,11 @@ server {
     
     
     location / {
-        #rewrite  ^/v4(.*)$  $1 break;
-        proxy_pass        http://mg-rast-v4-web_pool;
+        proxy_pass        http://mg-rast-v4-web-pool-{{base $dir}};
         proxy_redirect    off;
         proxy_set_header  Host             $host;
         proxy_set_header  X-Real-IP        $remote_addr;
         proxy_set_header  X-Forwarded-For  $proxy_add_x_forwarded_for;
    }
 }
+{{end}}
