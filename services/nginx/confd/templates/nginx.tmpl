@@ -23,8 +23,9 @@ server {
     error_log /var/log/nginx/error.log;
     rewrite_log on;
     
-    location /v4/ {
-    	rewrite  ^/v4/(.*)$  $scheme://140.221.76.70/$1 last;
+    rewrite  ^/v4/(.*)$  /$1 last;
+    
+    location / {
         proxy_pass        http://mg-rast-v4-web_pool;
         proxy_redirect    off;
         proxy_set_header  Host             $host;
