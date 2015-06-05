@@ -21,7 +21,8 @@ server {
     #access_log /var/log/nginx/access.log upstreamlog;
     access_log /var/log/nginx/access.log;
     error_log /var/log/nginx/error.log;
-
+    rewrite_log on;
+    
     location /v4/ {
     	rewrite  ^/v4/(.*)$  $scheme://140.221.76.70/$1 last;
         proxy_pass        http://mg-rast-v4-web_pool;
