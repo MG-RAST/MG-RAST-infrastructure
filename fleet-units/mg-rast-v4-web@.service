@@ -16,7 +16,7 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 #ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 #echo hello.v4.service | cut -d . -f 2
-ExecStartPre=/usr/bin/bash -c "BRANCH=$(echo hello.v4.service | cut -d . -f 2) ; /home/core/skycore pull --tag=latest etcd:${SERVICE}-${BRANCH}"
+ExecStartPre=/usr/bin/bash -c "BRANCH=$(echo %i | cut -d . -f 2) ; /home/core/skycore pull --tag=latest etcd:${SERVICE}-${BRANCH}"
 
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
