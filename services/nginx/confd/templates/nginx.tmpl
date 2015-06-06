@@ -3,7 +3,7 @@
 {{range $dir := lsdir "/services/mg-rast-v4-web"}}
 upstream mg-rast-v4-web-pool-{{base $dir}} {
 
-{{ range gets "/services/mg-rast-v4-web/{{base $dir}}/*"}}
+{{ range gets printf "/services/mg-rast-v4-web/%s/*" {{base $dir}}}}
 	
 	#instance: {{.Key}}
 	{{$data := json .Value}}
