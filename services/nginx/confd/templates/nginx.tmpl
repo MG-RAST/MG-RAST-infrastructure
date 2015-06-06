@@ -4,11 +4,20 @@
 #dir: {{$dir}}
 {{$base := base $dir}}
 #base: {{$base}}
+##################
 upstream mg-rast-v4-web-pool-{{$base}} {
-
 
 {{$loc := printf "/services/mg-rast-v4-web/%s/*" $dir }}
 #loc: {{$loc}}
+
+{{ range gets $loc}}
+	
+	#instance: {{.Key}}
+	{{$data := json .Value}}
+	#id: {{$data.host}}
+	#ip: {{$data.COREOS_PRIVATE_IPV4}}
+	server {{$data.COREOS_PRIVATE_IPV4}}:{{$data.port}};
+{{end}}
 
 
 }
