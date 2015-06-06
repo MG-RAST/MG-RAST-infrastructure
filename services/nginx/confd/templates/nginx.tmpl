@@ -1,11 +1,13 @@
 # expected to be in /etc/confd/templates/nginx.tmpl
 
 {{range $dir := lsdir "/services/mg-rast-v4-web"}}
-upstream mg-rast-v4-web-pool-{{base $dir}} {
-
 #dir: {{$dir}}
+{{$base := base $dir}}
+#base: {{$base}}
+upstream mg-rast-v4-web-pool-{{$base}} {
 
-{{$loc := printf "/services/mg-rast-v4-web/%s/*" {{base $dir}}}}
+
+{{$loc := printf "/services/mg-rast-v4-web/%s/*" {{$base}}}}
 #loc: {{$loc}}
 
 
