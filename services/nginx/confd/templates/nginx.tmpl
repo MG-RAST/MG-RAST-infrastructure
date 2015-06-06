@@ -3,16 +3,12 @@
 {{range $dir := lsdir "/services/mg-rast-v4-web"}}
 upstream mg-rast-v4-web-pool-{{base $dir}} {
 
-{{printf "/services/mg-rast-v4-web/%s/*" {{base $dir}}}}
+#dir: {{$dir}}
 
-{{ range gets printf "/services/mg-rast-v4-web/%s/*" {{base $dir}}}}
-	
-	#instance: {{.Key}}
-	{{$data := json .Value}}
-	#id: {{$data.host}}
-	#ip: {{$data.COREOS_PRIVATE_IPV4}}
-	server {{$data.COREOS_PRIVATE_IPV4}}:{{$data.port}};
-{{end}}
+{{ $loc := printf "/services/mg-rast-v4-web/%s/*" {{base $dir}}}}
+#loc: {{$loc}}
+
+
 }
 
 server {
