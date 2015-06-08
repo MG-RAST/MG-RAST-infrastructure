@@ -20,3 +20,4 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Conflicts=mg-rast-nginx@*.service
+MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
