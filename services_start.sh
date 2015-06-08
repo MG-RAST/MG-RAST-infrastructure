@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# WARNING: Please run register_docker_image_for_service_all.sh first!
+
+
+
 set -x
 set -e
 
