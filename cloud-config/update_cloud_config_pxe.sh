@@ -10,7 +10,7 @@ TARGET=/srv/www/html/coreos/
 PUBLIC_KEYS=$(cat cloud-config/keys.yaml| sed ':a;N;$!ba;s/\n/\\n/g')
 DISCOVERY_TOKEN=$(cat cloud-config/discovery_token.txt)
 NETWORK_INTERFACE=enp2s0f0
-PRIVATE_KEY=$(sed 's/^/        /' ssh_key/mgrast_coreos.pem)
+PRIVATE_KEY=$(sed 's/^/        /' ssh_key/mgrast_coreos.pem | sed ':a;N;$!ba;s/\n/\\n/g')
 
 
 # use template from local git repo or download
