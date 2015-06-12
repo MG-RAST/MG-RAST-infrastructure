@@ -126,9 +126,9 @@
    <field name="job" type="int" indexed="true" stored="true" />
    <field name="PI_firstname" type="text_general_rev" indexed="true" stored="true" />
    <field name="PI_lastname" type="text_general_rev" indexed="true" stored="true" />
-   <field name="md5" type="text_general" indexed="true" stored="true" multiValued="true" /> 
-   <field name="function" type="text_general_rev" indexed="true" stored="true" multiValued="true" /> 
-   <field name="organism" type="text_general_rev" indexed="true" stored="true" multiValued="true" /> 
+   <field name="md5" type="text_general" indexed="true" stored="false" multiValued="true" /> 
+   <field name="function" type="text_general_rev" indexed="true" stored="false" multiValued="true" /> 
+   <field name="organism" type="text_general_rev" indexed="true" stored="false" multiValued="true" /> 
    <field name="project" type="text_general_rev" indexed="true" stored="true" />
    <field name="status" type="text_general_rev" indexed="true" stored="true" />
    <field name="library" type="text_general_rev" indexed="true" stored="true" />
