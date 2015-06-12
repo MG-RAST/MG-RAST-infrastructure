@@ -15,6 +15,9 @@ for i in ${TEMPLATE_DIR} ${CONFIG} ; do
   git pull
 done
 
+
+# this strangely looking sed commands "sed ':a;N;$!ba;s/\n/\\n/g'" convert linebreaks into "\n" strings
+
 PUBLIC_KEYS=$(cat ${CONFIG}cloud-config/keys.yaml| sed ':a;N;$!ba;s/\n/\\n/g')
 DISCOVERY_TOKEN=$(cat ${CONFIG}cloud-config/discovery_token.txt)
 NETWORK_INTERFACE=enp2s0f0
