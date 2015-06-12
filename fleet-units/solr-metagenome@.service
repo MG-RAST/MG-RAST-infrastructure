@@ -26,4 +26,4 @@ ExecStop=-/usr/bin/docker stop ${CONTAINER}
 [X-Fleet]
 Conflicts=${SERVICE}@*.service
 #MachineMetadata=RAM_GB=47
-MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker2-10g.mcs.anl.gov
