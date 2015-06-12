@@ -224,16 +224,10 @@ write_files:
         TOOLBOX_DOCKER_TAG=latest
         TOOLBOX_USER=root
         TOOLBOX_DIRECTORY=/media/ephemeral/toolbox
-#    - path: /etc/resolv.conf
-#      permissions: 0644
-#      owner: root
-#      content: |
-#        nameserver 192.168.1.1
-#        nameserver 8.8.8.8
-#        nameserver 8.8.4.4
-#        domain somedomain.local
-#hostname: coreos001
-#manage_etc_hosts: localhost
+    - path: /home/core/.ssh/mgrast_coreos.pem
+      permissions: 0644
+      content: |
+%config_private_ssh_key%
 # This is the first stage
 coreos:
   units:
