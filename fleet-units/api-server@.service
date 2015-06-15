@@ -1,0 +1,32 @@
+[Unit]
+Description=API server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=api-server-%i'
+Environment='IMAGE=mgrast/api'
+Environment='SERVICE=api-server'
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=/bin/bash -c 'if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+# preprocessing: loading
+ExecStartPre=/usr/bin/docker run --rm -name ${CONTAINER} -v /media/ephemeral/api-server-data:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER} -v /home/core/mgrast-config/services/api-server:/api-server-conf -v /media/ephemeral/api-server-data:/m5nr -p 80:80 ${IMAGE} /usr/local/apache2/bin/httpd -DFOREGROUND -f /MG-RAST/conf/httpd.conf
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=${SERVICE}@*.service
+MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
