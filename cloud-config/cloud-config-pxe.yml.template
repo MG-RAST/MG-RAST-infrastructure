@@ -224,8 +224,12 @@ write_files:
         TOOLBOX_DOCKER_TAG=latest
         TOOLBOX_USER=root
         TOOLBOX_DIRECTORY=/media/ephemeral/toolbox
-    - path: /etc/ssh/mgrast_coreos.pem
+    - path: /home/core/.ssh/mgrast_coreos.pem
       permissions: 0644
+      content: |
+%config_private_ssh_key%
+    - path: /etc/ssh/mgrast_coreos.pem
+      permissions: 0600
       content: |
 %config_private_ssh_key%
 # This is the first stage
