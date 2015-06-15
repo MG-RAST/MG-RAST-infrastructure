@@ -14,7 +14,7 @@ EnvironmentFile=-/etc/environment
 
 
 ExecStartPre=/bin/bash -c 'if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+ExecStartPre=/bin/bash -c 'if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
