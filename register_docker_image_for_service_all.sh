@@ -25,3 +25,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-beta/shoc
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ab071920-a117-441e-9084-4d4ef5c7ca5c"
 
+#api server
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/fc032536-3022-428f-9ac2-948674c13b9b"
+
+
