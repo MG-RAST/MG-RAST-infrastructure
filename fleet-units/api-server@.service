@@ -18,7 +18,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 ExecStartPre=/usr/bin/chmod 600 /home/core/mgrast-config/services/api-server/.postgresql/postgresql.key
-ExecStartPre=/usr/bin/chown daemon:daemon /home/core/mgrast-config/services/api-server/.postgresql/postgresql.key
+ExecStartPre=/usr/bin/chown daemon:daemon /home/core/mgrast-config/services/api-server/.postgresql/postgresql.key /home/core/mgrast-config/services/api-server/.postgresql/postgresql.crt
 
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
