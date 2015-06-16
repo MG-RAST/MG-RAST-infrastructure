@@ -17,10 +17,6 @@ ExecStartPre=/bin/bash -c 'if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | 
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
 
-#ExecStartPre=/usr/bin/chmod 600 /home/core/mgrast-config/services/api-server/.postgresql/postgresql.key
-#ExecStartPre=/usr/bin/chown daemon:daemon /home/core/mgrast-config/services/api-server/.postgresql/postgresql.key /home/core/mgrast-config/services/api-server/.postgresql/postgresql.crt
-
-
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
