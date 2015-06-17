@@ -5,10 +5,10 @@ set -e
 
 
 # mg-rast-nginx (note that nginx and confd use the same image)
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a34d112c-5f29-479d-af72-783b3410f264"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/6a3a889d-3c51-45a2-9246-57e9e98ce772"
 
 # mg-rast-confd (note that nginx and confd use the same image)
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a34d112c-5f29-479d-af72-783b3410f264"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/6a3a889d-3c51-45a2-9246-57e9e98ce772"
 
 
 # solr-m5nr
