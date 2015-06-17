@@ -3,6 +3,22 @@
 
 set -x
 
+
+if [ "${DOCKERVERSION+xxx}" = "xxx" ] ;
+  echo "Variable DOCKERVERSION is not set"
+  exit 1 
+fi
+
+rm -f /usr/bin/docker
+
+if [ -e /usr/bin/docker-${DOCKERVERSION}] ; then
+  curl -o /usr/bin/docker-${DOCKERVERSION} https://get.docker.com/builds/Linux/x86_64/docker-${DOCKERVERSION}
+  chmod +x /usr/bin/docker-${DOCKERVERSION}
+fi
+
+ln -s /usr/bin/docker-${DOCKERVERSION} /usr/bin/docker
+
+
 set -e
 # test to make sure client and server version of docker are the same
 /usr/bin/docker version
