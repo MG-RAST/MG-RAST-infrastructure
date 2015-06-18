@@ -16,7 +16,8 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/bash -c "export DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) ; echo \"DOCKERVERSION=${DOCKERVERSION}\";  /usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=${DOCKERVERSION} --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh"
+# I do not get output from docker....
+ExecStart=/usr/bin/bash -c "export DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) ; echo \"DOCKERVERSION=${DOCKERVERSION}\";  /usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=1.5.0 --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh"
 
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
