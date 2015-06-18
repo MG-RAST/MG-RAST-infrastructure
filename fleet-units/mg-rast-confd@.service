@@ -8,13 +8,15 @@ Environment='CONTAINER=mgrast_confd'
 Environment='IMAGE=mgrast/nginxconfd'
 Environment='SERVICE=mg-rast-confd'
 
+
+
 Restart=always
 EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh
+ExecStart=/usr/bin/bash -c "export DOCKERVERSION=$(docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) ; /usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=${DOCKERVERSION} --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh"
 
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
