@@ -4,14 +4,14 @@
 set -x
 
 
-if [ "${DOCKERVERSION+xxx}" = "xxx" ] ; then
+if [ ${DOCKERVERSION}x = x ] ; then
   echo "Variable DOCKERVERSION is not set"
   exit 1 
 fi
 
 rm -f /usr/bin/docker
 
-if [ -e /usr/bin/docker-${DOCKERVERSION} ] ; then
+if [ ! -e /usr/bin/docker-${DOCKERVERSION} ] ; then
   curl -o /usr/bin/docker-${DOCKERVERSION} https://get.docker.com/builds/Linux/x86_64/docker-${DOCKERVERSION}
   chmod +x /usr/bin/docker-${DOCKERVERSION}
 fi
