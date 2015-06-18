@@ -4,7 +4,7 @@
 set -x
 
 
-if [ "${DOCKERVERSION+xxx}" = "xxx" ] ; then
+if [ ${DOCKERVERSION}x = x ] ; then
   echo "Variable DOCKERVERSION is not set"
   exit 1 
 fi
