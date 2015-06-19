@@ -51,7 +51,7 @@ write_files:
                     [Service]
                     Type=oneshot
                     RemainAfterExit=yes
-                    ExecStart=/usr/sbin/swapon /dev/md0p1
+                    ExecStart=/usr/sbin/swapon /dev/${RAID_DEVICE}p1
                 - name: create_docker_directories.service
                   command: start
                   content: |
@@ -167,20 +167,21 @@ write_files:
         echo metatadata=\"METADATA=${METADATA}\" >> /etc/fleet/fleet.conf
         sed -i 's/\$METADATA/'${METADATA}'/g' /run/cloud-config.yml
         
-
+        # md0 or md127
+        export RAID_DEVICE=`cat /proc/mdstat | grep active | cut -f 1 -d ' '`
         # wait for array partitions
 
-        if [ ! -e /dev/md0p1 ] ; then sleep 3; echo 'Waiting for /dev/md0p1'; fi
-        if [ ! -e /dev/md0p2 ] ; then sleep 3; echo 'Waiting for /dev/md0p2'; fi
+        if [ ! -e /dev/${RAID_DEVICE}p1 ] ; then sleep 3; echo 'Waiting for /dev/${RAID_DEVICE}p1'; fi
+        if [ ! -e /dev/${RAID_DEVICE}p2 ] ; then sleep 3; echo 'Waiting for /dev/${RAID_DEVICE}p2'; fi
 
-        if [ ! -e /dev/md0p1 ] ; then echo "/dev/md0p1 not found, exit script" ; exit ; fi
+        if [ ! -e /dev/${RAID_DEVICE}p1 ] ; then echo "/dev/${RAID_DEVICE}p1 not found, exit script" ; exit ; fi
 
 
         # wipe filesystem if mount fails or "keep_filesystem" does not exist
         WIPE_FS=0
         mkdir -p /media/ephemeral/
          # try to mount
-        /usr/bin/mount -t btrfs /dev/md0p2 /media/ephemeral/
+        /usr/bin/mount -t btrfs /dev/${RAID_DEVICE}p2 /media/ephemeral/
         if [ $? -eq 0 ]; then
             WIPE_FS=1
         fi
@@ -191,14 +192,14 @@ write_files:
         
         if [ ${WIPE_FS} -eq 1 ] ; then
             echo "creating file systems"
-            /usr/sbin/wipefs -f /dev/md0p1
-            /usr/sbin/wipefs -f /dev/md0p2
+            /usr/sbin/wipefs -f /dev/${RAID_DEVICE}p1
+            /usr/sbin/wipefs -f /dev/${RAID_DEVICE}p2
             
-            /usr/sbin/mkswap /dev/md0p1
-            /usr/sbin/mkfs.btrfs -f /dev/md0p2
+            /usr/sbin/mkswap /dev/${RAID_DEVICE}p1
+            /usr/sbin/mkfs.btrfs -f /dev/${RAID_DEVICE}p2
             
             
-            /usr/bin/mount -t btrfs /dev/md0p2 /media/ephemeral/
+            /usr/bin/mount -t btrfs /dev/${RAID_DEVICE}p2 /media/ephemeral/
             if [ $? -eq 0 ]; then
                 # mounted
                 echo "delete this file to wipe filesystem on next boot" > /media/ephemeral/keep_filesystem
@@ -214,7 +215,7 @@ write_files:
         #!/bin/bash
         
         sed 's/\$_private/$private/g' /run/cloud-config.yml > /tmp/cconfigtmp
-        sed -i 's/\$_public/$public/g' /tmp/cconfigtmp
+        sed -i 's/\$_public/$public/g' 's/\$\{RAID_DEVICE\}/${RAID_DEVICE}/g' /tmp/cconfigtmp
         
         mv /tmp/cconfigtmp /run/cloud-config.yml
     - path: /home/core/.toolboxrc
