@@ -169,6 +169,9 @@ write_files:
         
         # md0 or md127
         export RAID_DEVICE=`cat /proc/mdstat | grep active | cut -f 1 -d ' '`
+
+        sed -i 's/\${RAID_DEVICE}/'${RAID_DEVICE}'/g' /run/cloud-config.yml
+
         # wait for array partitions
 
         if [ ! -e /dev/${RAID_DEVICE}p1 ] ; then sleep 3; echo 'Waiting for /dev/${RAID_DEVICE}p1'; fi
@@ -215,7 +218,7 @@ write_files:
         #!/bin/bash
         
         sed 's/\$_private/$private/g' /run/cloud-config.yml > /tmp/cconfigtmp
-        sed -i 's/\$_public/$public/g' 's/\${RAID_DEVICE}/${RAID_DEVICE}/g' /tmp/cconfigtmp
+        sed -i 's/\$_public/$public/g'  /tmp/cconfigtmp
         
         mv /tmp/cconfigtmp /run/cloud-config.yml
     - path: /home/core/.toolboxrc
