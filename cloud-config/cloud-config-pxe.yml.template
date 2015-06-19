@@ -215,7 +215,7 @@ write_files:
         #!/bin/bash
         
         sed 's/\$_private/$private/g' /run/cloud-config.yml > /tmp/cconfigtmp
-        sed -i 's/\$_public/$public/g' 's/\$\{RAID_DEVICE\}/${RAID_DEVICE}/g' /tmp/cconfigtmp
+        sed -i 's/\$_public/$public/g' 's/\${RAID_DEVICE}/${RAID_DEVICE}/g' /tmp/cconfigtmp
         
         mv /tmp/cconfigtmp /run/cloud-config.yml
     - path: /home/core/.toolboxrc
