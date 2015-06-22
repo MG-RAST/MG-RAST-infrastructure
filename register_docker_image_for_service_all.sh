@@ -28,4 +28,6 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-test/shock -
 #api server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/fc032536-3022-428f-9ac2-948674c13b9b"
 
+#awe server
+curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af0d8ec4-bc6e-43d2-9a9b-de6c725d38a3"
 
