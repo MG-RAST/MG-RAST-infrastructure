@@ -1,0 +1,31 @@
+[Unit]
+Description=AWE server
+After=awe-server-mongodb@%i.service
+Requires=awe-server-mongodb@%i.service
+
+[Service]
+Environment='CONTAINER=awe-server-%i'
+Environment='IMAGE=mgrast/awe'
+Environment='SERVICE=awe-server'
+
+
+TimeoutStartSec=0
+Restart=always
+EnvironmentFile=-/etc/environment
+Environment='TITLE=MG-RAST AWE server'
+
+ExecStartPre=/bin/bash -c 'if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:awe-server
+ExecStartPre=/usr/bin/mkdir -p /media/ephemeral/awe-server-%i/
+
+
+# use -p ${COREOS_PRIVATE_IPV4}:80:80 instead of -p 80:80 ???
+ExecStart=/usr/bin/docker run --rm --name awe-server-%i -p 80:80 -p 8001:8001 -v /home/core/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v /media/ephemeral/awe-server-%i/data/:/mnt/awe/  --link=awe-server-mongodb:mongodb ${IMAGE}:latest /gopath/bin/awe-server --hosts=mongodb --conf=/awe.cfg  --use_app_defs=yes --title=${TITLE}
+ExecStop=-/usr/bin/docker stop awe-server-%i
+
+[X-Fleet]
+MachineOf=awe-server-mongodb@%i.service

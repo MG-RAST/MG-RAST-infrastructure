@@ -1,0 +1,28 @@
+[Unit]
+Description=MongoDB for AWE server (instance: %i)
+After=docker.service
+Requires=docker.service
+
+[Service]
+
+Environment='CONTAINER=awe-server-mongodb-%i'
+Environment='IMAGE=mgrast/mongodb:2.4.14'
+Environment='SERVICE=awe-server-mongodb'
+
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/awe-server-%i/mongodb/:/data/db --expose=27017 ${IMAGE} /usr/bin/mongod
+
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+#MachineID=
+#MachineMetadata=RAM_GB=47
+Conflicts=${SERVICE}@*.service
+MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
