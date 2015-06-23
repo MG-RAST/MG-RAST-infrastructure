@@ -11,7 +11,7 @@ Environment='SERVICE=mg-rast-nginx'
 Restart=always
 EnvironmentFile=-/etc/environment
 
-ExecStartPre=-/usr/bin/ip addr add 140.221.76.75/24 brd + dev enp2s0f0
+ExecStartPre=-/usr/bin/ip addr add 140.221.76.84/24 brd + dev enp2s0f0
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
@@ -19,7 +19,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PUBLIC_IPV4}:80:80 -v /etc/nginx/sites-enabled/ ${IMAGE}:latest /usr/sbin/nginx -c /MG-RAST-infrastructure/services/nginx/nginx.conf
 
-ExecStop=-/usr/bin/ip addr del 140.221.76.75/24 dev enp2s0f0
+ExecStop=-/usr/bin/ip addr del 140.221.76.84/24 dev enp2s0f0
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
