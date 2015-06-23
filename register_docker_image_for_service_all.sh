@@ -1,8 +1,9 @@
 #!/bin/sh
-
 set -x
 set -e
 
+
+# service configuration
 
 # mg-rast-nginx (note that nginx and confd use the same image)
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/f0aba6ce-1d10-495b-82a2-5921107848c1"
@@ -31,3 +32,12 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server/shock -XPUT -d v
 #awe server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af0d8ec4-bc6e-43d2-9a9b-de6c725d38a3"
 
+
+
+# production services:
+
+# fleetctl start mg-rast-{confd,nginx}@1.service
+# fleetctl start mg-rast-v4-web{,-discovery}@{1..2}.v4.service
+# fleetctl start solr-m5nr@1.service
+# fleetctl start solr-metagenome@1.service
+# fleetctl start api-server@1.service
