@@ -31,4 +31,6 @@ Conflicts=api-server@*.service
 Conflicts=mg-rast-v4-web@*.service
 Conflicts=solr-m5nr@*.service
 Conflicts=solr-metagenome@*.service
+Conflicts=awe-server-mongodb@*.service
+
 #MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
