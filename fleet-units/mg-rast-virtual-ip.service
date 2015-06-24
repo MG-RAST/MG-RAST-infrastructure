@@ -18,7 +18,4 @@ ExecStart=/usr/bin/sleep infinity
 ExecStop=-/usr/bin/ip addr del ${VIRTUAL_IP}/24 dev enp2s0f0
 
 [X-Fleet]
-MachineOf=mg-rast-nginx@1.service
-MachineOf=mg-rast-nginx@2.service
-#MachineOf=mg-rast-nginx@3.service
-#MachineOf=mg-rast-nginx@4.service
+MachineOf=mg-rast-nginx.service

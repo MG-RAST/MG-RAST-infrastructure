@@ -20,11 +20,6 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -v /etc/nginx/si
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-Conflicts=mg-rast-nginx@*.service
-Conflicts=api-server@*.service
-Conflicts=mg-rast-v4-web@*.service
-Conflicts=solr-m5nr@*.service
-Conflicts=solr-metagenome@*.service
-Conflicts=awe-server-mongodb@*.service
+Global=true
 
 #MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov

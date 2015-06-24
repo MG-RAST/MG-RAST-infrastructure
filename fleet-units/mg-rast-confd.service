@@ -1,7 +1,7 @@
 [Unit]
 Description=MG-RAST Nginx
-After=docker.service
-Requires=docker.service
+BindsTo=mg-rast-nginx.service
+After=mg-rast-nginx.service
 
 [Service]
 Environment='CONTAINER=mgrast_confd'
@@ -24,4 +24,5 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 
 [X-Fleet]
-MachineOf=mg-rast-nginx@%i.service
+#MachineOf=mg-rast-nginx@%i.service
+Global=true
