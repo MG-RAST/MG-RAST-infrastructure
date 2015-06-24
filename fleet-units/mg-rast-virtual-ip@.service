@@ -1,0 +1,24 @@
+[Unit]
+Description=MG-RAST virtual ip for reverse proxy
+After=docker.service
+Requires=docker.service
+
+[Service]
+
+Environment='VIRTUAL_IP=140.221.76.84'
+
+
+Restart=always
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=-/usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev enp2s0f0
+
+ExecStart=/usr/bin/sleep infinity
+
+ExecStop=-/usr/bin/ip addr del ${VIRTUAL_IP}/24 dev enp2s0f0
+
+[X-Fleet]
+MachineOf=mg-rast-nginx@1.service
+MachineOf=mg-rast-nginx@2.service
+MachineOf=mg-rast-nginx@3.service
+MachineOf=mg-rast-nginx@4.service
