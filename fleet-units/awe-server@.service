@@ -24,7 +24,7 @@ ExecStartPre=/usr/bin/mkdir -p /media/ephemeral/awe-server-%i/
 
 
 # use -p ${COREOS_PRIVATE_IPV4}:80:80 instead of -p 80:80 ???
-ExecStart=/usr/bin/docker run --rm --name awe-server-%i -p 80:80 -p 8001:8001 -v /home/core/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v /media/ephemeral/awe-server-%i/data/:/mnt/awe/  --link=awe-server-mongodb:mongodb ${IMAGE}:latest /gopath/bin/awe-server --hosts=mongodb --conf=/awe.cfg  --use_app_defs=yes --title=${TITLE}
+ExecStart=/usr/bin/docker run --rm --name awe-server-%i -p 80:80 -p 8001:8001 -v /home/core/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v /media/ephemeral/awe-server-%i/data/:/mnt/awe/  --link=awe-server-mongodb-%i:mongodb ${IMAGE}:latest /gopath/bin/awe-server --hosts=mongodb --conf /awe.cfg  --use_app_defs=yes --title=${TITLE}
 ExecStop=-/usr/bin/docker stop awe-server-%i
 
 [X-Fleet]
