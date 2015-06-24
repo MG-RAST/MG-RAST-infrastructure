@@ -1,7 +1,8 @@
 [Unit]
 Description=MG-RAST virtual ip for reverse proxy
 After=docker.service
-Requires=docker.service
+BindsTo=mg-rast-nginx.service
+
 
 [Service]
 
