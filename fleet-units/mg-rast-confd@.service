@@ -1,7 +1,8 @@
 [Unit]
 Description=MG-RAST Nginx
-Requires=mg-rast-nginx.service
-After=mg-rast-nginx.service
+Requires=mg-rast-nginx@%i.service
+BindsTo=mg-rast-nginx@%i.service
+#After=mg-rast-nginx@%i.service
 
 [Service]
 Environment='CONTAINER=mgrast_confd'
