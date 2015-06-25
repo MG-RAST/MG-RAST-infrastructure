@@ -1,0 +1,26 @@
+[Unit]
+Description=MG-RAST Nginx image
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='IMAGE=mgrast/nginxconfd'
+Environment='SERVICE=mg-rast-nginx'
+
+Restart=always
+
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/sleep infinity
+
+
+[X-Fleet]
+Global=true
+MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker8-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker13-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov
