@@ -9,8 +9,14 @@ Environment='CONTAINER=mgrast_nginx'
 Environment='IMAGE=mgrast/nginxconfd'
 Environment='SERVICE=mg-rast-nginx'
 
+Environment='VIRTUAL_IP=140.221.76.250'
+
 Restart=always
 EnvironmentFile=-/etc/environment
+
+
+ExecStartPre=-/usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev enp2s0f0
+
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
@@ -18,6 +24,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -v /etc/nginx/sites-enabled/ ${IMAGE}:latest /usr/sbin/nginx -c /MG-RAST-infrastructure/services/nginx/nginx.conf
 
+ExecStop=-/usr/bin/ip addr del ${VIRTUAL_IP}/24 dev enp2s0f0
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
