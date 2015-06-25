@@ -26,4 +26,4 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 MachineOf=mg-rast-nginx.service
-Global=true
+#Global=true
