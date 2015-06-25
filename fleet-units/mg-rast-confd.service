@@ -1,5 +1,6 @@
 [Unit]
 Description=MG-RAST Nginx
+Requires=mg-rast-nginx.service
 BindsTo=mg-rast-nginx.service
 After=mg-rast-nginx.service
 
@@ -24,5 +25,5 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 
 [X-Fleet]
-#MachineOf=mg-rast-nginx@%i.service
+MachineOf=mg-rast-nginx.service
 Global=true
