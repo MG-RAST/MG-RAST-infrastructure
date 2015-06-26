@@ -19,12 +19,23 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/solr-m5nr/shock -XPUT -d va
 curl -L http://127.0.0.1:4001/v2/keys/service_images/solr-metagenome/shock -XPUT -d value="shock.metagenomics.anl.gov/node/6d69bd20-1403-4bde-b52f-208db29f5c20"
 
 # mg-rast-v4-web
-#curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
-
+#v4
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-beta/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
+#v4-dev
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ab071920-a117-441e-9084-4d4ef5c7ca5c"
+#v4-test
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ab071920-a117-441e-9084-4d4ef5c7ca5c"
+
+# mg-rast-v3-web
+#v3
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3/shock -XPUT -d value="shock.metagenomics.anl.gov/node/69525bc1-70a1-4f85-bccd-a1c1e59a19d1"
+#v3-dev
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/69525bc1-70a1-4f85-bccd-a1c1e59a19d1"
+#v3-test
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/69525bc1-70a1-4f85-bccd-a1c1e59a19d1"
+
+
+
 
 #api server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/fc032536-3022-428f-9ac2-948674c13b9b"
