@@ -10,7 +10,7 @@ Dest = "/etc/nginx/sites-enabled/mg-rast-v4-web_pool.conf"
 
 # The etcd keys or directory to watch.  This is where the information to fill in
 # the template will come from.
-Keys = [ "/services/mg-rast-v4-web" ]
+Keys = [ "/services/mg-rast-v4-web" , "/services/mg-rast-v3-web" ]
 
 # File ownership and mode information
 Owner = "root"
