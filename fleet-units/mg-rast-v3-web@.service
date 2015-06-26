@@ -1,0 +1,31 @@
+[Unit]
+Description=MG-RAST v4 web frontend
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mg-rast-v3-web-%i'
+Environment='IMAGE=mgrast/v3-web'
+Environment='SERVICE=mg-rast-v3-web'
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+# get image
+ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 ${IMAGE}:latest /usr/local/apache2/bin/httpd -D FOREGROUND
+#ExecStartPost=/usr/bin/sleep 5
+#ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
+ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=mg-rast-v4-web@*.service
