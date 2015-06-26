@@ -1,5 +1,5 @@
 [Unit]
-Description=MG-RAST Nginx
+Description=MG-RAST Confd
 Requires=mg-rast-nginx@%i.service
 #BindsTo=mg-rast-nginx@%i.service
 After=mg-rast-nginx@%i.service
