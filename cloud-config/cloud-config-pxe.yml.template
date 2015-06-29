@@ -236,6 +236,11 @@ write_files:
       permissions: 0600
       content: |
 %config_private_ssh_key%
+    - path: /etc/profile.d/skycore.sh
+      permissions: 0644
+      content: |
+        #!/bin/bash
+        export SKYCORE_SHOCK=shock.metagenomics.anl.gov
 # This is the first stage
 coreos:
   units:
