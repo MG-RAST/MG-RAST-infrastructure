@@ -97,7 +97,7 @@ write_files:
                    Type=oneshot
                    PreExecStart=-/usr/bin/rm -f /home/core/skycore
                    ExecStart=/usr/bin/wget --tries=10 --wait=3 --random-wait --retry-connrefused https://github.com/wgerlach/Skycore/releases/download/latest/skycore  --output-document=/home/core/skycore
-                   ExecStart=/usr/bin/chmod +x /home/core/skycore
+                   ExecStartPost=/usr/bin/chmod +x /home/core/skycore
     - path: /run/setup-environment.sh
       permissions: '0755'
       content: |
