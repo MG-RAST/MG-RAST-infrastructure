@@ -47,8 +47,8 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d v
 
 # production services:
 
-# fleetctl start mg-rast-nginx-image.service
-# fleetctl start mg-rast-{confd,nginx}@1.service
+# fleetctl start mg-rast-confd.service # global unit that runs on multiple machines
+# fleetctl start mg-rast-nginx@1.service
 # fleetctl start solr-m5nr@1.service
 # fleetctl start solr-metagenome@1.service
 # fleetctl start api-server@1.service
