@@ -16,15 +16,26 @@ EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
-#should not be needed as it uses the same image as nginx!
-#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+# this fleet unit repsonsible to get the nginx image as well !
+
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # I do not get output from docker....
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) --volumes-from mgrast_nginx -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh"
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) -v /etc/nginx/sites-enabled/mg-rast-v4-web_pool.conf -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh"
 
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 
 [X-Fleet]
-MachineOf=mg-rast-nginx@%i.service
+Global=true
+MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker8-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker13-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov
+
