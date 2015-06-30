@@ -22,7 +22,7 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # preprocessing: loading
-ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/api-server-data:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
+ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/api-server-%i/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
