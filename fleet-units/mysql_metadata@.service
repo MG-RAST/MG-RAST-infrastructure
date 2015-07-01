@@ -1,0 +1,46 @@
+[Unit]
+Description=mysql server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mysql-metadata-%i'
+Environment='IMAGE=mgrast/mysql-metadata'
+Environment='SERVICE=mysql_metadata'
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+Environment='DIR=/media/ephemeral/mysql_metadata-%i'
+
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/
+ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/logs/api.metagenomics
+
+
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+
+# TODO init mysql 
+# -v /media/ephemeral/:/mnt/
+
+
+#ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+#ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+
+
+ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data:/var/lib/mysql -v ${DIR}/log/:/var/log/mysqld/ -v /home/core/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test mysql/mysql-server:5.6
+
+
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=${SERVICE}@*.service
+MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
