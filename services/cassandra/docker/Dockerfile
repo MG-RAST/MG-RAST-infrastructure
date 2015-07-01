@@ -12,7 +12,6 @@ ENV AGENT_URL http://downloads.datastax.com/community/datastax-agent-${AGENT_VER
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y \
-        git-core \
         curl \
         python \
         default-jre \
@@ -20,8 +19,11 @@ RUN apt-get update && \
     apt-get clean
 
 RUN mkdir -p /opt /data /bin && \
-  cd / && \
-  git clone https://github.com/MG-RAST/MG-RAST-infrastructure.git
+  cd /bin && \
+  curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/configure-cassandra.sh && \
+  chmod +x configure-cassandra.sh && \
+  curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/load-cassandra-m5nr.sh && \
+  chmod +x load-cassandra-m5nr.sh
 
 RUN curl -s $CASS_URL | tar -zxvf - -C /opt && \
     ln -s /opt/apache-cassandra-${CASS_VERSION} /opt/cassandra
