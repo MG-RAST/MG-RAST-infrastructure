@@ -26,7 +26,7 @@ RUN mkdir -p /opt /data /bin && \
 RUN curl -s $CASS_URL | tar -zxvf - -C /opt && \
     ln -s /opt/apache-cassandra-${CASS_VERSION} /opt/cassandra
 
-curl -s $AGENT_URL | tar -zxvf - -C /opt
-ln -s /opt/datastax-agent-${AGENT_VERSION} /opt/agent
+RUN curl -s $AGENT_URL | tar -zxvf - -C /opt && \
+    ln -s /opt/datastax-agent-${AGENT_VERSION} /opt/agent
 
 EXPOSE 7000 7001 7199 9042 9160 61621
