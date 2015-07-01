@@ -55,6 +55,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d v
 # fleetctl start awe-server{,-mongodb}@1.service
 
 # develop services:
+# fleetctl start mysql_metadata@1.service
 # fleetctl start mg-rast-v4-web{,-discovery}@{1..2}.v4-web.service
 # fleetctl start mg-rast-v4-web{,-discovery}@{1..2}.v4-web-dev.service
 # fleetctl start mg-rast-v3-web{,-discovery}@{1..2}.v3-web.service
