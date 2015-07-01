@@ -12,9 +12,13 @@ Restart=always
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
 
+Environment='DIR=/media/ephemeral/api-server-%i'
 
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+ExecStartPre=/bin/mkdir -p ${DIR}/logs/api.metagenomics
+ExecStartPre=/bin/chmod 777 ${DIR}/logs/api.metagenomics
 
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
@@ -22,12 +26,12 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # preprocessing: loading
-ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/api-server-%i/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
+ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 #-v /home/core/mgrast-config/services/api-server/postgresql/:/root/postgresql/:ro
-ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER}  -v /home/core/mgrast-config/services/api-server:/api-server-conf:rw -v /media/ephemeral/api-server-%i/logs/:/var/log/httpd/:rw -v /media/ephemeral/api-server-%i/data/:/m5nr:ro -p 80:80 -p 443:443 ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/* ; /bin/chown daemon:daemon /api-server-conf/postgresql/* ; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
+ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER}  -v /home/core/mgrast-config/services/api-server:/api-server-conf:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -p 80:80 -p 443:443 ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/* ; /bin/chown daemon:daemon /api-server-conf/postgresql/* ; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
