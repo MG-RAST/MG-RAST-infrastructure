@@ -43,6 +43,8 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server/shock -XPUT -d v
 #awe server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af0d8ec4-bc6e-43d2-9a9b-de6c725d38a3"
 
+#cassandra node
+curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT -d value="shock.metagenomics.anl.gov/node/bcefe766-84cd-4764-8cc3-1bb19ee38848"
 
 
 # production services:
@@ -53,6 +55,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d v
 # fleetctl start solr-metagenome@1.service
 # fleetctl start api-server@1.service
 # fleetctl start awe-server{,-mongodb}@1.service
+# fleetctl start cassandra-node.service # global unit that runs on multiple machines
 
 # develop services:
 # fleetctl start mysql_metadata@1.service
