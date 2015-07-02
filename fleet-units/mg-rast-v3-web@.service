@@ -20,7 +20,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 # Set v3url.confd
-ExecStartPre=/usr/bin/bash -c "mkdir -p /media/emphemeral/%p-%i/conf.d/ && echo "SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov" > /media/emphemeral/%p-%i/conf.d/v3url.confd"
+ExecStartPre=/usr/bin/bash -c "mkdir -p /media/emphemeral/%p-%i/conf.d/ && echo "SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov" > /media/emphemeral/%p-%i/conf.d/v3url.conf"
 
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
