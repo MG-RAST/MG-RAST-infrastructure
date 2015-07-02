@@ -20,13 +20,13 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 # Set v3url.confd
-ExecStartPre=/usr/bin/bash -c "mkdir -p /media/emphemeral/%p-%i/conf.d/ && echo "SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov" > /media/emphemeral/%p-%i/conf.d/v3url.conf"
+ExecStartPre=/usr/bin/bash -c "mkdir -p /media/ephemeral/%p-%i/conf.d/ && echo "SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov" > /media/ephemeral/%p-%i/conf.d/v3url.conf"
 
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 -v /media/emphemeral/%p-%i/conf.d/:/conf.d/ -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 -v /media/ephemeral/%p-%i/conf.d/:/conf.d/ -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
 
 #ExecStartPost=/usr/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
