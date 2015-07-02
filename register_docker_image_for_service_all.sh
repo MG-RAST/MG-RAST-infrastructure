@@ -5,11 +5,16 @@ set -e
 
 # service configuration
 
+
 # mg-rast-nginx (note that nginx and confd use the same image)
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a83e38ca-8037-4cbc-8b4a-11c25fa80765"
 
 # mg-rast-confd (note that nginx and confd use the same image)
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a83e38ca-8037-4cbc-8b4a-11c25fa80765"
+
+
+# mysql_metadata
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mysql_metadata/shock -XPUT -d value="shock.metagenomics.anl.gov/node/25fd3da0-769c-4a10-af0b-13d6659aee56"
 
 
 # solr-m5nr
