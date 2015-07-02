@@ -18,16 +18,20 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
+# define and clean tmp
+Environment='TEMP=/media/ephemeral/%p/%i/tmp'
+ExecStartPre=-/usr/bin/rm -rf ${TEMP} ; /usr/bin/mkdir -p ${TEMP}
 
 # Set v3url.confd
 Environment='CONFD=/media/ephemeral/%p/%i/conf.d'
+
 ExecStartPre=/usr/bin/bash -c "mkdir -p ${CONFD} && echo \"SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${CONFD}/v3url.conf"
 
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 -v ${CONFD}:/conf.d/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 -v ${TEMP}:/MG-RAST/site/CGI/Tmp/:rw  -v ${CONFD}:/conf.d/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
 
 #ExecStartPost=/usr/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
