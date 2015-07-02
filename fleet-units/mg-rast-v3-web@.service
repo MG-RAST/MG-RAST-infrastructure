@@ -19,16 +19,14 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.go
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
 
-# very ugly way of passing variables:
-ExecStartPre=/usr/bin/bash -c "mkdir -p /media/emphemeral/units/ && echo PREFIX=$(echo %i | cut -d . -f 2) > /media/emphemeral/units/%p_%i.env"
-EnvironmentFile=-/media/emphemeral/units/%p_%i.env
-
+# Set v3url.confd
+ExecStartPre=/usr/bin/bash -c "mkdir -p /media/emphemeral/%p-%i/conf.d/ && echo "SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov" > /media/emphemeral/%p-%i/conf.d/v3url.confd"
 
 # get image
-ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-${PREFIX}"
+ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 --env V3URL=${PREFIX}.metagenomics.anl.gov -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 -v /media/emphemeral/%p-%i/conf.d/:/conf.d/ -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
 
 #ExecStartPost=/usr/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
