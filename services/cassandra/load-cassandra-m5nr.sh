@@ -9,10 +9,9 @@ DATA_DIR=""
 SCHEMA_DIR="/schema"
 CASS_DIR="/opt/cassandra"
 
-while getopts hi:a:v:r:d: option; do
+while getopts i:a:v:r:d: option; do
     case "${option}"
         in
-            h) HELP=1;;
             i) MY_IP=${OPTARG};;
             a) ALL_IPS=${OPTARG};;
             v) VERSION=${OPTARG};;
@@ -50,9 +49,9 @@ curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Sch
 # download bulkloader
 mkdir -p $LOAD_DIR
 cd $LOAD_DIR
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/BulkLoader.sh > BulkLoader.sh
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/BulkLoader.java > BulkLoader.java
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/opencsv-3.4.jar > opencsv-3.4.jar
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/BulkLoader.sh
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/BulkLoader.java
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/opencsv-3.4.jar
 
 # download data
 DATA_URL=""

@@ -21,12 +21,13 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 -e PUBLIC_IP=${COREOS_PUBLIC_IPV4} -v /home/core/mgrast-config/services/cassandra:/config:rw -v ${CDATA}:/data/cassandra:rw ${IMAGE} bash -c ""
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7001:7001 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 -v /home/core/mgrast-config/services/cassandra:/config:rw -v ${CDATA}:/data/cassandra:rw ${IMAGE} bash -c "/bin/configure-cassandra.sh -c /config -b /opt -d /data/cassandra -i ${COREOS_PUBLIC_IPV4}; /opt/agent/bin/datastax-agent; /opt/cassandra/bin/cassandra -f"
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Global=true
+MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
@@ -36,4 +37,6 @@ MachineMetadata=HOSTNAME=bio-worker10-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker12-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker13-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov
+
+# all IPs: 140.221.76.66,140.221.76.70,140.221.76.71,140.221.76.72,140.221.76.73,140.221.76.74,140.221.76.76,140.221.76.77,140.221.76.67,140.221.76.81
+# seed IPs: 140.221.76.70,140.221.76.71
