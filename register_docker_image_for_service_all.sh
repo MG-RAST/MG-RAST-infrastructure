@@ -48,9 +48,14 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server/shock -XPUT -d v
 #awe server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af0d8ec4-bc6e-43d2-9a9b-de6c725d38a3"
 
-#cassandra node
-curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT -d value="shock.metagenomics.anl.gov/node/bcefe766-84cd-4764-8cc3-1bb19ee38848"
+#memcached server
+curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
 
+#cassandra node
+curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2dd70ba4-2b75-4c5c-ad30-79ec9f261387"
+
+#opscenter server
+curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/388ba3fe-3cd2-4965-8c25-6c85faeec862"
 
 # production services:
 
@@ -60,7 +65,9 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT 
 # fleetctl start solr-metagenome@1.service
 # fleetctl start api-server@1.service
 # fleetctl start awe-server{,-mongodb,-discovery}@1.service
+# fleetctl start memcached.service # global unit that runs on multiple machines
 # fleetctl start cassandra-node.service # global unit that runs on multiple machines
+# fleetctl start opscenter@1.service
 
 # develop services:
 # fleetctl start mysql_metadata@1.service
