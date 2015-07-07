@@ -20,8 +20,13 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+
 # I do not get output from docker....
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) -v /etc/nginx/sites-enabled -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /MG-RAST-infrastructure/services/nginx/confd/run_confd.sh"
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) -v /etc/nginx/sites-enabled -v /home/core/mgrast-config:/config:ro -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /config/run_confd.sh"
 
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
