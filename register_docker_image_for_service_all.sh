@@ -59,7 +59,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT 
 # fleetctl start solr-m5nr@1.service
 # fleetctl start solr-metagenome@1.service
 # fleetctl start api-server@1.service
-# fleetctl start awe-server{,-mongodb}@1.service
+# fleetctl start awe-server{,-mongodb,-discovery}@1.service
 # fleetctl start cassandra-node.service # global unit that runs on multiple machines
 
 # develop services:
