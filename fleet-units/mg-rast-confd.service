@@ -10,7 +10,7 @@ Environment='SERVICE=mg-rast-confd'
 
 
 
-Restart=always
+#Restart=always
 EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
