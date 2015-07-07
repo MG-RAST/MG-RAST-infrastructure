@@ -1,0 +1,26 @@
+[Unit]
+Description=Opts Center
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=optscenter-%i'
+Environment='IMAGE=mgrast/optscenter'
+Environment='SERVICE=optscenter'
+
+Restart=always
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8888:8888 -p 61620:61620 /opt/opscenter/bin/opscenter -f
+
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=${SERVICE}@*.service
+MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov
+# IP - 140.221.76.82
