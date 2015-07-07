@@ -1,7 +1,7 @@
 [Unit]
 Description=MG-RAST Nginx
-After=mg-rast-confd.service
-Requires=mg-rast-confd.service
+After=docker.service
+Requires=docker.service
 
 
 [Service]
@@ -22,9 +22,9 @@ ExecStartPre=-/usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE}
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
-#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 --volumes-from mgrast_confd ${IMAGE}:latest /usr/sbin/nginx -c /MG-RAST-infrastructure/services/nginx/nginx.conf
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro ${IMAGE}:latest /usr/sbin/nginx -c /MG-RAST-infrastructure/services/nginx/nginx.conf
 
 ExecStartPost=-/usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP}
 
