@@ -17,8 +17,7 @@ while getopts c:b:d:i: option; do
 done
 
 cd $BASE_DIR/agent/conf
-echo "stomp_interface: $PUBLIC_IP" > address.yaml
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/opscenter/address.yaml
 
 cd $BASE_DIR/cassandra/conf
-sed "s;\[\% public_ip \%\];$PUBLIC_IP;g" $CONF_DIR/cassandra-env.sh > cassandra-env.sh
 sed -e "s;\[\% public_ip \%\];$PUBLIC_IP;g" -e "s;\[\% data_dir \%\];$DATA_DIR;g" -e "s;\[\% clust_name \%\];$CNAME;g" $CONF_DIR/cassandra.yaml > cassandra.yaml
