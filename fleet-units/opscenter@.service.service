@@ -1,12 +1,12 @@
 [Unit]
-Description=Opts Center
+Description=Ops Center
 After=docker.service
 Requires=docker.service
 
 [Service]
-Environment='CONTAINER=optscenter-%i'
-Environment='IMAGE=mgrast/optscenter'
-Environment='SERVICE=optscenter'
+Environment='CONTAINER=opscenter-%i'
+Environment='IMAGE=mgrast/opscenter'
+Environment='SERVICE=opscenter'
 
 Restart=always
 TimeoutStartSec=0
