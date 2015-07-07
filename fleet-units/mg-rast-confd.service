@@ -25,8 +25,10 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.go
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
 
+ExecStartPre=/usr/bin/mkdir -p /media/emphemeral/confd/
+
 # I do not get output from docker....
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) -v /etc/nginx/sites-enabled -v /home/core/mgrast-config:/config:ro -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /config/run_confd.sh"
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) -v /media/emphemeral/confd/:/etc/nginx/sites-enabled:rw -v /home/core/mgrast-config:/config:ro -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest /config/run_confd.sh"
 
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
