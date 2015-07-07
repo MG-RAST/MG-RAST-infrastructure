@@ -4,13 +4,14 @@
 ## Example deployment process for a fleet service using skycore
 Build image (requires docker):
 ```bash
-docker build --tag=mgrast/m5nr-solr:20150223_1700 --force-rm --no-cache https://raw.githubusercontent.com/MG-RAST/myM5NR/master/solr/docker/Dockerfile
+export TAG=`date +"%Y%m%d.%H%M"`
+docker build --tag=mgrast/m5nr-solr:${TAG} --force-rm --no-cache https://raw.githubusercontent.com/MG-RAST/myM5NR/master/solr/docker/Dockerfile
 ```
 Upload image to Shock:
 ```bash
-skycore push mgrast/m5nr-solr:20150223_1700
+skycore push mgrast/m5nr-solr:${TAG}
 or
-skycore push --shock=http://shock.metagenomics.anl.gov --token=$TOKEN mgrast/m5nr-solr:20150223_1700
+skycore push --shock=http://shock.metagenomics.anl.gov --token=$TOKEN mgrast/m5nr-solr:${TAG}
 ```
 Register shock node (of the new image) with etcd (requires etcd access):
 ```bash
