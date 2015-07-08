@@ -16,7 +16,7 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8888:8888 -p 61620:61620 /opt/opscenter/bin/opscenter -f
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8888:8888 -p 61620:61620 ${IMAGE} /opt/opscenter/bin/opscenter -f
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
