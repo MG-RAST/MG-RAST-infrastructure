@@ -1,12 +1,12 @@
 [Unit]
-Description=Cassandra Node
+Description=Cassandra Seed
 After=docker.service
 Requires=docker.service
 
 [Service]
-Environment='CONTAINER=cassandra-node'
+Environment='CONTAINER=cassandra-seed'
 Environment='IMAGE=mgrast/cassandra'
-Environment='SERVICE=cassandra-node'
+Environment='SERVICE=cassandra-seed'
 Environment='CDATA=/media/ephemeral/cassandra'
 
 Restart=always
@@ -27,6 +27,7 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Global=true
+Conflicts=cassandra-node.service
 MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
 
