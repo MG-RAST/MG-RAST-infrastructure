@@ -27,7 +27,6 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Global=true
-Conflicts=cassandra-seed.service
 MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker7-10g.mcs.anl.gov
