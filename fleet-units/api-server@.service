@@ -23,7 +23,7 @@ ExecStartPre=/bin/chmod 777 ${DIR}/logs/api.metagenomics
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
-ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)
 
 # preprocessing: loading
 ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
