@@ -41,4 +41,5 @@ ExecStop=-/usr/bin/rm -rf /media/ephemeral/%p/%i/
 
 [X-Fleet]
 Conflicts=mg-rast-v3-web@*.service
-Conflicts=solr-*@.service
+Conflicts=solr-m5nr@*.service
+Conflicts=solr-metagenome@*.service
