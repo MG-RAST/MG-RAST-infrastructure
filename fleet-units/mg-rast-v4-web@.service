@@ -29,3 +29,5 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Conflicts=mg-rast-v4-web@*.service
+Conflicts=solr-m5nr@*.service
+Conflicts=solr-metagenome@*.service
