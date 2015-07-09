@@ -6,7 +6,7 @@ Requires=docker.service
 [Service]
 Environment='CONTAINER=cassandra-seed'
 Environment='IMAGE=mgrast/cassandra'
-Environment='SERVICE=cassandra-seed'
+Environment='SERVICE=cassandra-node'
 Environment='CDATA=/media/ephemeral/cassandra'
 
 Restart=always
