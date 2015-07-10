@@ -17,7 +17,7 @@ Restart=always
 EnvironmentFile=-/etc/environment
 
 
-ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; fi'
+ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
 
 
 # get config
