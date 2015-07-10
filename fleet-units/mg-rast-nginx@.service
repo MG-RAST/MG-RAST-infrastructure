@@ -17,7 +17,7 @@ Restart=always
 EnvironmentFile=-/etc/environment
 
 
-ExecStartPre=-/usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE}
+ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
 
 
 # get config
@@ -32,10 +32,11 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -v /home/core/mgrast-config/services/nginx/:/config:ro -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro ${IMAGE}:latest /usr/sbin/nginx -c /config/nginx.conf
 
-ExecStartPost=-/usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP}
+ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
 
-ExecStop=-/usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE}
+
+ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]

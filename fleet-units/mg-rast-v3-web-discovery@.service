@@ -13,9 +13,9 @@ EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c "while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' )x\" == \"x\" ]; do echo \"port unknown\" ; /usr/bin/sleep 0.1 ; done"
 
-ExecStart=/bin/bash -c "export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); echo \"port detected: $PORT\"; export BRANCH=$(echo %i | cut -d . -f 2); echo \"branch detected: $BRANCH\"; while true; do etcdctl set /services/${SERVICE}/$BRANCH/${SERVICE}@%i \'{ \"host\":\"%H\",\"port\": \'\"$PORT\"\' ,\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60 ; sleep 45 ; done"
+ExecStart=/bin/bash -c "export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); echo \"port detected: $PORT\"; export CHANNEL=$(echo %i | cut -d . -f 2); echo \"channel detected: $CHANNEL\"; while true; do etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{ \"host\":\"%H\",\"port\": \'\"$PORT\"\' ,\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60 ; sleep 45 ; done"
 
-ExecStop=/usr/bin/etcdctl rm /services/${SERVICE}/${SERVICE}@%i
+ExecStop=/usr/bin/etcdctl rm /services/${SERVICE}/$CHANNEL/${SERVICE}@%i
 
 [X-Fleet]
 MachineOf=mg-rast-v3-web@%i.service
