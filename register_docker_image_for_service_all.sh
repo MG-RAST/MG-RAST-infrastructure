@@ -42,11 +42,11 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-test/
 
 #api-server-[channel]
 #channel: api
-curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/4d87c7d7-be5e-42b6-8adb-6dedb39f91c7"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/1d8243cb-4c76-4f2a-ba72-56e84ee18a9a"
 #channel: api-dev
-curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/4d87c7d7-be5e-42b6-8adb-6dedb39f91c7"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/1d8243cb-4c76-4f2a-ba72-56e84ee18a9a"
 #channel: api-test
-curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/4d87c7d7-be5e-42b6-8adb-6dedb39f91c7"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/1d8243cb-4c76-4f2a-ba72-56e84ee18a9a"
 
 
 #awe server
