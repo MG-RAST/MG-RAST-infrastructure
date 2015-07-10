@@ -14,18 +14,23 @@ EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
-#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+# Set v4url.confd
+Environment='CONFD=/media/ephemeral/%p/%i/conf.d'
+ExecStartPre=/usr/bin/bash -c "mkdir -p ${CONFD} && echo \"SetEnv V4URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${CONFD}/v4url.conf"
 
-#echo hello.v4.service | cut -d . -f 2
-#ExecStartPre=/usr/bin/bash -c "export BRANCH=$(echo %i | cut -d . -f 2) ; /usr/bin/echo \"use branch ${BRANCH}\" ; /home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2) "
+# get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80 -v ${CONFD}:/conf.d/:ro -v /home/core/mgrast-config/services/web_v4:/config/:rw ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
 ExecStartPost=/usr/bin/sleep 5
 ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
 ExecStop=/usr/bin/docker stop ${CONTAINER}
+ExecStop=-/usr/bin/rm -rf /media/ephemeral/%p/%i/
 
 [X-Fleet]
 Conflicts=mg-rast-v4-web@*.service
