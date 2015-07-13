@@ -1,0 +1,39 @@
+[Unit]
+Description=MongoDB replica for Shock (instance: %i)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mongodb-replica-shock-%i'
+Environment='IMAGE=mongo'
+Environment='SERVICE=mongodb-replica-shock'
+
+#Environment='VIRTUAL_IP=140.221.76.247'
+#Environment='DEVICE=enp2s0f0'
+
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+#ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
+
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+ExecStartPre=/usr/bin/mkdir -p /media/ephemeral/mongodb-shock
+ExecStartPre=/usr/bin/chattr -R +C /media/ephemeral/mongodb-shock
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-shock:/data/db --expose=27017 ${IMAGE} /usr/bin/mongod --dbpath /data/db --replSet shock
+ExecStartPost=/bin/bash -c ' \
+  until [ "`/usr/bin/docker inspect -f {{.State.Running}} ${CONTAINER}`" == "true" ]; do sleep 0.2; done; \
+  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate())"'
+
+#ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
+#ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=${SERVICE}@*.service
+Conflicts=solr-m5nr@*.service
+Conflicts=solr-metagenome@*.service
