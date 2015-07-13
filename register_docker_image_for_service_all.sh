@@ -7,10 +7,10 @@ set -e
 
 
 # mg-rast-nginx (note that nginx and confd use the same image)
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a83e38ca-8037-4cbc-8b4a-11c25fa80765"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2505c17e-848f-41c0-b722-4bb782a0275c"
 
 # mg-rast-confd (note that nginx and confd use the same image)
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a83e38ca-8037-4cbc-8b4a-11c25fa80765"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2505c17e-848f-41c0-b722-4bb782a0275c"
 
 
 # mysql_metadata
