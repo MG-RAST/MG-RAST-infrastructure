@@ -22,16 +22,15 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 Environment='TEMP=/media/ephemeral/%p/%i/tmp'
 ExecStartPre=-/usr/bin/rm -rf ${TEMP} ; /usr/bin/mkdir -p ${TEMP} ; /bin/chmod 777 ${TEMP}
 
-# Set v3url.confd
-Environment='CONFD=/media/ephemeral/%p/%i/conf.d'
+Environment='HTTPDCONF=/media/ephemeral/%p/%i/httpdconf'
 
-ExecStartPre=/usr/bin/bash -c "mkdir -p ${CONFD} && echo \"SetEnv V3URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${CONFD}/v3url.conf"
+ExecStartPre=/usr/bin/bash -c "mkdir -p ${HTTPDCONF} && sed 's/\[\% V3URL \%\]/$(echo %i | cut -d . -f 2).metagenomics.anl.gov\"/' httpd.conf_template > ${HTTPDCONF}/httpd.conf"
 
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -p 443 -v ${TEMP}:/MG-RAST/site/CGI/Tmp/:rw  -v ${CONFD}:/conf.d/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /config/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -p 443 -v ${TEMP}:/MG-RAST/site/CGI/Tmp/:rw  -v ${HTTPDCONF}:/httpdconf/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /httpdconf/httpd.conf"
 
 #ExecStartPost=/usr/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
