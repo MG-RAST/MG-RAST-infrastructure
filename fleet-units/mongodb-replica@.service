@@ -1,0 +1,35 @@
+[Unit]
+Description=MongoDB Replica %i
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mongodb-replica-%i'
+Environment='IMAGE=mongo'
+Environment='SERVICE=mongodb-replica'
+
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL'
+ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
+
+ExecStart=/bin/bash -c ' \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  /usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-$CHANNEL:/data/db --expose=27017 ${IMAGE} /usr/bin/mongod --dbpath /data/db --replSet $CHANNEL'
+
+ExecStartPost=/bin/bash -c ' \
+  until [ "`/usr/bin/docker inspect -f {{.State.Running}} ${CONTAINER}`" == "true" ]; \
+  do /usr/bin/sleep 0.1; done; \
+  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate())"'
+
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=${SERVICE}@*.service
+Conflicts=solr-m5nr@*.service
+Conflicts=solr-metagenome@*.service

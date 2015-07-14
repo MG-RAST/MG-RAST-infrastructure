@@ -1,22 +1,22 @@
 [Unit]
-Description=mg-rast-v4-web discovery
-BindsTo=mg-rast-v4-web@%i.service
-After=mg-rast-v4-web@%i.service
+Description=mongodb-server discovery
+BindsTo=mongodb-replica@%i.service
+After=mongodb-replica@%i.service
 
 
 [Service]
-Environment='CONTAINER=mg-rast-v4-web-%i'
-Environment='SERVICE=mg-rast-v4-web'
+Environment='CONTAINER=mongodb-replica-%i'
+Environment='SERVICE=mongodb-replica'
 
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \
-  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' )x\" == \"x\" ]; \
+  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"27017/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' )x\" == \"x\" ]; \
   do echo \"port unknown\"; \
   /usr/bin/sleep 0.1; done"
 
 ExecStart=/bin/bash -c " \
-  export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \
+  export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"27017/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \
   echo \"port detected: $PORT\"; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
@@ -29,4 +29,4 @@ ExecStop=/bin/bash -c " \
   /usr/bin/etcdctl rm /services/${SERVICE}/$CHANNEL/${SERVICE}@%i"
 
 [X-Fleet]
-MachineOf=mg-rast-v4-web@%i.service
+MachineOf=mongodb-replica@%i.service
