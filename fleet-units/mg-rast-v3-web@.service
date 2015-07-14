@@ -24,7 +24,7 @@ ExecStartPre=-/usr/bin/rm -rf ${TEMP} ; /usr/bin/mkdir -p ${TEMP} ; /bin/chmod 7
 
 Environment='HTTPDCONFDIR=/media/ephemeral/%p/%i/httpdconf'
 
-ExecStartPre=/usr/bin/bash -c "mkdir -p ${HTTPDCONFDIR} && sed 's/\[\% V3URL \%\]/$(echo %i | cut -d . -f 2).metagenomics.anl.gov' /home/core/mgrast-config/services/web_v3/httpd.conf_template > ${HTTPDCONF}/httpd.conf"
+ExecStartPre=/usr/bin/bash -c "mkdir -p ${HTTPDCONFDIR} && sed 's/\[\% V3URL \%\]/$(echo %i | cut -d . -f 2).metagenomics.anl.gov/' /home/core/mgrast-config/services/web_v3/httpd.conf_template > ${HTTPDCONF}/httpd.conf"
 
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
