@@ -26,7 +26,8 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 
-ExecStartPre=/usr/bin/mkdir -p /media/ephemeral/confd/sites-enabled /media/ephemeral/confd/docker ; /usr/bin/rm -rf /media/ephemeral/confd/sites-enabled/*
+ExecStartPre=/usr/bin/mkdir -p /media/ephemeral/confd/sites-enabled /media/ephemeral/confd/docker ; 
+ExecStartPre=/usr/bin/rm /media/ephemeral/confd/sites-enabled/*
 
 
 # I do not get output from docker....
