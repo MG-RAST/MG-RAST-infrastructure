@@ -61,9 +61,8 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT 
 #opscenter server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/388ba3fe-3cd2-4965-8c25-6c85faeec862"
 
-# mongo
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica-shock/shock -XPUT -d value="shock.metagenomics.anl.gov/node/7f37c9af-0bae-4655-8da4-a82868de661d"
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica-awe/shock -XPUT -d value="shock.metagenomics.anl.gov/node/7f37c9af-0bae-4655-8da4-a82868de661d"
+# mongo replica
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT -d value="shock.metagenomics.anl.gov/node/7426ffca-9554-4412-98a2-d392ada8a2c7"
 
 # production services:
 

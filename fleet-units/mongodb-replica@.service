@@ -20,12 +20,12 @@ ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/c
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-$CHANNEL:/data/db --expose=27017 ${IMAGE} /usr/bin/mongod --dbpath /data/db --replSet $CHANNEL'
+  /usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} mongod --replSet $CHANNEL'
 
 ExecStartPost=/bin/bash -c ' \
   until [ "`/usr/bin/docker inspect -f {{.State.Running}} ${CONTAINER}`" == "true" ]; \
   do /usr/bin/sleep 0.1; done; \
-  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate())"'
+  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); cfg = rs.conf(); cfg.members[0].host = \"%H\"; rs.reconfig(cfg);"'
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
