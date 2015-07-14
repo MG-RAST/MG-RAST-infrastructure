@@ -18,12 +18,10 @@ ExecStartPre=/bin/sh -c " \
 ExecStart=/bin/bash -c " \
   export HTTP=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \
   echo \"http port detected: $HTTP\"; \
-  export HTTPS=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"443/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \
-  echo \"https port detected: $HTTPS\"; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
   while true; \
-  do etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"host\":\"%H\",\"http\":\'\"$HTTP\"\',\"https\":\'\"$HTTPS\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+  do etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"host\":\"%H\",\"http\":\'\"$HTTP\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
   sleep 45; done"
 
 ExecStop=/bin/bash -c " \
