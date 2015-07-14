@@ -21,12 +21,12 @@ ExecStart=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
   while true; \
-  do etcdctl set /services/${SERVICE}/${CHANNEL}/${SERVICE}@%i \'{\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+  do etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
   sleep 45; done"
 
 ExecStop=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/etcdctl rm /services/${SERVICE}/${CHANNEL}/${SERVICE}@%i"
+  /usr/bin/etcdctl rm /services/${SERVICE}/$CHANNEL/${SERVICE}@%i"
 
 [X-Fleet]
 MachineOf=mg-rast-v4-web@%i.service
