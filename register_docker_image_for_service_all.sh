@@ -7,10 +7,10 @@ set -e
 
 
 # mg-rast-nginx (note that nginx and confd use the same image)
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a83e38ca-8037-4cbc-8b4a-11c25fa80765"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2505c17e-848f-41c0-b722-4bb782a0275c"
 
 # mg-rast-confd (note that nginx and confd use the same image)
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a83e38ca-8037-4cbc-8b4a-11c25fa80765"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2505c17e-848f-41c0-b722-4bb782a0275c"
 
 
 # mysql_metadata
@@ -25,11 +25,11 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/solr-metagenome/shock -XPUT
 
 # mg-rast-v4-web
 #v4
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc266f16-2854-424e-b0f5-dfdbe0e7f811"
 #v4-dev
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/247d49e8-5699-4329-92cc-774a210b8dff"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc266f16-2854-424e-b0f5-dfdbe0e7f811"
 #v4-test
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ab071920-a117-441e-9084-4d4ef5c7ca5c"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc266f16-2854-424e-b0f5-dfdbe0e7f811"
 
 # mg-rast-v3-web-[channel]
 #channel: v3-web

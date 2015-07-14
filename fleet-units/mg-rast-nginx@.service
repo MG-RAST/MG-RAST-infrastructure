@@ -30,7 +30,7 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -v /home/core/mgrast-config/services/nginx/:/config:ro -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro ${IMAGE}:latest /usr/sbin/nginx -c /config/nginx.conf
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -v /home/core/mgrast-config/services/nginx/:/config:ro -v /home/core/mgrast-config/services/ssl/:/ssl:ro -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro ${IMAGE}:latest /usr/sbin/nginx -c /config/nginx.conf
 
 ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
