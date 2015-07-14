@@ -33,7 +33,7 @@ ExecStartPre=/home/core/mgrast-config/services/web_v3/httpd_conf_create.sh %i /h
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -p 443 -v ${TEMP}:/MG-RAST/site/CGI/Tmp/:rw  -v ${HTTPDCONFDIR}:/httpdconf/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /httpdconf/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -v ${TEMP}:/MG-RAST/site/CGI/Tmp/:rw  -v ${HTTPDCONFDIR}:/httpdconf/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro ${IMAGE}:latest bash -c "/bin/chmod 600 /config/postgresql/* ; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /httpdconf/httpd.conf"
 
 #ExecStartPost=/usr/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
