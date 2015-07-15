@@ -29,7 +29,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 # prepare directories
 ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/
-ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/logs/api.metagenomics
+ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/
 
 
 # remove old container
