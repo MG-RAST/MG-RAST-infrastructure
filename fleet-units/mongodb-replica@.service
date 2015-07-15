@@ -23,9 +23,12 @@ ExecStart=/bin/bash -c ' \
   /usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} mongod --replSet $CHANNEL'
 
 ExecStartPost=/bin/bash -c ' \
-  until [ "`/usr/bin/docker inspect -f {{.State.Running}} ${CONTAINER}`" == "true" ]; \
-  do /usr/bin/sleep 0.1; done; \
-  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); cfg = rs.conf(); cfg.members[0].host = \"${COREOS_PUBLIC_IPV4}\"; rs.reconfig(cfg);"'
+  STATUS=1; \
+  until [ $STATUS -eq 0 ]; \
+  do /usr/bin/sleep 1; \
+  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); printjson(cfg = rs.conf()); printjson(cfg.members[0].host = \\"${COREOS_PUBLIC_IPV4}\\"); printjson(rs.reconfig(cfg));"; \
+  STATUS=$?; \
+  done'
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
