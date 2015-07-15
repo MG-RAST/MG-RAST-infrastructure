@@ -41,13 +41,12 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 
 # TODO init mysql 
-# -v /media/ephemeral/:/mnt/
+# -v ${DIR}/staging/:/mnt/
 
 
-ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data:/var/lib/mysql -v ${DIR}/log/:/var/log/mysqld/ -v /home/core/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE}
+ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v /home/core/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE}
 
 ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
-
 
 
 ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
