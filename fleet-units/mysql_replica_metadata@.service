@@ -14,7 +14,7 @@ Environment='PORT=3306'
 #Environment='DEVICE=enp2s0f0'
 
 
-Restart=always
+#Restart=always
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
 
@@ -45,7 +45,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 # reset with: /usr/bin/etcdctl set /services/mysql_replica_metadata/master none
 ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/mysql_replica_metadata/master '%i'
 
-ExecStartPre=/bin/bash -c "export SERVER=`/usr/bin/etcdctl get /services/mysql_replica_metadata/master` ; if [ $SERVER -eq \"%1\" ] ; then echo \"I am master\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state master ; else echo \"I am slave\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state slave; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; fi"
+ExecStartPre=/bin/bash -c "set -x ; export SERVER=`/usr/bin/etcdctl get /services/mysql_replica_metadata/master` ; if [ $SERVER -eq \"%i\" ] ; then echo \"I am master\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state master ; else echo \"I am slave\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state slave; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; fi"
 
 
 # TODO init mysql 
