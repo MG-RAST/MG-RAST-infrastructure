@@ -8,8 +8,8 @@ Environment='CONTAINER=mysql-metadata-%i'
 Environment='IMAGE=mysql/mysql-server'
 Environment='SERVICE=mysql_metadata'
 
-Environment='VIRTUAL_IP=140.221.76.248'
-Environment='DEVICE=enp2s0f0'
+#Environment='VIRTUAL_IP=140.221.76.248'
+#Environment='DEVICE=enp2s0f0'
 
 
 Restart=always
@@ -17,7 +17,7 @@ TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
 
 
-ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
+#ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
 
 
 # data directory
@@ -46,10 +46,10 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v /home/core/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE}
 
-ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
+#ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
 
-ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
+#ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]

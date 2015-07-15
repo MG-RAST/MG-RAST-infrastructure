@@ -25,7 +25,7 @@ ExecStart=/bin/bash -c ' \
 ExecStartPost=/bin/bash -c ' \
   until [ "`/usr/bin/docker inspect -f {{.State.Running}} ${CONTAINER}`" == "true" ]; \
   do /usr/bin/sleep 0.1; done; \
-  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); cfg = rs.conf(); cfg.members[0].host = \"%H\"; rs.reconfig(cfg);"'
+  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); cfg = rs.conf(); cfg.members[0].host = \"${COREOS_PUBLIC_IPV4}\"; rs.reconfig(cfg);"'
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
