@@ -32,7 +32,7 @@ ExecStart=/bin/bash -c ' \
       echo "Adding virtual IP ${VIRTUAL_IP} to primary on ${CONTAINER}"; \
       ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE}; \
       echo "Updating mongodb hosts to primary on ${CONTAINER}"; \
-      export HOSTS=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\"hosts\"]" | tr "," "\n"); \
+      export HOSTS=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"hosts\\"]" | tr "," "\n"); \
       for A in $ACTIVE; do \
         MISSING=1; \
         for H in $HOSTS; do \
