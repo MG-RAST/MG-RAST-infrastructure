@@ -15,20 +15,31 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
-ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL'
-ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
+
+# don't remove dir if no servers running
+ExecStartPre=/bin/bash -c ' \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  export NUM=$(/usr/bin/etcdctl ls /services/mongodb-replica/$CHANNEL 2> /dev/null | wc -l); \
+  if [ $NUM -gt 0 ]; \
+    then /usr/bin/rm -rf /media/ephemeral/mongodb-$CHANNEL; \
+  fi'
+
+ExecStartPre=/bin/bash -c ' \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
+  /usr/bin/chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   /usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} mongod --replSet $CHANNEL'
 
-ExecStartPost=/bin/bash -c ' \
-  STATUS=1; \
-  until [ $STATUS -eq 0 ]; \
-  do /usr/bin/sleep 1; \
-  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); printjson(cfg = rs.conf()); printjson(cfg.members[0].host = \\"${COREOS_PUBLIC_IPV4}\\"); printjson(rs.reconfig(cfg));"; \
-  STATUS=$?; \
-  done'
+#ExecStartPost=/bin/bash -c ' \
+#  export STATUS=1; \
+#  until [ $STATUS -eq 0 ]; \
+#  do /usr/bin/sleep 1; \
+#  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); printjson(cfg = rs.conf()); printjson(cfg.members[0].host = \\"${COREOS_PUBLIC_IPV4}\\"); printjson(rs.reconfig(cfg));"; \
+#  STATUS=$?; \
+#  done'
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 

@@ -1,0 +1,53 @@
+[Unit]
+Description=mongodb-server watch
+BindsTo=mongodb-replica-discovery@%i.service
+After=mongodb-replica-discovery@%i.service
+
+[Service]
+Environment='CONTAINER=mongodb-replica-%i'
+Environment='SERVICE=mongodb-replica'
+EnvironmentFile=-/etc/environment
+
+# if this is running on primary host, will update it every time change in etcd
+# etcd watch breaks every 45 secs when updated, need to verify that a real change occurred
+
+ExecStart=/bin/bash -c ' \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  export PREVIOUS=$(for X in `/usr/bin/etcdctl ls --sort /clusters/${SERVICE}/$CHANNEL`; do /usr/bin/etcdctl get $X; done); \
+  while true; do \
+    /usr/bin/etcdctl etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/; \
+    export ACTIVE=$(for X in `/usr/bin/etcdctl ls --sort /clusters/${SERVICE}/$CHANNEL`; do /usr/bin/etcdctl get $X; done); \
+    if [ "$PREVIOUS" == "$ACTIVE" ]; then \
+      continue; \
+    fi; \
+    PREVIOUS=$ACTIVE; \
+    export PRIMARY=$(/usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"primary\\"]" | cut -d : -f 1); \
+    if [ "$PRIMARY" == "${COREOS_PUBLIC_IPV4}" ]; then \
+      echo "Updating primary on ${CONTAINER}"; \
+      export HOSTS=$(/usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\"hosts\"]" | tr "," "\n"); \
+      for A in $ACTIVE; do \
+        MISSING=1; \
+        for H in $HOSTS; do \
+          if [ "$A" == "$H" ]; then MISSING=0; fi; \
+        done; \
+        if [ $MISSING -eq 1 ]; then \
+          /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "rs.add(\\"$A\\")"; \
+          echo "Added $A"; \
+        fi; \
+      done; \
+      for H in $HOSTS; do \
+        MISSING=1; \
+        for A in $ACTIVE; do \
+          if [ "$A" == "$H" ]; then MISSING=0; fi; \
+        done; \
+        if [ $MISSING -eq 1 ]; then \
+          /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "rs.remove(\\"$H\\")"; \
+          echo "Removed $H"; \
+        fi; \
+      done; \
+    fi; \
+  done'
+
+
+[X-Fleet]
+MachineOf=mongodb-replica-discovery@%i.service
