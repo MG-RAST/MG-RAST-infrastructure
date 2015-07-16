@@ -23,7 +23,7 @@ ExecStart=/bin/bash -c ' \
     etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/; \
     export ACTIVE=$(for X in `etcdctl ls --sort /clusters/${SERVICE}/$CHANNEL`; do etcdctl get $X; done); \
     if [ "$PREVIOUS" == "$ACTIVE" ]; then \
-      echo "etcd updated with same info"
+      echo "etcd updated with same info"; \
       continue; \
     fi; \
     PREVIOUS=$ACTIVE; \
