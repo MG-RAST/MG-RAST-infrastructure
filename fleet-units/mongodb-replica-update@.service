@@ -26,8 +26,8 @@ ExecStart=/bin/bash -c ' \
       continue; \
     fi; \
     PREVIOUS=$ACTIVE; \
-    export PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"primary\\"]" | cut -d : -f 1); \
-    if [ "$PRIMARY" == "${COREOS_PUBLIC_IPV4}" ]; then \
+    PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"ismaster\\"]"); \
+    if [ "$PRIMARY" == "true" ]; then \
       echo "Adding virtual IP ${VIRTUAL_IP} to primary on ${CONTAINER}"; \
       ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE}; \
       echo "Updating mongodb hosts to primary on ${CONTAINER}"; \
