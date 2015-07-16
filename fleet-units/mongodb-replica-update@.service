@@ -52,7 +52,7 @@ ExecStart=/bin/bash -c ' \
           echo "Removed $H"; \
         fi; \
       done; \
-    else; \
+    else \
       echo "Change in etcd, removing virtual IP if exists from secondary on ${CONTAINER}"; \
       ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE}; \
     fi; \
