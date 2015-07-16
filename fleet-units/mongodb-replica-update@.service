@@ -18,11 +18,12 @@ Environment='DEVICE=enp2s0f0'
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  export PREVIOUS=$(for X in `etcdctl ls --sort /clusters/${SERVICE}/$CHANNEL`; do etcdctl get $X; done); \
+  export PREVIOUS=""; \
   while true; do \
     etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/; \
     export ACTIVE=$(for X in `etcdctl ls --sort /clusters/${SERVICE}/$CHANNEL`; do etcdctl get $X; done); \
     if [ "$PREVIOUS" == "$ACTIVE" ]; then \
+      echo "etcd updated with same info"
       continue; \
     fi; \
     PREVIOUS=$ACTIVE; \
