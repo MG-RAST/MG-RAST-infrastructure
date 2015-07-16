@@ -33,6 +33,7 @@ ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   /usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} mongod --replSet $CHANNEL'
 
+#This should only run on primary
 #ExecStartPost=/bin/bash -c ' \
 #  export STATUS=1; \
 #  until [ $STATUS -eq 0 ]; \
