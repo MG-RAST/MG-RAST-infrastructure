@@ -35,10 +35,11 @@ ExecStart=/bin/bash -c ' \
 
 #This should only run on primary
 #ExecStartPost=/bin/bash -c ' \
+#  export CHANNEL=$(echo %i | cut -d . -f 2); \
 #  export STATUS=1; \
 #  until [ $STATUS -eq 0 ]; \
 #  do /usr/bin/sleep 1; \
-#  /usr/bin/docker exec ${CONTAINER} mongo --eval "printjson(rs.initiate()); printjson(cfg = rs.conf()); printjson(cfg.members[0].host = \\"${COREOS_PUBLIC_IPV4}\\"); printjson(rs.reconfig(cfg));"; \
+#  /usr/bin/docker exec ${CONTAINER} mongo --quit --eval "printjson(rs.initiate({_id:\\"$CHANNEL\\",members:[{_id:0,host:\\"${COREOS_PUBLIC_IPV4}:27017\\"}]}))"; \
 #  STATUS=$?; \
 #  done'
 
