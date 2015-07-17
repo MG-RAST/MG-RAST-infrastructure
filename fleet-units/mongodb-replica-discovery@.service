@@ -28,7 +28,7 @@ ExecStart=/bin/bash -c " \
 
 ExecStop=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  echo "stopping, removing ${SERVICE}@%i from etcd"; \
+  echo \"stopping, removing ${SERVICE}@%i from etcd\"; \
   etcdctl rm /services/${SERVICE}/$CHANNEL/${SERVICE}@%i"
 
 [X-Fleet]
