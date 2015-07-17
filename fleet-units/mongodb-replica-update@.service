@@ -29,12 +29,9 @@ ExecStart=/bin/bash -c ' \
   fi; \
   export PREVIOUS=""; \
   while true; do \
-    etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/; \
+    etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/ > /dev/null; \
     export ACTIVE=$(for X in `etcdctl ls --sort /services/${SERVICE}/$CHANNEL`; do etcdctl get $X; done | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\:[0-9]*"); \
-    if [ "$PREVIOUS" == "$ACTIVE" ]; then \
-      echo "etcd updated with same info"; \
-      continue; \
-    fi; \
+    if [ "$PREVIOUS" == "$ACTIVE" ]; then continue; fi; \
     PREVIOUS=$ACTIVE; \
     sleep 10; \
     PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"ismaster\\"]"); \
