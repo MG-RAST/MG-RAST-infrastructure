@@ -5,8 +5,8 @@ Requires=docker.service
 
 [Service]
 Environment='CONTAINER=mysql-replica-metadata-%i'
-Environment='IMAGE=mysql/mysql-server'
-Environment='SERVICE=mysql_metadata'
+Environment='IMAGE=mysql/mysql'
+Environment='SERVICE=mysql_replica_metadata'
 
 Environment='PORT=3306'
 
@@ -23,7 +23,7 @@ EnvironmentFile=-/etc/environment
 
 
 # data directory
-Environment='DIR=/media/ephemeral/mysql_replica_metadata-%i'
+Environment='DIR=/media/ephemeral/${SERVICE}-%i'
 
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
@@ -42,18 +42,18 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # become master if there is none 
-# reset with: /usr/bin/etcdctl set /services/mysql_replica_metadata/master none
-ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/mysql_replica_metadata/master '%i'
+# reset with: /usr/bin/etcdctl set /services/${SERVICE}/master none
+ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/master '%i'
 
 # create arguments for master/slave
 ExecStartPre=/bin/bash -c "set -x ; \
-  export SERVER=`/usr/bin/etcdctl get /services/mysql_replica_metadata/master` ; \
+  export SERVER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
   if [ $SERVER -eq \"%i\" ] ; then \
-    echo \"I am master\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state master ; \
+    echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
   else \
     echo \"I am slave\" ; \
-    /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state slave; \
-    /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
   fi"
 
 
@@ -63,7 +63,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
 
 ### Start MySQL ###
 
-ExecStart=/bin/bash -c "set -x ; export ARGS=`/usr/bin/etcdctl get /services/mysql_replica_metadata/server/%i/args` ; echo \"using args: $ARGS\" /usr/bin/docker run --name ${CONTAINER} --rm -p ${PORT}:3306 -v  ${DIR}/log-bin/:/replica/mysql-bin/:rw -v ${DIR}/data/:/var/lib/mysql/:rw -v ${DIR}/log/:/var/log/mysqld/:rw -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE} mysqld --server-id=%i $ARGS"
+ExecStart=/bin/bash -c "set -x ; export ARGS=`/usr/bin/etcdctl get /services/${SERVICE}/server/%i/args` ; echo \"using args: $ARGS\" /usr/bin/docker run --name ${CONTAINER} --rm -p ${PORT}:3306 -v  ${DIR}/log-bin/:/replica/mysql-bin/:rw -v ${DIR}/data/:/var/lib/mysql/:rw -v ${DIR}/log/:/var/log/mysqld/:rw -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE} mysqld --server-id=%i $ARGS"
 
 #ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
