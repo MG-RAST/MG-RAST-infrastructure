@@ -17,12 +17,13 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # don't remove dir if no servers running
-ExecStartPre=/bin/bash -c ' \
-  export CHANNEL=$(echo %i | cut -d . -f 2); \
-  export NUM=$(/usr/bin/etcdctl ls /services/mongodb-replica/$CHANNEL 2> /dev/null | wc -l); \
-  if [ $NUM -gt 0 ]; \
-    then /usr/bin/rm -rf /media/ephemeral/mongodb-$CHANNEL; \
-  fi'
+# for now do not remove at all
+# ExecStartPre=/bin/bash -c ' \
+#   export CHANNEL=$(echo %i | cut -d . -f 2); \
+#   export NUM=$(/usr/bin/etcdctl ls /services/mongodb-replica/$CHANNEL 2> /dev/null | wc -l); \
+#   if [ $NUM -gt 0 ]; \
+#     then /usr/bin/rm -rf /media/ephemeral/mongodb-$CHANNEL; \
+#   fi'
 
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
