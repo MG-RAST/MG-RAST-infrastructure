@@ -23,7 +23,7 @@ EnvironmentFile=-/etc/environment
 
 
 # data directory
-Environment='DIR=/media/ephemeral/mysql_metadata-%i'
+Environment='DIR=/media/ephemeral/mysql_replica_metadata-%i'
 
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
