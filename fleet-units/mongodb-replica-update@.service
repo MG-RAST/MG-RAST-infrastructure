@@ -26,7 +26,7 @@ ExecStart=/bin/bash -c ' \
     VIRTUAL_IP=${AWE_IP}; \
   else \
     VIRTUAL_IP=${TEST_IP}; \
-  fi;
+  fi; \
   export PREVIOUS=""; \
   while true; do \
     etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/; \
