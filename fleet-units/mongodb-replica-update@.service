@@ -30,7 +30,7 @@ ExecStart=/bin/bash -c ' \
   export PREVIOUS=""; \
   while true; do \
     etcdctl watch --recursive /services/${SERVICE}/$CHANNEL/; \
-    export ACTIVE=$(for X in `etcdctl ls --sort /clusters/${SERVICE}/$CHANNEL`; do etcdctl get $X; done); \
+    export ACTIVE=$(for X in `etcdctl ls --sort /services/${SERVICE}/$CHANNEL`; do etcdctl get $X; done | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\:[0-9]*"); \
     if [ "$PREVIOUS" == "$ACTIVE" ]; then \
       echo "etcd updated with same info"; \
       continue; \
@@ -38,9 +38,9 @@ ExecStart=/bin/bash -c ' \
     PREVIOUS=$ACTIVE; \
     PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"ismaster\\"]"); \
     if [ "$PRIMARY" == "true" ]; then \
-      echo "Adding virtual IP $VIRTUAL_IP to primary on ${CONTAINER}"; \
+      echo "adding virtual IP $VIRTUAL_IP to primary on ${CONTAINER}"; \
       ip addr add $VIRTUAL_IP/24 brd + dev ${DEVICE}; \
-      echo "Updating mongodb hosts to primary on ${CONTAINER}"; \
+      echo "updating mongodb hosts to primary on ${CONTAINER}"; \
       export HOSTS=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"hosts\\"]" | tr "," "\n"); \
       for A in $ACTIVE; do \
         MISSING=1; \
@@ -49,7 +49,7 @@ ExecStart=/bin/bash -c ' \
         done; \
         if [ $MISSING -eq 1 ]; then \
           docker exec ${CONTAINER} mongo --quiet --eval "rs.add(\\"$A\\")"; \
-          echo "Added $A"; \
+          echo "added $A"; \
         fi; \
       done; \
       for H in $HOSTS; do \
@@ -59,15 +59,28 @@ ExecStart=/bin/bash -c ' \
         done; \
         if [ $MISSING -eq 1 ]; then \
           docker exec ${CONTAINER} mongo --quiet --eval "rs.remove(\\"$H\\")"; \
-          echo "Removed $H"; \
+          echo "removed $H"; \
         fi; \
       done; \
     else \
-      echo "Change in etcd, removing virtual IP if exists from secondary on ${CONTAINER}"; \
+      echo "change in etcd, removing virtual IP if exists from secondary on ${CONTAINER}"; \
       ip addr del $VIRTUAL_IP/24 dev ${DEVICE}; \
     fi; \
   done'
 
+# remove virtual IP on stop, its ok to run 'ip addr del' if doesn't exist
+
+ExecStop=-/bin/bash -c ' \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  if [ "$CHANNEL" == "shock" ]; then \
+    VIRTUAL_IP=${SHOCK_IP}; \
+  elif [ "$CHANNEL" == "awe" ]; then \
+    VIRTUAL_IP=${AWE_IP}; \
+  else \
+    VIRTUAL_IP=${TEST_IP}; \
+  fi; \
+  echo "Stopping, removing virtual IP if exists on ${CONTAINER}"; \
+  ip addr del $VIRTUAL_IP/24 dev ${DEVICE}'
 
 [X-Fleet]
 MachineOf=mongodb-replica-discovery@%i.service
