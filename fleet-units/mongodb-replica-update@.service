@@ -36,6 +36,7 @@ ExecStart=/bin/bash -c ' \
       continue; \
     fi; \
     PREVIOUS=$ACTIVE; \
+    sleep 10; \
     PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"ismaster\\"]"); \
     if [ "$PRIMARY" == "true" ]; then \
       echo "adding virtual IP $VIRTUAL_IP to primary on ${CONTAINER}"; \
