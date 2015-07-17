@@ -22,15 +22,14 @@ ExecStart=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
   while true; do \
-    etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
-    etcdctl set /clusters/${SERVICE}/$CHANNEL/${SERVICE}@%i ${COREOS_PUBLIC_IPV4}:$PORT --ttl 60; \
+    etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"address\":\'\"${COREOS_PUBLIC_IPV4}:$PORT\"\',\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
     sleep 45; \
   done"
 
 ExecStop=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  etcdctl rm /services/${SERVICE}/$CHANNEL/${SERVICE}@%i; \
-  etcdctl rm /clusters/${SERVICE}/$CHANNEL/${SERVICE}@%i"
+  echo "stopping, removing ${SERVICE}@%i from etcd"; \
+  etcdctl rm /services/${SERVICE}/$CHANNEL/${SERVICE}@%i"
 
 [X-Fleet]
 MachineOf=mongodb-replica@%i.service
