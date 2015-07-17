@@ -45,14 +45,25 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 # reset with: /usr/bin/etcdctl set /services/mysql_replica_metadata/master none
 ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/mysql_replica_metadata/master '%i'
 
-ExecStartPre=/bin/bash -c "set -x ; export SERVER=`/usr/bin/etcdctl get /services/mysql_replica_metadata/master` ; if [ $SERVER -eq \"%i\" ] ; then echo \"I am master\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state master ; else echo \"I am slave\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state slave; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; fi"
+# create arguments for master/slave
+ExecStartPre=/bin/bash -c "set -x ; \
+  export SERVER=`/usr/bin/etcdctl get /services/mysql_replica_metadata/master` ; \
+  if [ $SERVER -eq \"%i\" ] ; then \
+    echo \"I am master\" ; /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state master ; \
+  else \
+    echo \"I am slave\" ; \
+    /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/state slave; \
+    /usr/bin/etcdctl set /services/mysql_replica_metadata/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
+  fi"
+
 
 
 # TODO init mysql 
 # -v ${DIR}/staging/:/mnt/
 
 ### Start MySQL ###
-ExecStart=/bin/bash -c "export ARGS=`/usr/bin/etcdctl get /services/mysql_replica_metadata/server/%i/args` ; echo \"using args: $ARGS\" /usr/bin/docker run --name ${CONTAINER} --rm -p ${PORT}:3306 -v  ${DIR}/log-bin/:/replica/mysql-bin/:rw -v ${DIR}/data/:/var/lib/mysql/:rw -v ${DIR}/log/:/var/log/mysqld/:rw -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE} mysql --server-id=%i $ARGS"
+
+ExecStart=/bin/bash -c "export ARGS=`/usr/bin/etcdctl get /services/mysql_replica_metadata/server/%i/args` ; echo \"using args: $ARGS\" /usr/bin/docker run --name ${CONTAINER} --rm -p ${PORT}:3306 -v  ${DIR}/log-bin/:/replica/mysql-bin/:rw -v ${DIR}/data/:/var/lib/mysql/:rw -v ${DIR}/log/:/var/log/mysqld/:rw -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test ${IMAGE} mysqld --server-id=%i $ARGS"
 
 #ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
