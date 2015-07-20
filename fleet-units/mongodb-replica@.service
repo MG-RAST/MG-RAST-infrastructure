@@ -50,3 +50,4 @@ ExecStop=-/usr/bin/docker stop ${CONTAINER}
 Conflicts=${SERVICE}@*.service
 Conflicts=solr-m5nr@*.service
 Conflicts=solr-metagenome@*.service
+Conflicts=mysql_metadata@*.service
