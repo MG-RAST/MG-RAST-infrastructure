@@ -50,10 +50,16 @@ ExecStartPre=/bin/bash -c "set -x ; \
   export SERVER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
   if [ $SERVER -eq \"%i\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
+    if [ "$(ls -A ${DIR}/data/)" ] ; then \
+      echo "data Not Empty" \
+    else \
+      echo "data Empty" ; \
+    fi \
+   /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"mysql_install_db"; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"mysqld --report-host=$SERVER --report-port=${PORT}\"; \
   fi"
 
 
@@ -61,9 +67,25 @@ ExecStartPre=/bin/bash -c "set -x ; \
 # TODO init mysql 
 # -v ${DIR}/staging/:/mnt/
 
+
+
+
+
 ### Start MySQL ###
 
-ExecStart=/bin/bash -c "set -x ; export ARGS=`/usr/bin/etcdctl get /services/${SERVICE}/server/%i/args` ; echo \"using args: $ARGS\" /usr/bin/docker run --name ${CONTAINER} --rm -p ${PORT}:3306 -v  ${DIR}/log-bin/:/replica/mysql-bin/:rw -v ${DIR}/data/:/var/lib/mysql/:rw -v ${DIR}/log/:/var/log/mysqld/:rw -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=test --entrypoint='/bin/sh -c' ${IMAGE} bash -c \"chmod -R 777 /var/log/mysqld/ /replica/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysqld/ /replica/ /var/lib/mysql/ ; /entrypoint.sh mysqld --secure-file-priv=/var/lib/mysql --server-id=%i $ARGS\""
+ExecStart=/bin/bash -c "set -x ; \
+  export COMMAND=`/usr/bin/etcdctl get /services/${SERVICE}/server/%i/args` ; \
+  echo \"using args: $ARGS\" ; \
+  /usr/bin/docker run --name ${CONTAINER} --rm \
+    -p ${PORT}:3306 \
+    -v ${DIR}/log-bin/:/log-bin/:rw \
+    -v ${DIR}/data/:/var/lib/mysql/:rw \
+    -v ${DIR}/log/:/var/log/mysqld/:rw \
+    -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf \
+    -e MYSQL_ROOT_PASSWORD=test \
+    --entrypoint=/bin/bash \
+    ${IMAGE} \
+   -c \"chmod -R 777 /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; /entrypoint.sh mysqld  $COMMAND --secure-file-priv=/var/lib/mysql --server-id=%i\""
 
 #ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
