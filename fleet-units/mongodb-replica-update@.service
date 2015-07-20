@@ -8,9 +8,9 @@ Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
 EnvironmentFile=-/etc/environment
 
+Environment='AWE_IP=140.221.76.249'
 Environment='SHOCK_IP=140.221.76.247'
-Environment='AWE_IP=140.221.76.246'
-Environment='TEST_IP=140.221.76.245'
+Environment='TEST_IP=140.221.76.246'
 Environment='DEVICE=enp2s0f0'
 
 # if this is running on primary host, will update it every time change in etcd
