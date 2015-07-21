@@ -13,7 +13,7 @@ Restart=always
 
 EnvironmentFile=-/etc/environment
 Environment='TITLE=MG-RAST AWE server'
-Environment='DIR=/media/ephemeral/${CONTAINER}'
+Environment='DIR=/media/ephemeral/awe-server-%i'
 
 ExecStartPre=/bin/bash -c 'if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts; fi'
 ExecStartPre=/bin/bash -c '\
