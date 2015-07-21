@@ -32,7 +32,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 ExecStartPre=/usr/bin/mkdir -p ${DIR}
 
 # use -p ${COREOS_PRIVATE_IPV4}:80:80 instead of -p 80:80 ???
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v /home/core/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/:/mnt/awe/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf /awe.cfg --use_app_defs=yes --title=${TITLE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v /home/core/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/:/mnt/awe/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE}
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
