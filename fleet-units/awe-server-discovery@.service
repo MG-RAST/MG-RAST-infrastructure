@@ -8,6 +8,9 @@ After=awe-server@%i.service
 Environment='CONTAINER=awe-server-%i'
 Environment='SERVICE=awe-server'
 
+TimeoutStartSec=0
+Restart=always
+
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c "\

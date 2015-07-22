@@ -8,6 +8,9 @@ After=api-server@%i.service
 Environment='CONTAINER=api-server-%i'
 Environment='SERVICE=api-server'
 
+TimeoutStartSec=0
+Restart=always
+
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \
