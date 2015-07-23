@@ -60,7 +60,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
       export DIR=${DIR} ; \
      /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh; \
     fi \
-   /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"\"; \
+   /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args ''; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
