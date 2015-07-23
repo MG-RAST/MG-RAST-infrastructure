@@ -51,11 +51,11 @@ ExecStartPre=/bin/bash -c "set -x ; \
   echo \"MASTER is $MASTER\" ; \
   if [ \"$MASTER x\" = \"%i x\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--gtid-mode=ON --log-slave-updates\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --gtid-mode=ON --log-slave-updates\"; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=${COREOS_PUBLIC_IPV4} --report-port=${PORT}\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --report-host=${COREOS_PUBLIC_IPV4} --report-port=${PORT}\"; \
   fi"
 
 ExecStartPre=/bin/bash -c "set -x ; \
