@@ -51,24 +51,19 @@ ExecStartPre=/bin/bash -c "set -x ; \
   echo \"MASTER is $MASTER\" ; \
   if [ \"$MASTER x\" = \"%i x\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
-    export IMAGE=${IMAGE} ; \
-    export CONTAINER=${CONTAINER} ; \
-    export PORT=${PORT} ; \
-    export DIR=${DIR} ; \
-    /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \'\'; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=${COREOS_PUBLIC_IPV4} --report-port=${PORT}\"; \
   fi"
 
-ExecStartPre=/bin/bash -c "echo XXXXXX XXXXXX XXXXXX XXXXXX XXXXXX XXXXXX XXXXXX" ; sleep 10"
-
-# TODO init mysql 
-# -v ${DIR}/staging/:/mnt/
-
-
+ExecStartPre=/bin/bash -c "set -x ; \
+  export IMAGE=${IMAGE} ; \
+  export CONTAINER=${CONTAINER} ; \
+  export PORT=${PORT} ; \
+  export DIR=${DIR} ; \
+  /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
 
 
