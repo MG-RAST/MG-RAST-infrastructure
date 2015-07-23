@@ -51,7 +51,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   echo \"MASTER is $MASTER\" ; \
   if [ \"$MASTER x\" = \"%i x\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--gtid-mode=ON\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--gtid-mode=ON --log-slave-updates\"; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
