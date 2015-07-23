@@ -47,11 +47,12 @@ ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/m
 
 # create arguments for master/slave
 ExecStartPre=/bin/bash -c "set -x ; \
-  export SERVER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
-  if [ \"${SERVER}x\" -eq \"%ix\" ] ; then \
+  export MASTER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
+  echo \"MASTER is $MASTER\" ; \
+  if [ \"${MASTER}x\" = \"%ix\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
     if [ \"$(ls -A ${DIR}/data/)\" ] ; then \
-      echo \"data Not Empty   TODO: check state\" \
+      echo \"data Not Empty   (TODO: check state)\" \
     else \
       echo \"data Empty\" ; \
       export IMAGE=${IMAGE} ; \
