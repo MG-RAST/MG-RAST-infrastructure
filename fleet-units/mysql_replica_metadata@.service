@@ -49,7 +49,7 @@ ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/m
 ExecStartPre=/bin/bash -c "set -x ; \
   export MASTER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
   echo \"MASTER is $MASTER\" ; \
-  if [ \"${MASTER}x\" = \"%ix\" ] ; then \
+  if [ \"$MASTER x\" = \"%i x\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
     if [ \"$(ls -A ${DIR}/data/)\" ] ; then \
       echo \"data Not Empty   (TODO: check state)\" \
