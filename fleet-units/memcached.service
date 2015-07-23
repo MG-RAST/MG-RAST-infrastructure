@@ -8,6 +8,7 @@ Environment='CONTAINER=memcached'
 Environment='IMAGE=mgrast/memcached'
 Environment='SERVICE=memcached'
 
+TimeoutStartSec=0
 Restart=always
 EnvironmentFile=-/etc/environment
 

@@ -10,6 +10,7 @@ Environment='SERVICE=opscenter'
 
 Restart=always
 TimeoutStartSec=0
+
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 

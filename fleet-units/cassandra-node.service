@@ -9,6 +9,7 @@ Environment='IMAGE=mgrast/cassandra'
 Environment='SERVICE=cassandra-node'
 Environment='CDATA=/media/ephemeral/cassandra'
 
+TimeoutStartSec=0
 Restart=always
 EnvironmentFile=-/etc/environment
 

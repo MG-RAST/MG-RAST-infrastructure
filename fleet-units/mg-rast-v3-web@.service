@@ -2,6 +2,8 @@
 Description=MG-RAST v3 web frontend
 After=docker.service
 Requires=docker.service
+Wants=%p-discovery@%i.service
+Before=%p-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=mg-rast-v3-web-%i'
@@ -10,6 +12,7 @@ Environment='SERVICE=mg-rast-v3-web'
 
 Restart=always
 TimeoutStartSec=0
+
 EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}

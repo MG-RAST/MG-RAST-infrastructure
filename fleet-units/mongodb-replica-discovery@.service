@@ -8,6 +8,9 @@ After=mongodb-replica@%i.service
 Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
 
+TimeoutStartSec=0
+Restart=always
+
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \

@@ -8,6 +8,9 @@ Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
 EnvironmentFile=-/etc/environment
 
+TimeoutStartSec=0
+Restart=always
+
 Environment='AWE_IP=140.221.76.249'
 Environment='SHOCK_IP=140.221.76.247'
 Environment='TEST_IP=140.221.76.246'

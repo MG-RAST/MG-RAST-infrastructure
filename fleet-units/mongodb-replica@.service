@@ -9,6 +9,8 @@ Environment='IMAGE=mongo'
 Environment='SERVICE=mongodb-replica'
 
 TimeoutStartSec=0
+Restart=always
+
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}

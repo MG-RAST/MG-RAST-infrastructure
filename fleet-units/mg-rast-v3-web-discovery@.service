@@ -8,6 +8,9 @@ After=mg-rast-v3-web@%i.service
 Environment='CONTAINER=mg-rast-v3-web-%i'
 Environment='SERVICE=mg-rast-v3-web'
 
+Restart=always
+TimeoutStartSec=0
+
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \

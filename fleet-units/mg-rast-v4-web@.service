@@ -10,6 +10,7 @@ Environment='SERVICE=mg-rast-v4-web'
 
 Restart=always
 TimeoutStartSec=0
+
 EnvironmentFile=-/etc/environment
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
