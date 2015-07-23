@@ -3,13 +3,9 @@ Description=mg-rast-v3-web discovery
 BindsTo=mg-rast-v3-web@%i.service
 After=mg-rast-v3-web@%i.service
 
-
 [Service]
 Environment='CONTAINER=mg-rast-v3-web-%i'
 Environment='SERVICE=mg-rast-v3-web'
-
-Restart=always
-TimeoutStartSec=0
 
 EnvironmentFile=-/etc/environment
 

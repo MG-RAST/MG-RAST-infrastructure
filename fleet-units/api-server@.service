@@ -2,6 +2,7 @@
 Description=API server
 After=docker.service
 Requires=docker.service
+Wants=%p-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=api-server-%i'

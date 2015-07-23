@@ -2,6 +2,7 @@
 Description=MongoDB Replica %i
 After=docker.service
 Requires=docker.service
+Wants=mongodb-replica-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=mongodb-replica-%i'

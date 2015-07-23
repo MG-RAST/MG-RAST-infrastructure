@@ -2,14 +2,11 @@
 Description=mongodb-server discovery
 BindsTo=mongodb-replica@%i.service
 After=mongodb-replica@%i.service
-
+Wants=mongodb-replica-update@%i.service
 
 [Service]
 Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
-
-TimeoutStartSec=0
-Restart=always
 
 EnvironmentFile=-/etc/environment
 

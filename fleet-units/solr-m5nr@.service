@@ -2,6 +2,7 @@
 Description=Solr m5nr
 After=docker.service
 Requires=docker.service
+Wants=%p-discovery@%i.service
 
 [Service]
 # service name:   solr-m5nr
