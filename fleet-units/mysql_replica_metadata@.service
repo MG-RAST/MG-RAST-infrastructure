@@ -50,16 +50,16 @@ ExecStartPre=/bin/bash -c "set -x ; \
   export SERVER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
   if [ \"${SERVER}x\" -eq \"%ix\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
-    if [ "$(ls -A ${DIR}/data/)" ] ; then \
-      echo "data Not Empty   TODO: check state" \
+    if [ \"$(ls -A ${DIR}/data/)\" ] ; then \
+      echo \"data Not Empty   TODO: check state\" \
     else \
-      echo "data Empty" ; \
+      echo \"data Empty\" ; \
       export IMAGE=${IMAGE} ; \
       export CONTAINER=${CONTAINER} ; \
       export PORT=${PORT} ; \
       export DIR=${DIR} ; \
      /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh; \
-    fi \
+    fi; \
    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \'\'; \
   else \
     echo \"I am slave\" ; \
