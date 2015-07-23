@@ -3,13 +3,9 @@ Description=awe-server discovery
 BindsTo=awe-server@%i.service
 After=awe-server@%i.service
 
-
 [Service]
 Environment='CONTAINER=awe-server-%i'
 Environment='SERVICE=awe-server'
-
-TimeoutStartSec=0
-Restart=always
 
 EnvironmentFile=-/etc/environment
 

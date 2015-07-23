@@ -3,13 +3,9 @@ Description=api-server discovery
 BindsTo=api-server@%i.service
 After=api-server@%i.service
 
-
 [Service]
 Environment='CONTAINER=api-server-%i'
 Environment='SERVICE=api-server'
-
-TimeoutStartSec=0
-Restart=always
 
 EnvironmentFile=-/etc/environment
 

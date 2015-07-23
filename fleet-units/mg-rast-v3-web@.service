@@ -3,7 +3,6 @@ Description=MG-RAST v3 web frontend
 After=docker.service
 Requires=docker.service
 Wants=%p-discovery@%i.service
-Before=%p-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=mg-rast-v3-web-%i'
