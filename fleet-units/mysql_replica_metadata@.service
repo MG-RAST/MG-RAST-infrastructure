@@ -67,7 +67,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
   fi"
 
-
+ExecStartPre=/bin/bash -c "echo XXXXXX XXXXXX XXXXXX XXXXXX XXXXXX XXXXXX XXXXXX" ; sleep 10"
 
 # TODO init mysql 
 # -v ${DIR}/staging/:/mnt/
