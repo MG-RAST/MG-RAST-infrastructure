@@ -30,8 +30,8 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 # prepare directories
-ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/
-ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/
+ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
+ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
 
 
 # remove old container
@@ -51,15 +51,20 @@ ExecStartPre=/bin/bash -c "set -x ; \
   if [ $SERVER -eq \"%i\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
     if [ "$(ls -A ${DIR}/data/)" ] ; then \
-      echo "data Not Empty" \
+      echo "data Not Empty   TODO: check state" \
     else \
       echo "data Empty" ; \
+      export IMAGE=${IMAGE} ; \
+      export CONTAINER=${CONTAINER} ; \
+      export PORT=${PORT} ; \
+      export DIR=${DIR} ; \
+     /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh; \
     fi \
-   /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"mysql_install_db"; \
+   /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"\"; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"mysqld --report-host=$SERVER --report-port=${PORT}\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
   fi"
 
 
@@ -81,11 +86,11 @@ ExecStart=/bin/bash -c "set -x ; \
     -v ${DIR}/log-bin/:/log-bin/:rw \
     -v ${DIR}/data/:/var/lib/mysql/:rw \
     -v ${DIR}/log/:/var/log/mysqld/:rw \
+    -v ${DIR}/staging/:/staging:ro \
     -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf \
-    -e MYSQL_ROOT_PASSWORD=test \
     --entrypoint=/bin/bash \
     ${IMAGE} \
-   -c \"chmod -R 777 /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; /entrypoint.sh mysqld  $COMMAND --secure-file-priv=/var/lib/mysql --server-id=%i\""
+   -c \"chmod -R 777 /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; mysqld  $COMMAND --secure-file-priv=/var/lib/mysql --server-id=%i\""
 
 #ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
