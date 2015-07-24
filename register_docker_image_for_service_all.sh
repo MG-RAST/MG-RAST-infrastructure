@@ -35,24 +35,24 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-web-test/
 
 # mg-rast-v3-web-[channel]
 #channel: v3-web
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/65ed20a8-5998-4d12-9f4a-399823fd94cb"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/bce1b177-c3d8-4a8d-8fb1-3ed0f2d3cb03"
 #channel: v3-web-dev
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/65ed20a8-5998-4d12-9f4a-399823fd94cb"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/bce1b177-c3d8-4a8d-8fb1-3ed0f2d3cb03"
 #channel: v3-web-test
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/65ed20a8-5998-4d12-9f4a-399823fd94cb"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/bce1b177-c3d8-4a8d-8fb1-3ed0f2d3cb03"
 
 
 #api-server-[channel]
 #channel: api
-curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/c9d70e08-cf20-48d4-82a1-c91da5078236"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/0dc4a9b7-2702-4efb-b73e-5e42ff77342b"
 #channel: api-dev
-curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/c9d70e08-cf20-48d4-82a1-c91da5078236"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/0dc4a9b7-2702-4efb-b73e-5e42ff77342b"
 #channel: api-test
-curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/c9d70e08-cf20-48d4-82a1-c91da5078236"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/0dc4a9b7-2702-4efb-b73e-5e42ff77342b"
 
 
 #awe server
-curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/1401b060-dd4c-4aeb-83f4-f3d3f9d8ec84"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a156bd90-3a56-4fac-ae3c-3664deadecd2"
 
 #memcached server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
@@ -73,7 +73,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT
 # fleetctl start solr-m5nr@1.service
 # fleetctl start solr-metagenome@1.service
 # fleetctl start api-server@{1,2}.api.service # or api-dev !
-# fleetctl start awe-server{,-mongodb,-discovery}@1.service
+# fleetctl start awe-server{,-discovery}@1.service
 # fleetctl start memcached.service # global unit that runs on multiple machines
 # fleetctl start cassandra-node.service # global unit that runs on multiple machines
 # fleetctl start opscenter@1.service
