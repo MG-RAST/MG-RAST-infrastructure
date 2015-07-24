@@ -1,0 +1,84 @@
+[Unit]
+Description=mysql replica server
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=mysql-galera-metadata-%i'
+Environment='IMAGE=mysql-galera'
+Environment='SERVICE=mysql_galera_metadata'
+
+TimeoutStartSec=0
+EnvironmentFile=-/etc/environment
+
+
+
+
+# data directory
+Environment='DIR=/media/ephemeral/${SERVICE}-%i'
+
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+
+# prepare directories
+ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
+ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
+
+
+# remove old container
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+# download docker image
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+# become master if there is none 
+# reset with: /usr/bin/etcdctl set /services/${SERVICE}/initnode none
+ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}'
+
+# create arguments for master/slave
+ExecStartPre=/bin/bash -c "set -x ; \
+  export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode ` ; \
+  echo \"INITNODE is $INITNODE\" ; \
+  if [ \"$INITNODE x\" = \"${COREOS_PUBLIC_IPV4} x\" ] ; then \
+    echo \"I am initnode\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state initnode ; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep-new-cluster\"; \
+  else \
+    echo \"I am normal node\" ; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state node; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep_cluster_address=gcomm://ip,ip\"; \
+  fi"
+
+#ExecStartPre=/bin/bash -c "set -x ; \
+#  export IMAGE=${IMAGE} ; \
+#  export CONTAINER=${CONTAINER} ; \
+#  export PORT=${PORT} ; \
+#  export DIR=${DIR} ; \
+#  /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
+
+
+
+### Start MySQL ###
+
+ExecStart=/bin/bash -c "set -x ; \
+  export COMMAND=`/usr/bin/etcdctl get /services/${SERVICE}/server/%i/args` ; \
+  echo \"using args: $ARGS\" ; \
+  /usr/bin/docker run --name ${CONTAINER} --rm \
+    -p ${PORT}:3306 \
+    -v ${DIR}/log-bin/:/log-bin/:rw \
+    -v ${DIR}/data/:/var/lib/mysql/:rw \
+    -v ${DIR}/log/:/var/log/mysqld/:rw \
+    -v ${DIR}/staging/:/staging:ro \
+    -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf \
+    --entrypoint=/bin/bash \
+    ${IMAGE} \
+   -c \"chmod -R 777 /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysqld/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i $COMMAND \""
+
+
+ExecStop=-/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=${SERVICE}@*.service
+Conflicts=mysql_metadata@*.service
+
