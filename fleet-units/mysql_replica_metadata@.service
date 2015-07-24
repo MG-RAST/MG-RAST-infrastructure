@@ -47,32 +47,23 @@ ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/m
 
 # create arguments for master/slave
 ExecStartPre=/bin/bash -c "set -x ; \
-  export SERVER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
-  if [ $SERVER -eq \"%i\" ] ; then \
+  export MASTER=`/usr/bin/etcdctl get /services/${SERVICE}/master` ; \
+  echo \"MASTER is $MASTER\" ; \
+  if [ \"$MASTER x\" = \"%i x\" ] ; then \
     echo \"I am master\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state master ; \
-    if [ "$(ls -A ${DIR}/data/)" ] ; then \
-      echo "data Not Empty   TODO: check state" \
-    else \
-      echo "data Empty" ; \
-      export IMAGE=${IMAGE} ; \
-      export CONTAINER=${CONTAINER} ; \
-      export PORT=${PORT} ; \
-      export DIR=${DIR} ; \
-     /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh; \
-    fi \
-   /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args ''; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --gtid-mode=ON --log-slave-updates\"; \
   else \
     echo \"I am slave\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state slave; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \"--report-host=$SERVER --report-port=${PORT}\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --report-host=${COREOS_PUBLIC_IPV4} --report-port=${PORT}\"; \
   fi"
 
-
-
-# TODO init mysql 
-# -v ${DIR}/staging/:/mnt/
-
-
+ExecStartPre=/bin/bash -c "set -x ; \
+  export IMAGE=${IMAGE} ; \
+  export CONTAINER=${CONTAINER} ; \
+  export PORT=${PORT} ; \
+  export DIR=${DIR} ; \
+  /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
 
 
