@@ -1,5 +1,5 @@
 [Unit]
-Description=mysql replica server
+Description=mysql galera server
 After=docker.service
 Requires=docker.service
 
@@ -37,7 +37,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 # reset with: /usr/bin/etcdctl set /services/${SERVICE}/initnode none
 ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}'
 
-# create arguments for master/slave
+# create arguments for init / follower nodes
 ExecStartPre=/bin/bash -c "set -x ; \
   export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode ` ; \
   echo \"INITNODE is $INITNODE\" ; \
@@ -47,7 +47,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   else \
     echo \"I am normal node\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state node; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep_cluster_address=gcomm://ip,ip\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep_cluster_address=gcomm://$INITNODE\"; \
   fi"
 
 #ExecStartPre=/bin/bash -c "set -x ; \
