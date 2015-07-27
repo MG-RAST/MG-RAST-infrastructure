@@ -16,7 +16,11 @@ EnvironmentFile=-/etc/environment
 
 # data directory
 Environment='DIR=/media/ephemeral/${SERVICE}-%i'
-Environment='PORT=3306'
+Environment='PORT3306=3306'
+Environment='PORT4567=4567'
+Environment='PORT4568=4568'
+Environment='PORT4444=4444'
+
 
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
@@ -66,7 +70,10 @@ ExecStart=/bin/bash -c "set -x ; \
   export COMMAND=`/usr/bin/etcdctl get /services/${SERVICE}/server/%i/args` ; \
   echo \"using args: $ARGS\" ; \
   /usr/bin/docker run --name ${CONTAINER} --rm \
-    -p ${PORT}:3306 \
+    -p ${PORT3306}:3306 \
+    -p ${PORT4567}:4567 \
+    -p ${PORT4568}:4568 \
+    -p ${PORT4444}:4444 \
     -v ${DIR}/log-bin/:/log-bin/:rw \
     -v ${DIR}/data/:/var/lib/mysql/:rw \
     -v ${DIR}/log/:/var/log/mysqld/:rw \
