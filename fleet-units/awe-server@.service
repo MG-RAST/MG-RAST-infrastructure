@@ -38,10 +38,11 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-Conflicts=${SERVICE}@*.service
-Conflicts=solr-m5nr@*.service
-Conflicts=solr-metagenome@*.service
-Conflicts=mysql_metadata@*.service
-MachineMetadata=RAM_GB=39
-MachineMetadata=RAM_GB=47
-MachineMetadata=RAM_GB=71
+#Conflicts=${SERVICE}@*.service
+#Conflicts=solr-m5nr@*.service
+#Conflicts=solr-metagenome@*.service
+#Conflicts=mysql_metadata@*.service
+#MachineMetadata=RAM_GB=39
+#MachineMetadata=RAM_GB=47
+#MachineMetadata=RAM_GB=71
+MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
