@@ -76,7 +76,7 @@ ExecStart=/bin/bash -c "set -x ; \
     -p ${PORT4444}:4444 \
     -v ${DIR}/log-bin/:/log-bin/:rw \
     -v ${DIR}/data/:/var/lib/mysql/:rw \
-    -v ${DIR}/log/:/var/log/mysqld/:rw \
+    -v ${DIR}/log/:/var/log/mysql/:rw \
     -v ${DIR}/staging/:/staging:ro \
     -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf \
     --entrypoint=/bin/bash \
