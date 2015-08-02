@@ -46,7 +46,7 @@ ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/i
 ExecStartPre=/bin/bash -c "set -x ; \
   export IMAGE=${IMAGE} ; \
   export CONTAINER=${CONTAINER} ; \
-  export PORT=${PORT} ; \
+  export PORT=${PORT3306} ; \
   export DIR=${DIR} ; \
   /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
