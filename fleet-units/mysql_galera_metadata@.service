@@ -42,6 +42,14 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 # reset with: /usr/bin/etcdctl set /services/${SERVICE}/initnode none
 ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}'
 
+
+ExecStartPre=/bin/bash -c "set -x ; \
+  export IMAGE=${IMAGE} ; \
+  export CONTAINER=${CONTAINER} ; \
+  export PORT=${PORT} ; \
+  export DIR=${DIR} ; \
+  /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
+
 # create arguments for init / follower nodes
 ExecStartPre=/bin/bash -c "set -x ; \
   export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode ` ; \
@@ -55,12 +63,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep_cluster_address=gcomm://$INITNODE\"; \
   fi"
 
-#ExecStartPre=/bin/bash -c "set -x ; \
-#  export IMAGE=${IMAGE} ; \
-#  export CONTAINER=${CONTAINER} ; \
-#  export PORT=${PORT} ; \
-#  export DIR=${DIR} ; \
-#  /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
+
 
 
 
