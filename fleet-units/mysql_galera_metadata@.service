@@ -78,7 +78,7 @@ ExecStart=/bin/bash -c "set -x ; \
     -v ${DIR}/data/:/var/lib/mysql/:rw \
     -v ${DIR}/log/:/var/log/mysql/:rw \
     -v ${DIR}/staging/:/staging:ro \
-    -v /home/core/mgrast-config/services/mysql_metadata/mysql_replica.cnf:/etc/my.cnf \
+    -v /home/core/mgrast-config/services/mysql_metadata/mysql_galera.cnf:/etc/my.cnf \
     --entrypoint=/bin/bash \
     ${IMAGE} \
    -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i $COMMAND \""
