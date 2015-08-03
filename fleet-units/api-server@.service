@@ -8,23 +8,27 @@ Wants=%p-discovery@%i.service
 Environment='CONTAINER=api-server-%i'
 Environment='IMAGE=mgrast/api'
 Environment='SERVICE=api-server'
-
-TimeoutStartSec=0
-Restart=always
-
-EnvironmentFile=-/etc/environment
-
 Environment='DIR=/media/ephemeral/api-server-%i'
 
+Restart=always
+TimeoutStartSec=0
+
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
+# get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
 
+# mk dirs and clean temp
 ExecStartPre=/bin/mkdir -p ${DIR}/logs/api.metagenomics
 ExecStartPre=/bin/chmod 777 ${DIR}/logs/api.metagenomics
+ExecStartPre=-/usr/bin/rm -rf ${DIR}/tmp
+ExecStartPre=/usr/bin/mkdir -p ${DIR}/tmp
+ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 
-
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+# get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 # preprocessing: loading
@@ -32,12 +36,11 @@ ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
-#-v /home/core/mgrast-config/services/api-server/postgresql/:/root/postgresql/:ro
-ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER}  -v /home/core/mgrast-config/services/api-server:/api-server-conf:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -p 80 -p 443 ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/* ; /bin/chown daemon:daemon /api-server-conf/postgresql/* ; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v /home/core/mgrast-config/services/api-server:/api-server-conf:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -v ${DIR}/tmp:/MG-RAST/site/CGI/Tmp/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro -p 80 -p 443 ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-Conflicts=${SERVICE}@*.service
-Conflicts=solr-m5nr@*.service
-Conflicts=solr-metagenome@*.service
+#Conflicts=${SERVICE}@*.service
+#Conflicts=solr-m5nr@*.service
+#Conflicts=solr-metagenome@*.service
 MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
