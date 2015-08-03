@@ -62,10 +62,10 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d v
 curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
 
 #cassandra node
-curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2dd70ba4-2b75-4c5c-ad30-79ec9f261387"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT -d value="shock.metagenomics.anl.gov/node/4d5de175-558b-45e1-a0a3-c7991756ed75"
 
 #opscenter server
-curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/388ba3fe-3cd2-4965-8c25-6c85faeec862"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/24787a69-a0f4-4aef-b995-ac4d3fccd3cf"
 
 # mongo replica
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT -d value="shock.metagenomics.anl.gov/node/7426ffca-9554-4412-98a2-d392ada8a2c7"
