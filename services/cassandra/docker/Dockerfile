@@ -2,10 +2,10 @@
 
 FROM ubuntu:14.10
 
-ENV CASS_VERSION 2.1.7
-ENV CASS_URL http://psg.mtu.edu/pub/apache/cassandra/${CASS_VERSION}/apache-cassandra-${CASS_VERSION}-bin.tar.gz
+ENV CASS_VERSION 2.1.8
+ENV CASS_URL http://apache.cs.utah.edu/cassandra/${CASS_VERSION}/apache-cassandra-${CASS_VERSION}-bin.tar.gz
 
-ENV AGENT_VERSION 5.1.3
+ENV AGENT_VERSION 5.2.0
 ENV AGENT_URL http://downloads.datastax.com/community/datastax-agent-${AGENT_VERSION}.tar.gz
 
 # dependencies
@@ -20,15 +20,29 @@ RUN apt-get update && \
 
 RUN mkdir -p /opt /data /bin && \
   cd /bin && \
-  curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/configure-cassandra.sh && \
-  chmod +x configure-cassandra.sh && \
   curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/load-cassandra-m5nr.sh && \
   chmod +x load-cassandra-m5nr.sh
 
+VOLUME /var/lib/cassandra
+
 RUN curl -s $CASS_URL | tar -zxvf - -C /opt && \
-    ln -s /opt/apache-cassandra-${CASS_VERSION} /opt/cassandra
+    ln -s /opt/apache-cassandra-${CASS_VERSION} /opt/cassandra && \
+    cd /opt/cassandra/conf && \
+    rm -f cassandra.yaml && \
+    ln -s /config/cassandra.yaml
 
 RUN curl -s $AGENT_URL | tar -zxvf - -C /opt && \
-    ln -s /opt/datastax-agent-${AGENT_VERSION} /opt/agent
+    ln -s /opt/datastax-agent-${AGENT_VERSION} /opt/agent && \
+    cd /opt/agent/conf && \
+    rm -f address.yaml && \
+    curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/opscenter/address.yaml
 
+# 7000: intra-node communication
+# 7001: TLS intra-node communication
+# 7199: JMX
+# 9042: CQL
+# 9160: thrift service
+# 61621: opscenter agent communication
 EXPOSE 7000 7001 7199 9042 9160 61621
+
+CMD ["cassandra", "-f"]

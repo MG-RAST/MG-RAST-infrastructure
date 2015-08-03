@@ -2,7 +2,7 @@
 
 FROM ubuntu:14.10
 
-ENV VERSION 5.1.3
+ENV VERSION 5.2.0
 ENV URL http://downloads.datastax.com/community/opscenter-${VERSION}.tar.gz
 
 # dependencies
