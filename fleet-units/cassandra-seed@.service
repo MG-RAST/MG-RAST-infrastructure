@@ -27,7 +27,7 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-Conflicts=${SERVICE}@*.service
+Conflicts=cassandra-seed@*.service
 MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
 
