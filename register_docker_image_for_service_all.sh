@@ -62,7 +62,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d v
 curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
 
 #cassandra node
-curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra-node/shock -XPUT -d value="shock.metagenomics.anl.gov/node/4d5de175-558b-45e1-a0a3-c7991756ed75"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra/shock -XPUT -d value="shock.metagenomics.anl.gov/node/4d5de175-558b-45e1-a0a3-c7991756ed75"
 
 #opscenter server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/24787a69-a0f4-4aef-b995-ac4d3fccd3cf"
@@ -76,17 +76,20 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT
 # fleetctl start mg-rast-nginx@1.service
 # fleetctl start solr-m5nr@1.service
 # fleetctl start solr-metagenome@1.service
-# fleetctl start api-server@{1,2}.api.service # or api-dev !
+# fleetctl start mongodb-replica{,-discovery}@{1,2,3}.shock.service # manualy set primary node before starting update service
+# fleetctl start mongodb-replica-update@{1,2,3}.shock.service
+# fleetctl start mongodb-replica{,-discovery}@{1,2,3}.awe.service # manualy set primary node before starting update service
+# fleetctl start mongodb-replica-update@{1,2,3}.awe.service
 # fleetctl start awe-server{,-discovery}@1.service
 # fleetctl start memcached.service # global unit that runs on multiple machines
-# fleetctl start cassandra-node.service # global unit that runs on multiple machines
-# fleetctl start opscenter@1.service
 
 # develop services:
-# fleetctl start mysql_metadata@1.service
-# fleetctl start mg-rast-v4-web{,-discovery}@{1..2}.v4-web.service
-# fleetctl start mg-rast-v4-web{,-discovery}@{1..2}.v4-web-dev.service
-# fleetctl start mg-rast-v3-web{,-discovery}@{1..2}.v3-web.service
-# fleetctl start mg-rast-v3-web{,-discovery}@{1..2}.v3-web-dev.service
-# fleetctl start cadvisor.service
 
+# fleetctl start api-server@{1,2}.api-dev.service
+# fleetctl start mysql_metadata@1.service
+# fleetctl start mg-rast-v4-web{,-discovery}@{1,2}.v4-web.service
+# fleetctl start mg-rast-v4-web{,-discovery}@{1,2}.v4-web-dev.service
+# fleetctl start mg-rast-v3-web{,-discovery}@{1,2}.v3-web.service
+# fleetctl start mg-rast-v3-web{,-discovery}@{1,2}.v3-web-dev.service
+# fleetctl start cadvisor.service
+# fleetctl start opscenter@1.service
