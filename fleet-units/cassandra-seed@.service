@@ -2,6 +2,7 @@
 Description=Cassandra Seed %i
 After=docker.service
 Requires=docker.service
+Wants=cassandra-seed-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=cassandra-seed-%i'
@@ -13,7 +14,7 @@ TimeoutStartSec=0
 Restart=always
 EnvironmentFile=-/etc/environment
 
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; if cd /home/core/mgrast-config; then git pull; else cd /home/core/; git clone git@git.mcs.anl.gov:mgrast-config.git; fi'
 
 ExecStartPre=/usr/bin/mkdir -p ${CDATA}/data ${CDATA}/commitlog ${CDATA}/saved_caches
@@ -22,7 +23,11 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 -v /home/core/mgrast-config/services/cassandra:/config:rw -v ${CDATA}:/var/lib/cassandra:rw -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} ${IMAGE} bash -c "/opt/agent/bin/datastax-agent; /opt/cassandra/bin/cassandra -f"
+# get seed list and add self to it
+ExecStart=/bin/bash -c ' \
+  SEEDS=$(for X in `etcdctl ls --sort /services/cassandra-seed`; do etcdctl get $X; done | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | sort -u | tr '\n' ','); \
+  SEEDS+=${COREOS_PUBLIC_IPV4}; \
+  /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 -v /home/core/mgrast-config/services/cassandra:/config:rw -v ${CDATA}:/var/lib/cassandra:rw -e CASSANDRA_SEEDS $SEEDS -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} ${IMAGE} bash -c "/opt/agent/bin/datastax-agent; /opt/cassandra/bin/cassandra -f"'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 

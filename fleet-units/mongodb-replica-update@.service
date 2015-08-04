@@ -1,5 +1,5 @@
 [Unit]
-Description=mongodb-server watch
+Description=MongoDB Replica %i watch
 BindsTo=mongodb-replica-discovery@%i.service
 After=mongodb-replica-discovery@%i.service
 

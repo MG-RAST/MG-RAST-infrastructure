@@ -1,5 +1,5 @@
 [Unit]
-Description=mongodb-server discovery
+Description=MongoDB Replica %i discovery
 BindsTo=mongodb-replica@%i.service
 After=mongodb-replica@%i.service
 Wants=mongodb-replica-update@%i.service

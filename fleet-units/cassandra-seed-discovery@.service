@@ -1,0 +1,39 @@
+[Unit]
+Description=Cassandra Seed %i discovery
+BindsTo=cassandra-seed@%i.service
+After=cassandra-seed@%i.service
+
+[Service]
+Environment='CONTAINER=cassandra-seed-%i'
+Environment='SERVICE=cassandra-seed'
+
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=/bin/sh -c " \
+  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"7000/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n')x\" == \"x\" ]; \
+    do echo \"port unknown\"; \
+    sleep 0.1; \
+  done"
+
+ExecStart=/bin/bash -c " \
+  export NODE=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"7000/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
+  echo \"port detected: $NODE\"; \
+  export JMX=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"7199/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
+  echo \"port detected: $JMX\"; \
+  export CQL=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"9042/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
+  echo \"port detected: $CQL\"; \
+  export THRIFT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"9160/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
+  echo \"port detected: $THRIFT\"; \
+  export AGENT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"61621/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
+  echo \"port detected: $AGENT\"; \
+  while true; do \
+    etcdctl set /services/${SERVICE}/${SERVICE}@%i \'{\"host\":\"%H\",\"node\":\'\"$NODE\"\',\"JMX\":\'\"$JMX\"\',\"CQL\":\'\"$CQL\"\',\"thrift\":\'\"$THRIFT\"\',\"agent\":\'\"$AGENT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+    sleep 45; \
+  done"
+
+ExecStop=/bin/bash -c " \
+  echo \"stopping, removing ${SERVICE}@%i from etcd\"; \
+  etcdctl rm /services/${SERVICE}/${SERVICE}@%i"
+
+[X-Fleet]
+MachineOf=cassandra-seed@%i.service
