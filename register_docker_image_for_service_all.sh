@@ -39,11 +39,11 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-web-test/
 
 # mg-rast-v3-web-[channel]
 #channel: v3-web
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af86f5b5-ed7c-423a-8588-09b04a7a19da"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/8907de9d-ee94-4b20-8c48-65827bb0e840"
 #channel: v3-web-dev
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af86f5b5-ed7c-423a-8588-09b04a7a19da"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/8907de9d-ee94-4b20-8c48-65827bb0e840"
 #channel: v3-web-test
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/af86f5b5-ed7c-423a-8588-09b04a7a19da"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-test/shock -XPUT -d value="shock.metagenomics.anl.gov/node/8907de9d-ee94-4b20-8c48-65827bb0e840"
 
 
 #api-server-[channel]
@@ -62,7 +62,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d v
 curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
 
 #cassandra node
-curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra/shock -XPUT -d value="shock.metagenomics.anl.gov/node/57db1ba9-56bd-400b-8345-14e3c77baeb0"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra/shock -XPUT -d value="shock.metagenomics.anl.gov/node/078b3746-c20a-44ff-8245-45e9de2dce12"
 
 #opscenter server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a030ea5b-3971-43c6-8574-6f82c510fca2"
