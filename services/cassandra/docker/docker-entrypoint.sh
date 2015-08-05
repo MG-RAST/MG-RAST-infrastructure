@@ -12,6 +12,7 @@ if [ "$1" = 'cassandra' ]; then
     
     # start agent in background
     datastax-agent
+    sleep 5
     
     # check if modified config exists
     if [ -f "$OPTIONAL_CONFIG/cassandra.yaml" ]; then
