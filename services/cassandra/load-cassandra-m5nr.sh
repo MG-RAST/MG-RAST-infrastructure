@@ -1,12 +1,13 @@
 #!/bin/bash
 
+set -e
+
 # set default value
 MY_IP=""
 ALL_IPS=""
 VERSION=""
 REP_NUM=""
 DATA_DIR=""
-SCHEMA_DIR="/schema"
 CASS_DIR="/opt/cassandra"
 
 while getopts i:a:v:r:d: option; do
@@ -27,11 +28,14 @@ if [ -z "$REP_NUM" ]; then
     REP_NUM="3"
 fi
 if [ -z "$DATA_DIR" ]; then
-    DATA_DIR="/data"
+    DATA_DIR="/var/lib/cassandra"
 fi
 
+set -x
+
 LOAD_DIR=$DATA_DIR/BulkLoader
-M5NR_DATA=$SRC_DIR/src/v${VERSION}
+SCHEMA_DIR=$DATA_DIR/schema
+M5NR_DATA=$DATA_DIR/src/v${VERSION}
 SCHEMA_TABLE=$SCHEMA_DIR/m5nr_table_v${VERSION}.cql
 SCHEMA_COPY=$SCHEMA_DIR/m5nr_copy_v${VERSION}.cql
 
@@ -42,9 +46,9 @@ SST_LOAD=$CASS_DIR/bin/sstableloader
 mkdir -p $SCHEMA_DIR
 cd $SCHEMA_DIR
 curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Schema/m5nr_table.cql.tt | \
-    sed -e "s;[% version %];$VERSION;g" -e "s;[% replication %];$REP_NUM;g" > $SCHEMA_TABLE
+    sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% replication \%\];$REP_NUM;g" > $SCHEMA_TABLE
 curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Schema/m5nr_copy.cql.tt | \
-    sed -e "s;[% version %];$VERSION;g" -e "s;[% data_dir %];$M5NR_DATA;g" > $SCHEMA_COPY
+    sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% data_dir \%\];$M5NR_DATA;g" > $SCHEMA_COPY
 
 # download bulkloader
 mkdir -p $LOAD_DIR
@@ -56,7 +60,7 @@ curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/
 # download data
 DATA_URL=""
 if [ "$VERSION" == "1" ]; then
-    DATA_URL="http://shock.metagenomics.anl.gov/node/?download"
+    DATA_URL="http://shock.metagenomics.anl.gov/node/cc14a6d4-77c9-46ba-94a8-90921657d0fa?download"
 elif [ "$VERSION" == "10" ]; then
     DATA_URL="http://shock.metagenomics.anl.gov/node/foo?download"
 fi
@@ -97,7 +101,8 @@ for TYPE in id md5; do
     # create sstables
     cd $LOAD_DIR
     for FILE in `ls $M5NR_DATA/${KEYSPACE}.annotation.${TYPE}.*`; do
-        /bin/bash BulkLoader.sh -c -k $KEYSPACE -t ${TYPE}_annotation -i $FILE -o $SST_DIR
+        /bin/bash BulkLoader.sh -c $CASS_DIR -k $KEYSPACE -t ${TYPE}_annotation -i $FILE -o $SST_DIR
+        rm $FILE
     done
     # load sstable
     $SST_LOAD -d $ALL_IPS $SST_DIR/$KEYSPACE/${TYPE}_annotation
