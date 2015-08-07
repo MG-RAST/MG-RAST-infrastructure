@@ -40,7 +40,6 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v /home/core/mgrast-conf
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-#Conflicts=${SERVICE}@*.service
-#Conflicts=solr-m5nr@*.service
-#Conflicts=solr-metagenome@*.service
-MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
+Conflicts=${SERVICE}@*.service
+Conflicts=solr-m5nr@*.service
+Conflicts=solr-metagenome@*.service

@@ -53,7 +53,6 @@ ExecStop=-/usr/bin/docker stop ${CONTAINER}
 Conflicts=${SERVICE}@*.service
 Conflicts=solr-m5nr@*.service
 Conflicts=solr-metagenome@*.service
-Conflicts=mysql_metadata@*.service
 MachineMetadata=RAM_GB=39
 MachineMetadata=RAM_GB=47
 MachineMetadata=RAM_GB=71
