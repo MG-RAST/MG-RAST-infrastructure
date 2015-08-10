@@ -1,7 +1,8 @@
 [Unit]
-Description=api-server discovery
+Description=MG-RAST API Server %i discovery
 BindsTo=api-server@%i.service
 After=api-server@%i.service
+Wants=api-server-update@%i.service
 
 [Service]
 Environment='CONTAINER=api-server-%i'

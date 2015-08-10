@@ -1,8 +1,8 @@
 [Unit]
-Description=API server
+Description=MG-RAST API Server %i
 After=docker.service
 Requires=docker.service
-Wants=%p-discovery@%i.service
+Wants=api-server-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=api-server-%i'
