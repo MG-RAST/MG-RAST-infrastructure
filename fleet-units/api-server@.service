@@ -44,7 +44,7 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/conf/:/api-serv
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-Conflicts=${SERVICE}@*.service
+Conflicts=api-server@*.service
 Conflicts=solr-m5nr@*.service
 Conflicts=solr-metagenome@*.service
 MachineMetadata=RAM_GB=39
