@@ -2,6 +2,7 @@
 Description=Memcached Service
 After=docker.service
 Requires=docker.service
+Wants=memcached-discovery.service
 
 [Service]
 Environment='CONTAINER=memcached'
