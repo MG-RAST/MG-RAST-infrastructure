@@ -9,6 +9,8 @@ Environment='SERVICE=api-server'
 Environment='CONF=/media/ephemeral/api-server-%i/conf/Conf.pm'
 EnvironmentFile=-/etc/environment
 
+# This is to update the Conf.pm file with changes in available memcached or cassandra hosts
+
 ExecStart=/bin/bash -c ' \
   export MEM_PREV=""; \
   export CASS_PREV=""; \

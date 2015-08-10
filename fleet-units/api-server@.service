@@ -32,8 +32,10 @@ ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
-# preprocessing: loading
+# config file is copied as it can be edited by update fleet-unit
 ExecStartPre=/usr/bin/cp /home/core/mgrast-config/services/api-server/Conf.pm ${DIR}/conf/Conf.pm
+
+# preprocessing: loading
 ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
