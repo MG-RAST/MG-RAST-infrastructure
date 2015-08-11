@@ -33,7 +33,7 @@ ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 # config file Conf.pm is copied as it can be edited by update fleet-unit
-ExecStartPre=/usr/bin/cp -r /home/core/mgrast-config/services/api-server ${DIR}/ ; /usr/bin/mv ${DIR}/api-server ${DIR}/conf
+ExecStartPre=/usr/bin/cp -fr /home/core/mgrast-config/services/api-server ${DIR}/ ; /usr/bin/mv ${DIR}/api-server ${DIR}/conf
 
 # preprocessing: loading
 ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
