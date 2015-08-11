@@ -36,5 +36,5 @@ ExecStop=-/usr/bin/docker stop ${CONTAINER}
 [X-Fleet]
 #MachineID=
 #MachineMetadata=RAM_GB=47
-Conflicts=${SERVICE}@*.service
+Conflicts=awe-server-mongodb@*.service
 MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov

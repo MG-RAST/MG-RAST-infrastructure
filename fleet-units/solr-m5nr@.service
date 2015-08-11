@@ -29,5 +29,4 @@ ExecStop=-/usr/bin/docker stop solr-m5nr
 
 
 [X-Fleet]
-#Conflicts=${SERVICE}@*.service
 MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov

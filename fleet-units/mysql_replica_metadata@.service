@@ -90,6 +90,6 @@ ExecStart=/bin/bash -c "set -x ; \
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-Conflicts=${SERVICE}@*.service
+Conflicts=mysql_replica_metadata@*.service
 Conflicts=mysql_metadata@*.service
 
