@@ -40,7 +40,7 @@ ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/conf/:/api-server-conf/:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -v ${DIR}/tmp:/MG-RAST/site/CGI/Tmp/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro -p 80 -p 443 ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/conf/:/api-server-conf/:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -v ${DIR}/tmp/:/MG-RAST/site/CGI/Tmp/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro -p 80 -p 443 ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
