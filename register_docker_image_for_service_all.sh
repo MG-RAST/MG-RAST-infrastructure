@@ -60,6 +60,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT
 
 # production services:
 
+# fleetctl start api-server{,-discovery}@1.api.service
 # fleetctl start mg-rast-confd.service # global unit that runs on multiple machines
 # fleetctl start mg-rast-nginx@1.service
 # fleetctl start solr-m5nr@1.service
@@ -70,14 +71,14 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT
 # fleetctl start mongodb-replica-update@{1,2,3}.awe.service
 # fleetctl start awe-server{,-discovery}@1.service
 # fleetctl start memcached.service # global unit that runs on multiple machines
+# fleetctl start mg-rast-v3-web{,-discovery}@{1,2}.v3-web.service
 
 # develop services:
 
-# fleetctl start api-server@{1,2}.api-dev.service
+# 
 # fleetctl start mysql_metadata@1.service
 # fleetctl start mg-rast-v4-web{,-discovery}@{1,2}.v4-web.service
 # fleetctl start mg-rast-v4-web{,-discovery}@{1,2}.v4-web-dev.service
-# fleetctl start mg-rast-v3-web{,-discovery}@{1,2}.v3-web.service
 # fleetctl start mg-rast-v3-web{,-discovery}@{1,2}.v3-web-dev.service
 # fleetctl start cadvisor.service
 # fleetctl start opscenter@1.service
