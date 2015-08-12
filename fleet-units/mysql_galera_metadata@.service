@@ -15,7 +15,7 @@ EnvironmentFile=-/etc/environment
 
 
 # data directory
-Environment='DIR=/media/ephemeral/mysql_galera_metadata-%i'
+Environment='DIR=/media/ephemeral/mysql_galera_metadata'
 Environment='PORT3306=3306'
 Environment='PORT4567=4567'
 Environment='PORT4568=4568'
