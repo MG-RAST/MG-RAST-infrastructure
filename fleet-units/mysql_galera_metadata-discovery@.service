@@ -4,6 +4,7 @@ BindsTo=mysql_galera_metadata@%i.service
 After=mysql_galera_metadata@%i.service
 
 [Service]
+Environment='CONTAINER=mysql-galera-metadata-%i'
 Environment='SERVICE=mysql_galera_metadata'
 
 EnvironmentFile=-/etc/environment
