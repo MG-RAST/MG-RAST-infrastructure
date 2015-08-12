@@ -84,7 +84,7 @@ ExecStart=/bin/bash -c "set -x ; \
     -v /home/core/mgrast-config/services/mysql_metadata/mysql_galera.cnf:/etc/my.cnf \
     --entrypoint=/bin/bash \
     ${IMAGE} \
-   -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i $COMMAND \""
+   -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i --wsrep_node_address=${COREOS_PUBLIC_IPV4}:${PORT4567} $COMMAND \""
 
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
