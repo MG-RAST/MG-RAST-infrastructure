@@ -49,7 +49,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
 
 # create arguments for init / follower nodes
 ExecStartPre=/bin/bash -c "set -x ; \
-  export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\":\\"[0-9\.]*\\"\" | grep -o \"[0-9\.]*\" | tr '\n' ',') ;\
+  export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\\":\\\"[0-9\.]*\\\"\" | grep -o \"[0-9\.]*\" | tr '\n' ',') ;\
   echo \"ACTIVE=$ACTIVE\" ; \
   if [ x$ACTIVE == \"x\" ] ; then \
     echo \"empty\" ; \
