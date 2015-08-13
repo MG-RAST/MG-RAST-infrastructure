@@ -59,9 +59,9 @@ ExecStartPre=/bin/bash -c "set -x ; \
 # create arguments for init / follower nodes
 ExecStartPre=/bin/bash -c "set -x ; \
   /usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}' ;\
-  export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode ` ; \
+  export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode` ; \
   echo \"INITNODE is $INITNODE\" ; \
-  if [ \"$INITNODE x\" = \"${COREOS_PUBLIC_IPV4} x\" ] ; then \
+  if [ \"$INITNODE x\" == \"${COREOS_PUBLIC_IPV4} x\" ] ; then \
     echo \"I am initnode\" ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \"wsrep-new-cluster\"; \
     /usr/bin/etcdctl set /services/${SERVICE}/initnode 'lock' ;\
@@ -70,7 +70,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
     while [ x$ACTIVE == \"x\" ] ; \
       do export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\\":\\\"[0-9\.]*\\\"\" | grep -o \"[0-9\.]*\" | tr '\n' ',') ;\
       sleep 1 ; \
-    done ;
+    done ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \"wsrep_cluster_address=gcomm://$ACTIVE\"; \
   fi"
 
