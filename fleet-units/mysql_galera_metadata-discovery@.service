@@ -25,13 +25,13 @@ ExecStart=/bin/bash -c " \
   export PORT4444=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"4444/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
   echo \"port detected: $PORT4444\"; \
   while true; do \
-    etcdctl set /services/${SERVICE}/${SERVICE}@%i \'{\"host\":\"%H\",\"PORT3306\":\'\"$PORT3306\"\',\"PORT4567\":\'\"$PORT4567\"\',\"PORT4568\":\'\"$PORT4568\"\',\"PORT4444\":\'\"$PORT4444\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+    etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/discovery \'{\"host\":\"%H\",\"PORT3306\":\'\"$PORT3306\"\',\"PORT4567\":\'\"$PORT4567\"\',\"PORT4568\":\'\"$PORT4568\"\',\"PORT4444\":\'\"$PORT4444\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
     sleep 45; \
   done"
 
 ExecStop=/bin/bash -c " \
   echo \"stopping, removing ${SERVICE}@%i from etcd\"; \
-  etcdctl rm /services/${SERVICE}/${SERVICE}@%i"
+  etcdctl rm /services/${SERVICE}/server/${SERVICE}@%i"
 
 [X-Fleet]
 MachineOf=mysql_galera_metadata@%i.service
