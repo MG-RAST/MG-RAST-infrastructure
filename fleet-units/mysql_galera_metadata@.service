@@ -15,7 +15,7 @@ EnvironmentFile=-/etc/environment
 
 
 # data directory
-Environment='DIR=/media/ephemeral/${SERVICE}-%i'
+Environment='DIR=/media/ephemeral/mysql_galera_metadata'
 Environment='PORT3306=3306'
 Environment='PORT4567=4567'
 Environment='PORT4568=4568'
@@ -27,6 +27,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 # prepare directories
+ExecStartPre=-/usr/bin/rm -rf ${DIR}
 ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
 ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
 
@@ -38,10 +39,6 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 # download docker image
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-# become master if there is none 
-# reset with: /usr/bin/etcdctl set /services/${SERVICE}/initnode none
-ExecStartPre=-/usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}'
-
 
 ExecStartPre=/bin/bash -c "set -x ; \
   export IMAGE=${IMAGE} ; \
@@ -52,15 +49,22 @@ ExecStartPre=/bin/bash -c "set -x ; \
 
 # create arguments for init / follower nodes
 ExecStartPre=/bin/bash -c "set -x ; \
+  export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o "COREOS_PUBLIC_IPV4\":\"[0-9\.]*\"" | grep -o "[0-9\.]*" | tr '\n' ',') ;\
+  if [ x$ACTIVE == "x" ] ; then \
+    echo empty ; \
+    /usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}' ;\
+  else \
+    echo "not empty" ;\
+  fi ; \
   export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode ` ; \
   echo \"INITNODE is $INITNODE\" ; \
   if [ \"$INITNODE x\" = \"${COREOS_PUBLIC_IPV4} x\" ] ; then \
-    echo \"I am initnode\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state initnode ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep-new-cluster\"; \
+    echo \"I am initnode\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/state initnode ; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \" --wsrep-new-cluster\"; \
   else \
     echo \"I am normal node\" ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/state node; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/%i/args \" --wsrep_cluster_address=gcomm://$INITNODE\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/state node; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \" --wsrep_cluster_address=gcomm://$INITNODE,$ACTIVE\"; \
   fi"
 
 
@@ -70,7 +74,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
 ### Start MySQL ###
 
 ExecStart=/bin/bash -c "set -x ; \
-  export COMMAND=`/usr/bin/etcdctl get /services/${SERVICE}/server/%i/args` ; \
+  export COMMAND=`/usr/bin/etcdctl get /services/${SERVICE}/server/${SERVICE}@%i/args` ; \
   echo \"using args: $ARGS\" ; \
   /usr/bin/docker run --name ${CONTAINER} --rm \
     -p ${PORT3306}:3306 \
@@ -84,7 +88,7 @@ ExecStart=/bin/bash -c "set -x ; \
     -v /home/core/mgrast-config/services/mysql_metadata/mysql_galera.cnf:/etc/my.cnf \
     --entrypoint=/bin/bash \
     ${IMAGE} \
-   -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i $COMMAND \""
+   -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i --wsrep_node_address=${COREOS_PUBLIC_IPV4}:${PORT4567} $COMMAND \""
 
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
