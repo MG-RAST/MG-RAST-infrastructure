@@ -68,7 +68,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   else \
     echo \"I am normal node, I wait for other nodes\" ; \
     while [ x$ACTIVE == \"x\" ] ; \
-      do export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\\":\\\"[0-9\.]*\\\"\" | grep -o \"[0-9\.]*\" | tr '\n' ',') ;\
+      do export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\\":\\\"[0-9\.]*\\\"\" | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\" | tr '\n' ',') ;\
       sleep 1 ; \
     done ; \
     /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \"wsrep_cluster_address=gcomm://$ACTIVE\"; \
