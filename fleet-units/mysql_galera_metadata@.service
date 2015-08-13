@@ -63,7 +63,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   echo \"INITNODE is $INITNODE\" ; \
   if [ \"$INITNODE x\" = \"${COREOS_PUBLIC_IPV4} x\" ] ; then \
     echo \"I am initnode\" ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \" --wsrep-new-cluster\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \"wsrep-new-cluster\"; \
     /usr/bin/etcdctl set /services/${SERVICE}/initnode 'lock' ;\
   else \
     echo \"I am normal node, I wait for other nodes\" ; \
@@ -71,7 +71,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
       do export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\\":\\\"[0-9\.]*\\\"\" | grep -o \"[0-9\.]*\" | tr '\n' ',') ;\
       sleep 1 ; \
     done ;
-    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \" --wsrep_cluster_address=gcomm://$ACTIVE\"; \
+    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \"wsrep_cluster_address=gcomm://$ACTIVE\"; \
   fi"
 
 
@@ -95,7 +95,7 @@ ExecStart=/bin/bash -c "set -x ; \
     -v /home/core/mgrast-config/services/mysql_metadata/mysql_galera.cnf:/etc/my.cnf \
     --entrypoint=/bin/bash \
     ${IMAGE} \
-   -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i --wsrep_node_address=${COREOS_PUBLIC_IPV4}:${PORT4567} $COMMAND \""
+   -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i --wsrep_node_address=${COREOS_PUBLIC_IPV4}:${PORT4567} --$COMMAND \""
 
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
