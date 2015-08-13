@@ -13,7 +13,7 @@ Requires=docker.service
 
 
 [Service]
-Environment='CONTAINER=mysql-galera-metadata-%i'
+Environment='CONTAINER=mysql-galera-metadata'
 Environment='IMAGE=mysql-galera'
 Environment='SERVICE=mysql_galera_metadata'
 
