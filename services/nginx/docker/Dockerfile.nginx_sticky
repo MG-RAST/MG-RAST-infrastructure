@@ -2,11 +2,14 @@
 
 FROM ubuntu:14.04
 
-RUN apt-get update && apt-get install -y make git curl gcc software-properties-common libpcre3 libpcre3-dev libssl-dev && \
+RUN apt-get update && \
+    apt-get install -y software-properties-common && \
     add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update && \
-    apt-get install g++-4.9 && \
-    ln -s /usr/bin/gcc /usr/bin/cc
+    apt-get install -y g++-4.9 && \
+    ln -s /usr/bin/gcc-4.9 /usr/bin/gcc && \
+    ln -s /usr/bin/gcc /usr/bin/cc && \
+    apt-get install -y make git curl libpcre3 libpcre3-dev libssl-dev
 
 RUN git clone https://bitbucket.org/nginx-goodies/nginx-sticky-module-ng.git
 
