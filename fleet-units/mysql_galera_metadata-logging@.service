@@ -1,0 +1,14 @@
+[Unit]
+Description=mysql galera server logging
+BindsTo=mysql_galera_metadata@%i.service
+After=mysql_galera_metadata@%i.service
+
+[Service]
+Environment='SERVICE=mysql_galera_metadata'
+
+
+
+ExecStart=/bin/bash -c "/usr/bin/journalctl -u mysql_galera_metadata@2.service -o short-iso -f 2>&1 | awk '{ print \"${SERVICE}@%i\", $0; fflush(); }' | /usr/bin/ncat --udp  log001-mgrast.mcs.anl.gov 514"
+
+[X-Fleet]
+MachineOf=mysql_galera_metadata@%i.service
