@@ -57,7 +57,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
 # create arguments for init / follower nodes
-ExecStartPre=/home/core/mgrast-config/services/mysql_metadata/create_args.sh ${SERVICE} ${COREOS_PUBLIC_IPV4}
+ExecStartPre=/home/core/mgrast-config/services/mysql_metadata/create_args.sh ${SERVICE} ${COREOS_PUBLIC_IPV4} %i
 
 
 
