@@ -1,0 +1,14 @@
+[Unit]
+Description=logging
+Requires=docker.service
+After=docker.service
+
+[Service]
+
+# to prepend tag: | awk '{ print \"${SERVICE}@%i\", $0; fflush(); }'
+
+ExecStart=/bin/bash -c "/usr/bin/journalctl -o short-iso -f 2>&1  | /usr/bin/ncat --udp log001-mgrast.mcs.anl.gov 514"
+
+
+[X-Fleet]
+Global=true
