@@ -3,8 +3,17 @@ Description=mysql galera server
 After=docker.service
 Requires=docker.service
 
+
+
+# Instructions to start fresh empty cluster:
+# > etcdctl rm --recursive /services/mysql_galera_metadata/
+# > etcdctl set /services/mysql_galera_metadata/initnode none
+
+# initnode is a lock that ensures that (only) the first node creates the cluster (avoids split-brain)
+
+
 [Service]
-Environment='CONTAINER=mysql-galera-metadata-%i'
+Environment='CONTAINER=mysql-galera-metadata'
 Environment='IMAGE=mysql-galera'
 Environment='SERVICE=mysql_galera_metadata'
 
@@ -48,26 +57,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
 # create arguments for init / follower nodes
-ExecStartPre=/bin/bash -c "set -x ; \
-  export ACTIVE=$(for X in `etcdctl ls --sort /services/mysql_galera_metadata/server`; do etcdctl get $X/discovery; done | grep -o \"COREOS_PUBLIC_IPV4\\\":\\\"[0-9\.]*\\\"\" | grep -o \"[0-9\.]*\" | tr '\n' ',') ;\
-  echo \"ACTIVE=$ACTIVE\" ; \
-  if [ x$ACTIVE == \"x\" ] ; then \
-    echo \"empty\" ; \
-    /usr/bin/etcdctl set --swap-with-value none /services/${SERVICE}/initnode '${COREOS_PUBLIC_IPV4}' ;\
-  else \
-    echo \"not empty\" ;\
-  fi ; \
-  export INITNODE=`/usr/bin/etcdctl get /services/${SERVICE}/initnode ` ; \
-  echo \"INITNODE is $INITNODE\" ; \
-  if [ \"$INITNODE x\" = \"${COREOS_PUBLIC_IPV4} x\" ] ; then \
-    echo \"I am initnode\" ; /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/state initnode ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \" --wsrep-new-cluster\"; \
-  else \
-    echo \"I am normal node\" ; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/state node; \
-    /usr/bin/etcdctl set /services/${SERVICE}/server/${SERVICE}@%i/args \" --wsrep_cluster_address=gcomm://$INITNODE,$ACTIVE\"; \
-  fi"
-
+ExecStartPre=/home/core/mgrast-config/services/mysql_metadata/create_args.sh ${SERVICE} ${COREOS_PUBLIC_IPV4} %i
 
 
 
@@ -76,7 +66,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
 
 ExecStart=/bin/bash -c "set -x ; \
   export COMMAND=`/usr/bin/etcdctl get /services/${SERVICE}/server/${SERVICE}@%i/args` ; \
-  echo \"using args: $ARGS\" ; \
+  echo \"using args: $COMMAND\" ; \
   /usr/bin/docker run --name ${CONTAINER} --rm \
     -p ${PORT3306}:3306 \
     -p ${PORT4567}:4567 \
