@@ -15,16 +15,16 @@ ExecStart=/bin/bash -c ' \
   export MEM_PREV=""; \
   export CASS_PREV=""; \
   while true; do \
-    export MEM_IPS=$(for X in `etcdctl ls /services/memcached`; do echo \"$(etcdctl get $X)\"; done | sort -u | tr "\n" "," | sed s/.$//); \
-    export CASS_IPS=$(for X in `etcdctl ls /services/cassandra-seed`; do etcdctl get $X; done | grep -o "\"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\"" | sort -u | tr "\n" "," | sed s/.$//); \
+    export MEM_IPS=$(for X in `etcdctl ls /services/memcached`; do echo \\\"$(etcdctl get $X)\\\"; done | sort -u | tr "\n" "," | sed s/.$//); \
+    export CASS_IPS=$(for X in `etcdctl ls /services/cassandra-seed`; do etcdctl get $X; done | grep -o "\\\"[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*\\\"" | sort -u | tr "\n" "," | sed s/.$//); \
     if [ "$MEM_PREV" != "$MEM_IPS" ]; then \
-      echo "new memcached IPs found: $MEM_IPS"
-      sed -i "s/web_memcache = \[.*\]/web_memcache = \[$MEM_IPS\]/" ${CONF}; \
+      echo "new memcached IPs found: $MEM_IPS"; \
+      sed -i "s/web_memcache = \\\[.*\\\]/web_memcache = \\\[$MEM_IPS\\\]/" ${CONF}; \
       MEM_PREV=$MEM_IPS; \
     fi; \
     if [ "$CASS_PREV" != "$CASS_IPS" ]; then \
-      echo "new cassandra-seed IPs found: $MEM_IPS"
-      sed -i "s/cassandra_m5nr = \[.*\]/cassandra_m5nr = \[$CASS_IPS\]/" ${CONF}; \
+      echo "new cassandra-seed IPs found: $MEM_IPS"; \
+      sed -i "s/cassandra_m5nr = \\\[.*\\\]/cassandra_m5nr = \\\[$CASS_IPS\\\]/" ${CONF}; \
       CASS_PREV=$CASS_IPS; \
     fi; \
     sleep 60; \
