@@ -12,5 +12,5 @@ temporarily used ports
 - 80, 8001: awe server
 - 80, 443: api-server
 - 8888, 61620: opscenter
-- 8080: cadvisor
+- 4194: cadvisor
 - 3000: fleetui
