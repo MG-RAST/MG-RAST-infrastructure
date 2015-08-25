@@ -51,7 +51,6 @@ ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Conflicts=mongodb-replica@*.service
-Conflicts=solr-m5nr@*.service
 Conflicts=solr-metagenome@*.service
 MachineMetadata=RAM_GB=39
 MachineMetadata=RAM_GB=47
