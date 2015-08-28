@@ -12,7 +12,12 @@ if [ "$1" = 'cassandra' ]; then
     
     # start agent in background
     datastax-agent
-    sleep 5
+    sleep 10
+    
+    # change log level
+    if [ "$CASSANDRA_LOG_LEVEL" ]; then
+        sed -ri "s/INFO/$CASSANDRA_LOG_LEVEL/" "$CASSANDRA_CONFIG/logback.xml"
+    fi
     
     # check if modified config exists
     if [ -f "$OPTIONAL_CONFIG/cassandra.yaml" ]; then
