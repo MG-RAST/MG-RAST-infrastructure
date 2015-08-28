@@ -267,6 +267,12 @@ write_files:
         stated in this warning.
         
         -----------------------------------------------------------------------------
+    - path: /etc/systemd/journald.conf 
+      permissions: 0644 
+      content: | 
+        [Journal] 
+        SystemMaxUse=20M 
+        RuntimeMaxUse=20M
 # This is the first stage
 coreos:
   units:
