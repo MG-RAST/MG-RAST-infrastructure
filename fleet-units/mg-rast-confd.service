@@ -9,6 +9,7 @@ Environment='IMAGE=mgrast/nginxconfd'
 Environment='SERVICE=mg-rast-confd'
 
 
+TimeoutStartSec=300s
 
 #Restart=always
 EnvironmentFile=-/etc/environment
