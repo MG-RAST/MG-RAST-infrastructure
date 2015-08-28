@@ -1,0 +1,21 @@
+[Unit]
+Description=log-courier 
+Requires=docker.service
+After=docker.service
+
+[Service]
+
+Environment='CONTAINER=log-courier'
+Environment='CONFDIR=/homes/coreos/mgrast-config/${CONTAINER}'
+
+Restart=always
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+
+
+#ExecStartPre=-/usr/bin/docker pull log-courier
+ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logcourier -v${CONFDIR}/lc.conf:/lc.conf -v${CONFDIR}/lc.crt:/lc.crt -i mgrast/log-courier -config=/lc.conf "
+
+
+[X-Fleet]
+Global=true
