@@ -10,6 +10,10 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-nginx/shock -XPUT -
 # mg-rast-confd (note that nginx and confd use the same image)
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-confd/shock -XPUT -d value="shock.metagenomics.anl.gov/node/c474bcd6-dd31-496f-af95-ba000cd3f2ed"
 
+
+# log-courier
+curl -L http://127.0.0.1:4001/v2/keys/service_images/log-courier/shock -XPUT -d value="shock.metagenomics.anl.gov/node/97a227b6-7e0e-49c9-8ca4-4e11b43d7d05"
+
 # mysql_metadata
 curl -L http://127.0.0.1:4001/v2/keys/service_images/mysql_metadata/shock -XPUT -d value="shock.metagenomics.anl.gov/node/25fd3da0-769c-4a10-af0b-13d6659aee56"
 
