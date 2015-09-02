@@ -52,7 +52,7 @@ ExecStart=/bin/bash -c ' \
           if [ "$A" == "$H" ]; then MISSING=0; fi; \
         done; \
         if [ $MISSING -eq 1 ]; then \
-          docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} --authenticationDatabase admin "rs.add(\\"$A\\")"; \
+          docker exec ${CONTAINER} mongo --quiet -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} --authenticationDatabase admin --eval "rs.add(\\"$A\\")"; \
           echo "added $A"; \
         fi; \
       done; \
@@ -62,7 +62,7 @@ ExecStart=/bin/bash -c ' \
           if [ "$A" == "$H" ]; then MISSING=0; fi; \
         done; \
         if [ $MISSING -eq 1 ]; then \
-          docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} --authenticationDatabase admin "rs.remove(\\"$H\\")"; \
+          docker exec ${CONTAINER} mongo --quiet -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} --authenticationDatabase admin --eval "rs.remove(\\"$H\\")"; \
           echo "removed $H"; \
         fi; \
       done; \
