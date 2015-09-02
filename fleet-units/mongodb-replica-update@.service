@@ -40,19 +40,19 @@ ExecStart=/bin/bash -c ' \
     if [ "$PREVIOUS" == "$ACTIVE" ]; then continue; fi; \
     PREVIOUS=$ACTIVE; \
     sleep 10; \
-    PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} "db.isMaster()[\\"ismaster\\"]"); \
+    PRIMARY=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"ismaster\\"]"); \
     if [ "$PRIMARY" == "true" ]; then \
       echo "adding virtual IP $VIRTUAL_IP to primary on ${CONTAINER}"; \
       ip addr add $VIRTUAL_IP/24 brd + dev ${DEVICE}; \
       echo "updating mongodb hosts to primary on ${CONTAINER}"; \
-      export HOSTS=$(docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} "db.isMaster()[\\"hosts\\"]" | tr "," "\n"); \
+      export HOSTS=$(docker exec ${CONTAINER} mongo --quiet --eval "db.isMaster()[\\"hosts\\"]" | tr "," "\n"); \
       for A in $ACTIVE; do \
         MISSING=1; \
         for H in $HOSTS; do \
           if [ "$A" == "$H" ]; then MISSING=0; fi; \
         done; \
         if [ $MISSING -eq 1 ]; then \
-          docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} "rs.add(\\"$A\\")"; \
+          docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} --authenticationDatabase admin "rs.add(\\"$A\\")"; \
           echo "added $A"; \
         fi; \
       done; \
@@ -62,7 +62,7 @@ ExecStart=/bin/bash -c ' \
           if [ "$A" == "$H" ]; then MISSING=0; fi; \
         done; \
         if [ $MISSING -eq 1 ]; then \
-          docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} "rs.remove(\\"$H\\")"; \
+          docker exec ${CONTAINER} mongo --quiet --eval -u ${MONGOD_ADMIN_NAME} -p ${MONGOD_ADMIN_PASS} --authenticationDatabase admin "rs.remove(\\"$H\\")"; \
           echo "removed $H"; \
         fi; \
       done; \

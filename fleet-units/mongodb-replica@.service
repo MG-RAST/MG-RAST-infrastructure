@@ -44,8 +44,8 @@ ExecStart=/bin/bash -c ' \
 #  until [ $STATUS -eq 0 ]; \
 #  do /usr/bin/sleep 1; \
 #  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(rs.initiate({_id:\\"$CHANNEL\\",members:[{_id:0,host:\\"${COREOS_PUBLIC_IPV4}:27017\\"}]}))"; \
-#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(use admin; db.createUser({user:\\"${MONGOD_ADMIN_NAME}\\",pwd:\\"${MONGOD_ADMIN_PASS}\\"}))"; \
-#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(use admin; db.createUser({user:\\"${MONGOD_USER_NAME}\\",pwd:\\"${MONGOD_USER_PASS}\\"}))"; \
+#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(use admin; db.createUser({user:\\"${MONGOD_ADMIN_NAME}\\",pwd:\\"${MONGOD_ADMIN_PASS}\\",roles:[{role:\\"userAdminAnyDatabase\\",db:\\"admin\\"}]}))"; \
+#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(use DBNAME; db.createUser({user:\\"${MONGOD_USER_NAME}\\",pwd:\\"${MONGOD_USER_PASS}\\",roles:[{role:\\"userAdmin\\",db:\\"DBNAME\\"}]}))"; \
 #  STATUS=$?; \
 #  done'
 
