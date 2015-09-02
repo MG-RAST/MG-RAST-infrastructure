@@ -7,11 +7,18 @@ After=docker.service
 Environment='IMAGE=mgrast/log-courier'
 Environment='SERVICE=log-courier'
 Environment='CONTAINER=logcourier'
-Environment='CONFDIR=/home/core/mgrast-config/services/log-courier'
+
+
+
+Environment='SERVICE_DIR=/media/ephemeral/log-courier'
+Environment='CONFDIR=${SERVICE_DIR}/mgrast-config/services/log-courier'
+
+
 
 Restart=always
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@git.mcs.anl.gov:mgrast-config.git'
+
 
 
 # get image
