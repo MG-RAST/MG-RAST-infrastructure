@@ -160,10 +160,11 @@ write_files:
         sed -i 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yml
 
         #fleet metadata:
+        VERSION_ID=`grep VERSION_ID /etc/os-release | grep -o '[0-9]*\.[0-9]*\.[0-9]*'`
         RAM_GB=`awk '/MemTotal/ {printf( "%.0f\n", $2 / (1024*1024) )}' /proc/meminfo`
         CORES=`nproc --all`
         mkdir -p /etc/fleet/        
-        export METADATA="HOSTNAME=${HOSTNAME},ETCD_NAME=${ETCD_NAME},RAM_GB=${RAM_GB},CORES=${CORES}"
+        export METADATA="HOSTNAME=${HOSTNAME},ETCD_NAME=${ETCD_NAME},RAM_GB=${RAM_GB},CORES=${CORES},CoreOS=${VERSION_ID}"
         echo metatadata=\"METADATA=${METADATA}\" >> /etc/fleet/fleet.conf
         sed -i 's/\$METADATA/'${METADATA}'/g' /run/cloud-config.yml
         
