@@ -32,8 +32,6 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 #     then /usr/bin/rm -rf /media/ephemeral/mongodb-$CHANNEL; \
 #   fi'
 
-ExecStartPre=/bin/chmod 600 /home/core/mgrast-config/services/mongod/key-file
-
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
@@ -41,7 +39,7 @@ ExecStartPre=/bin/bash -c ' \
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/docker run --rm --name ${CONTAINER} -v /home/core/mgrast-config/services/mongod/key-file:/keyfile:rw -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} mongod --auth --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL'
+  /usr/bin/docker run --rm --name ${CONTAINER} -v /home/core/mgrast-config/services/mongod/key-file:/keyfile:rw -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --auth --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
 
 #This should only run on primary
 #ExecStartPost=/bin/bash -c ' \
