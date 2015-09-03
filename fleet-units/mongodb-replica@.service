@@ -8,6 +8,7 @@ Wants=mongodb-replica-discovery@%i.service
 Environment='CONTAINER=mongodb-replica-%i'
 Environment='IMAGE=mongo'
 Environment='SERVICE=mongodb-replica'
+Environment='SERVICE_DIR=/media/ephemeral/mongodb'
 
 TimeoutStartSec=0
 Restart=always
@@ -19,7 +20,7 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@git.mcs.anl.gov:mgrast-config.git'
 
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
@@ -39,7 +40,7 @@ ExecStartPre=/bin/bash -c ' \
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/docker run --rm --name ${CONTAINER} -v /home/core/mgrast-config/services/mongod/key-file:/keyfile:rw -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --auth --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
+  /usr/bin/docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod/key-file:/keyfile:rw -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --auth --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
 
 #This should only run on primary
 #ExecStartPost=/bin/bash -c ' \
