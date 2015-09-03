@@ -24,35 +24,25 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-# don't remove dir if no servers running
-# for now do not remove at all
-# ExecStartPre=/bin/bash -c ' \
-#   export CHANNEL=$(echo %i | cut -d . -f 2); \
-#   export NUM=$(/usr/bin/etcdctl ls /services/mongodb-replica/$CHANNEL 2> /dev/null | wc -l); \
-#   if [ $NUM -gt 0 ]; \
-#     then /usr/bin/rm -rf /media/ephemeral/mongodb-$CHANNEL; \
-#   fi'
-
+# set data dir
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
   /usr/bin/chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
 
+# preprocessing: users
+ExecStartPre=/bin/bash -c ' \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod:/config:ro ${IMAGE} bash -c "mongod --dbpath /data/db --fork --logpath /mongod.log; /config/add_users.sh $CHANNEL /config/mongod.users"
+ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
+ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod/key-file:/keyfile:rw -v /media/ephemeral/mongodb-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --auth --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
+  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod/key-file:/keyfile:rw -v ${SERVICE_DIR}-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
 
-#This should only run on primary
-#ExecStartPost=/bin/bash -c ' \
-#  export CHANNEL=$(echo %i | cut -d . -f 2); \
-#  export STATUS=1; \
-#  until [ $STATUS -eq 0 ]; \
-#  do /usr/bin/sleep 1; \
-#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(rs.initiate({_id:\\"$CHANNEL\\",members:[{_id:0,host:\\"${COREOS_PUBLIC_IPV4}:27017\\"}]}))"; \
-#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(use admin; db.createUser({user:\\"${MONGOD_ADMIN_NAME}\\",pwd:\\"${MONGOD_ADMIN_PASS}\\",roles:[{role:\\"root\\",db:\\"admin\\"}]}))"; \
-#  /usr/bin/docker exec ${CONTAINER} mongo --quiet --eval "printjson(use DBNAME; db.createUser({user:\\"${MONGOD_USER_NAME}\\",pwd:\\"${MONGOD_USER_PASS}\\",roles:[{role:\\"dbOwner\\",db:\\"DBNAME\\"}]}))"; \
-#  STATUS=$?; \
-#  done'
+#This should only run on primary after mongo is running
+# docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
