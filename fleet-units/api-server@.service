@@ -18,8 +18,8 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 # get config
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 # mk dirs and clean temp
 ExecStartPre=/bin/mkdir -p ${DIR}/logs/api.metagenomics
@@ -31,16 +31,12 @@ ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
-# config file Conf.pm is copied as it can be edited by update fleet-unit
-ExecStartPre=/usr/bin/rm -rf ${DIR}/conf
-ExecStartPre=/usr/bin/cp -rf /home/core/mgrast-config/services/api-server ${DIR}/conf
-
 # preprocessing: loading
 ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/conf/:/api-server-conf/:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -v ${DIR}/tmp/:/MG-RAST/site/CGI/Tmp/:rw -v /home/core/mgrast-config/services/ssl/:/ssl:ro -p 80 -p 443 ${IMAGE} bash -c "/etc/init.d/postfix start; /bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/mgrast-config/services/api-server/:/api-server-conf/:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -v ${DIR}/tmp/:/MG-RAST/site/CGI/Tmp/:rw -v ${DIR}/mgrast-config/services/ssl/:/ssl:ro -p 80 -p 443 ${IMAGE} bash -c "/etc/init.d/postfix start; /bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
