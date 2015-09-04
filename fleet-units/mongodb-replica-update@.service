@@ -7,14 +7,10 @@ After=mongodb-replica-discovery@%i.service
 Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
 EnvironmentFile=-/etc/environment
-
-Environment='AWE_IP=140.221.76.249'
-Environment='SHOCK_IP=140.221.76.247'
-Environment='TEST_IP=140.221.76.246'
 Environment='DEVICE=enp2s0f0'
 
 # get config
-EnvironmentFile=-/media/ephemeral/mongodb/mgrast-config/services/mongod/mongod.admin
+EnvironmentFile=-/media/ephemeral/mongodb/mgrast-config/services/mongod/mongod.env
 
 # if this is running on primary host, will update it every time change in etcd
 # etcd watch breaks every 45 secs when updated, need to verify that a real change occurred
@@ -24,11 +20,11 @@ EnvironmentFile=-/media/ephemeral/mongodb/mgrast-config/services/mongod/mongod.a
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   if [ "$CHANNEL" == "shock" ]; then \
-    VIRTUAL_IP=${SHOCK_IP}; \
+    VIRTUAL_IP=${SHOCK_FLOAT_IP}; \
   elif [ "$CHANNEL" == "awe" ]; then \
-    VIRTUAL_IP=${AWE_IP}; \
+    VIRTUAL_IP=${AWE_FLOAT_IP}; \
   else \
-    VIRTUAL_IP=${TEST_IP}; \
+    VIRTUAL_IP=${TEST_FLOAT_IP}; \
   fi; \
   export PREVIOUS=""; \
   while true; do \
