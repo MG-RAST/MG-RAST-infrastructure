@@ -28,7 +28,7 @@ ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 
 # create httpd.conf from template
 ExecStartPre=/usr/bin/mkdir -p ${DIR}/httpdconf
-ExecStartPre=${DIR}/mgrast-config/services/web_v3/httpd_conf_create.sh %i ${DIR}/mgrast-config/services/web_v3/httpd.conf_template ${DIR}/httpdconf/httpd.conf
+ExecStartPre=/bin/bash ${DIR}/mgrast-config/services/web_v3/httpd_conf_create.sh %i ${DIR}/mgrast-config/services/web_v3/httpd.conf_template ${DIR}/httpdconf/httpd.conf
 
 # get image
 ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
