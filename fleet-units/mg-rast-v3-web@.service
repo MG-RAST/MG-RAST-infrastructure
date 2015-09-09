@@ -22,23 +22,23 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 # define and clean tmp
-ExecStartPre=/usr/bin/rm -rf ${DIR}/tmp
-ExecStartPre=/usr/bin/mkdir -p ${DIR}/tmp
+ExecStartPre=/bin/rm -rf ${DIR}/tmp
+ExecStartPre=/bin/mkdir -p ${DIR}/tmp
 ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 
 # create httpd.conf from template
-ExecStartPre=/usr/bin/mkdir -p ${DIR}/httpdconf
+ExecStartPre=/bin/mkdir -p ${DIR}/httpdconf
 ExecStartPre=/bin/bash ${DIR}/mgrast-config/services/web_v3/httpd_conf_create.sh %i ${DIR}/mgrast-config/services/web_v3/httpd.conf_template ${DIR}/httpdconf/httpd.conf
 
 # get image
-ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -v ${DIR}/tmp:/MG-RAST/site/CGI/Tmp/:rw  -v ${DIR}/httpdconf:/httpdconf/:ro -v ${DIR}/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/etc/init.d/postfix start; /bin/chmod 600 /config/postgresql/*; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /httpdconf/httpd.conf"
 
-#ExecStartPost=/usr/bin/sleep 5
+#ExecStartPost=/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
 ExecStop=/usr/bin/docker stop ${CONTAINER}
-ExecStop=-/usr/bin/rm -rf ${DIR}
+ExecStop=-/bin/rm -rf ${DIR}
 
 [X-Fleet]
 Conflicts=mg-rast-v3-web@*.service

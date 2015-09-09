@@ -27,8 +27,8 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 # set data dir
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
-  /usr/bin/chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
+  mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
+  chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
 
 # preprocessing: users
 ExecStartPre=/bin/bash -c ' \

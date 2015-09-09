@@ -36,9 +36,9 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 # prepare directories
-ExecStartPre=-/usr/bin/rm -rf ${DIR}
-ExecStartPre=/usr/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
-ExecStartPre=/usr/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
+ExecStartPre=-/bin/rm -rf ${DIR}
+ExecStartPre=/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
+ExecStartPre=/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
 
 
 # remove old container

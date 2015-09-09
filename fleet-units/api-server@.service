@@ -24,12 +24,12 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 # mk dirs and clean temp
 ExecStartPre=/bin/mkdir -p ${DIR}/logs/api.metagenomics
 ExecStartPre=/bin/chmod 777 ${DIR}/logs/api.metagenomics
-ExecStartPre=/usr/bin/rm -rf ${DIR}/tmp
-ExecStartPre=/usr/bin/mkdir -p ${DIR}/tmp
+ExecStartPre=/bin/rm -rf ${DIR}/tmp
+ExecStartPre=/bin/mkdir -p ${DIR}/tmp
 ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 
 # get image
-ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 # preprocessing: loading
 ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh

@@ -22,10 +22,13 @@ ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
+# set dirs
+ExecStartPre=/bin/mkdir -p ${DIR}/logs ${DIR}/data
+
 # get image
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v ${DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/:/mnt/awe/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v ${DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/  ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE}
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
