@@ -26,8 +26,8 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 443:443 -v /home/core/mgrast-config/services/nginx/:/config:ro -v /home/core/mgrast-config/services/ssl/:/ssl:ro -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro ${IMAGE}:latest /usr/sbin/nginx -c /config/nginx.conf

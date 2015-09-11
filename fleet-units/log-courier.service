@@ -25,8 +25,8 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}"
 
 
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER} log-courier
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER} log-courier
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" log-courier
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1" log-courier
 
 #ExecStartPre=-/usr/bin/docker pull log-courier
 ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logcourier -v=${CONFDIR}/lc.conf:/lc.conf -v=${CONFDIR}/lc.crt:/lc.crt -i mgrast/log-courier log-courier --stdin=true -config=/lc.conf "

@@ -14,8 +14,8 @@ Restart=always
 TimeoutStartSec=0
 
 EnvironmentFile=-/etc/environment
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
@@ -33,8 +33,8 @@ ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-
 
 # preprocessing: loading
 ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/data/:/m5nr ${IMAGE} bash /MG-RAST/bin/download_m5nr_blast.sh
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${DIR}/mgrast-config/services/api-server/:/api-server-conf/:rw -v ${DIR}/logs/:/var/log/httpd/:rw -v ${DIR}/data/:/m5nr:ro -v ${DIR}/tmp/:/MG-RAST/site/CGI/Tmp/:rw -v ${DIR}/mgrast-config/services/ssl/:/ssl:ro -p 80 -p 443 ${IMAGE} bash -c "/etc/init.d/postfix start; /bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"
 ExecStop=-/usr/bin/docker stop ${CONTAINER}

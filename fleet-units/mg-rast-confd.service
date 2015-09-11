@@ -15,8 +15,8 @@ TimeoutStartSec=300s
 
 Restart=always
 EnvironmentFile=-/etc/environment
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
 # this fleet unit repsonsible to get the nginx image as well !

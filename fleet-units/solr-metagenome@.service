@@ -8,18 +8,26 @@ Environment='CONTAINER=solr-metagenome-%i'
 Environment='IMAGE=mgrast/solr-metagenome'
 Environment='SERVICE=solr-metagenome'
 
+Environment='SERVICE_DIR=/media/ephemeral/solr-metagenome'
+
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
 Restart=always
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # preprocessing: solr loading
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
-ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER} -v /media/ephemeral/${SERVICE}/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE}:latest /MG-RAST-infrastructure/services/${SERVICE}/run-solr.sh
+
+ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/data/:/mnt -v ${SERVICE_DIR}/mgrast-config:/config -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE}:latest /MG-RAST-infrastructure/services/${SERVICE}/run-solr.sh
 ExecStop=/usr/bin/docker exec ${CONTAINER} /opt/solr/bin/solr stop -p 8983
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
 
