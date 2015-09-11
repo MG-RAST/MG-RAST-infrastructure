@@ -12,7 +12,7 @@ EnvironmentFile=-/etc/environment
 ExecStartPre=/bin/sh -c " \
   while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' )x\" == \"x\" ]; \
   do echo \"port unknown\"; \
-  /usr/bin/sleep 0.1; done"
+  sleep 0.1; done"
 
 ExecStart=/bin/bash -c " \
   export HTTP=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \

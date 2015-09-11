@@ -8,6 +8,7 @@ Wants=%p-discovery@%i.service
 Environment='CONTAINER=mg-rast-v3-web-%i'
 Environment='IMAGE=mgrast/v3-web'
 Environment='SERVICE=mg-rast-v3-web'
+Environment='DIR=/media/ephemeral/%p/%i'
 
 Restart=always
 TimeoutStartSec=0
@@ -17,31 +18,27 @@ ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
 # get config
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 # define and clean tmp
-Environment='TEMP=/media/ephemeral/%p/%i/tmp'
-ExecStartPre=-/usr/bin/rm -rf ${TEMP} ; /usr/bin/mkdir -p ${TEMP} ; /bin/chmod 777 ${TEMP}
-
-Environment='HTTPDCONFDIR=/media/ephemeral/%p/%i/httpdconf'
-
+ExecStartPre=/bin/rm -rf ${DIR}/tmp
+ExecStartPre=/bin/mkdir -p ${DIR}/tmp
+ExecStartPre=/bin/chmod 777 ${DIR}/tmp
 
 # create httpd.conf from template
-ExecStartPre=/usr/bin/mkdir -p ${HTTPDCONFDIR}
-ExecStartPre=/home/core/mgrast-config/services/web_v3/httpd_conf_create.sh %i /home/core/mgrast-config/services/web_v3/httpd.conf_template ${HTTPDCONFDIR}/httpd.conf
+ExecStartPre=/bin/mkdir -p ${DIR}/httpdconf
+ExecStartPre=/bin/bash ${DIR}/mgrast-config/services/web_v3/httpd_conf_create.sh %i ${DIR}/mgrast-config/services/web_v3/httpd.conf_template ${DIR}/httpdconf/httpd.conf
 
 # get image
-ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -v ${DIR}/tmp:/MG-RAST/site/CGI/Tmp/:rw  -v ${DIR}/httpdconf:/httpdconf/:ro -v ${DIR}/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/etc/init.d/postfix start; /bin/chmod 600 /config/postgresql/*; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /httpdconf/httpd.conf"
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80 -v ${TEMP}:/MG-RAST/site/CGI/Tmp/:rw  -v ${HTTPDCONFDIR}:/httpdconf/:ro -v /home/core/mgrast-config/services/web_v3:/config/:rw ${IMAGE}:latest bash -c "/etc/init.d/postfix start; /bin/chmod 600 /config/postgresql/*; /bin/chown daemon:daemon /config/postgresql/* ; /usr/local/apache2/bin/httpd -D FOREGROUND -f /httpdconf/httpd.conf"
-
-#ExecStartPost=/usr/bin/sleep 5
+#ExecStartPost=/bin/sleep 5
 #ExecStartPost=/usr/bin/docker exec ${CONTAINER} bash -c "echo %i > /var/www/html/instance.txt"
 ExecStop=/usr/bin/docker stop ${CONTAINER}
-ExecStop=-/usr/bin/rm -rf /media/ephemeral/%p/%i/
-
+ExecStop=-/bin/rm -rf ${DIR}
 
 [X-Fleet]
 Conflicts=mg-rast-v3-web@*.service

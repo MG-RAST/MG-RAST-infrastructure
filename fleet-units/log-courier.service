@@ -22,7 +22,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 
 
 # get image
-ExecStartPre=/usr/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}"
+ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}"
 
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} log-courier

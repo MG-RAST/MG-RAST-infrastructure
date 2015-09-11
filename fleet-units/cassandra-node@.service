@@ -16,7 +16,7 @@ EnvironmentFile=-/etc/environment
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
-ExecStartPre=/usr/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVICE_DIR}/saved_caches
+ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVICE_DIR}/saved_caches
 
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
@@ -29,7 +29,14 @@ ExecStart=/bin/bash -c ' \
     SEEDS=$(for X in `etcdctl ls /services/cassandra-seed 2> /dev/null`; do etcdctl get $X; done | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | sort -u | tr "\n" "," | sed s/.$//); \
     sleep 1; \
   done; \
-  /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 -v ${SERVICE_DIR}/mgrast-config/services/cassandra:/config:ro -v ${SERVICE_DIR}/data:/var/lib/cassandra/data:rw -v ${SERVICE_DIR}/commitlog:/var/lib/cassandra/commitlog:rw -v ${SERVICE_DIR}/saved_caches:/var/lib/cassandra/saved_caches:rw -e CASSANDRA_SEEDS=$SEEDS -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} -e CASSANDRA_LOG_LEVEL=WARN ${IMAGE} cassandra -f'
+  /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 \
+    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/log4j.properties:/opt/agent/conf/log4j.properties \
+    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/logback.xml:/opt/cassandra/conf/logback.xml \
+    -v ${SERVICE_DIR}/mgrast-config/services/cassandra:/config:ro \
+    -v ${SERVICE_DIR}/data:/var/lib/cassandra/data:rw \
+    -v ${SERVICE_DIR}/commitlog:/var/lib/cassandra/commitlog:rw \
+    -v ${SERVICE_DIR}/saved_caches:/var/lib/cassandra/saved_caches:rw \
+    -e CASSANDRA_SEEDS=$SEEDS -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} ${IMAGE} cassandra -f'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 

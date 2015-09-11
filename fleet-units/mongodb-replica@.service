@@ -27,13 +27,13 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 # set data dir
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  /usr/bin/mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
-  /usr/bin/chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
+  mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
+  chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
 
 # preprocessing: users
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod:/config:ro ${IMAGE} bash -c "mongod --dbpath /data/db --fork --logpath /mongod.log; /config/add_users.sh $CHANNEL /config/mongod.env"
+  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod:/config:ro -v ${SERVICE_DIR}-$CHANNEL:/data/db ${IMAGE} bash -c "mongod --dbpath /data/db --fork --logpath /mongod.log; /config/add_users.sh $CHANNEL /config/mongod.env; mongod --dbpath /data/db --shutdown; sleep 5"'
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
 
@@ -41,7 +41,7 @@ ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod/key-file:/keyfile:rw -v ${SERVICE_DIR}-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
 
-#This should only run on primary after mongo is running
+#This should only run on primary after mongo is running first time
 # docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
 
 ExecStop=-/usr/bin/docker stop ${CONTAINER}
