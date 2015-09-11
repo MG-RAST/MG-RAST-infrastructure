@@ -18,7 +18,7 @@ RUN cd / && \
   git clone https://github.com/MG-RAST/MG-RAST-infrastructure.git && \
   source /MG-RAST-infrastructure/services/solr-metagenome/deployment.cfg && \
   mkdir -p /opt && \
-  curl -s http://apache.mirrors.hoobly.com/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz | tar -zxvf - -C /opt/ && \
+  curl -s http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz | tar -zxvf - -C /opt/ && \
   ln -s /opt/solr-${SOLR_VERSION} /opt/solr
 
 # configure solr
