@@ -42,8 +42,8 @@ ExecStartPre=/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/stag
 
 
 # remove old container
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # download docker image
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}

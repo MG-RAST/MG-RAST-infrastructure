@@ -15,8 +15,8 @@ Restart=always
 
 EnvironmentFile=-/etc/environment
 
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
@@ -34,8 +34,8 @@ ExecStartPre=/bin/bash -c ' \
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod:/config:ro -v ${SERVICE_DIR}-$CHANNEL:/data/db ${IMAGE} bash -c "mongod --dbpath /data/db --fork --logpath /mongod.log; /config/add_users.sh $CHANNEL /config/mongod.env; mongod --dbpath /data/db --shutdown; sleep 5"'
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \

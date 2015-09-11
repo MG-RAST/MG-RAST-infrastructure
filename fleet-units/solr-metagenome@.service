@@ -18,13 +18,13 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 Restart=always
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # preprocessing: solr loading
-ExecStartPre=-/usr/bin/docker kill ${CONTAINER}
-ExecStartPre=-/usr/bin/docker rm ${CONTAINER}
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
 ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/data/:/mnt -v ${SERVICE_DIR}/mgrast-config:/config -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE}:latest /MG-RAST-infrastructure/services/${SERVICE}/run-solr.sh
