@@ -17,6 +17,7 @@ ENV OPTIONAL_CONFIG /config
 RUN apt-get update && \
     apt-get upgrade -y && \
     apt-get install -y curl python software-properties-common && \
+    add-apt-repository ppa:webupd8team/java && \
     apt-get update && \
     apt-get install -y oracle-java8-installer && \
     apt-get clean
