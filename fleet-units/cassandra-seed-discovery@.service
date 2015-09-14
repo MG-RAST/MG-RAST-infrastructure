@@ -4,7 +4,7 @@ BindsTo=cassandra-seed@%i.service
 After=cassandra-seed@%i.service
 
 [Service]
-Environment='CONTAINER=cassandra-seed-%i'
+Environment='CONTAINER=cassandra'
 Environment='SERVICE=cassandra-seed'
 
 EnvironmentFile=-/etc/environment

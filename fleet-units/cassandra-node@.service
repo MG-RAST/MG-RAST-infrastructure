@@ -4,7 +4,7 @@ After=docker.service
 Requires=docker.service
 
 [Service]
-Environment='CONTAINER=cassandra-node-%i'
+Environment='CONTAINER=cassandra'
 Environment='IMAGE=mgrast/cassandra'
 Environment='SERVICE_DIR=/media/ephemeral/cassandra'
 
