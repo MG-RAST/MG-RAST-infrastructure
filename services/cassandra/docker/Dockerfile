@@ -16,11 +16,9 @@ ENV OPTIONAL_CONFIG /config
 # dependencies
 RUN apt-get update && \
     apt-get upgrade -y && \
-    apt-get install -y \
-        curl \
-        python \
-        default-jre \
-        default-jdk && \
+    apt-get install -y curl python software-properties-common && \
+    apt-get update && \
+    apt-get install -y oracle-java8-installer && \
     apt-get clean
 
 RUN mkdir -p /opt /data /bin && \
