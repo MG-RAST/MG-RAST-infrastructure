@@ -5,26 +5,26 @@ After=api-server@%i.service
 Wants=api-server-update@%i.service
 
 [Service]
-Environment='CONTAINER=api-server-%i'
 Environment='SERVICE=api-server'
-
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \
-  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' )x\" == \"x\" ]; \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${SERVICE}-$CHANNEL | tr -d '\n' )x\" == \"x\" ]; \
   do echo \"port unknown\"; \
   sleep 0.1; done"
 
 ExecStart=/bin/bash -c " \
-  export HTTP=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \
-  echo \"port detected: $HTTP\"; \
-  export HTTPS=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"443/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n' ); \
-  echo \"port detected: $HTTPS\"; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
-  while true; \
-  do etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"host\":\"%H\",\"http\":\'\"$HTTP\"\',\"https\":\'\"$HTTPS\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
-  sleep 45; done"
+  export HTTP=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${SERVICE}-$CHANNEL | tr -d '\n' ); \
+  echo \"port detected: $HTTP\"; \
+  export HTTPS=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"443/tcp\") 0).HostPort}}' ${SERVICE}-$CHANNEL | tr -d '\n' ); \
+  echo \"port detected: $HTTPS\"; \
+  while true; do \
+    etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"host\":\"%H\",\"http\":\'\"$HTTP\"\',\"https\":\'\"$HTTPS\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+    sleep 45; \
+  done"
 
 ExecStop=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
