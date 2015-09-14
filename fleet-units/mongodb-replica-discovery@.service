@@ -5,22 +5,21 @@ After=mongodb-replica@%i.service
 Wants=mongodb-replica-update@%i.service
 
 [Service]
-Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
-
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \
-  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"27017/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n')x\" == \"x\" ]; \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"27017/tcp\") 0).HostPort}}' ${SERVICE}-$CHANNEL | tr -d '\n')x\" == \"x\" ]; \
     do echo \"port unknown\"; \
     sleep 0.1; \
   done"
 
 ExecStart=/bin/bash -c " \
-  export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"27017/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
-  echo \"port detected: $PORT\"; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
+  export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"27017/tcp\") 0).HostPort}}' ${SERVICE}-$CHANNEL | tr -d '\n'); \
+  echo \"port detected: $PORT\"; \
   while true; do \
     etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"address\":\"${COREOS_PUBLIC_IPV4}:\'\"$PORT\"\'\",\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
     sleep 45; \

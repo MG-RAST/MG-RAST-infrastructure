@@ -4,7 +4,6 @@ BindsTo=mongodb-replica-discovery@%i.service
 After=mongodb-replica-discovery@%i.service
 
 [Service]
-Environment='CONTAINER=mongodb-replica-%i'
 Environment='SERVICE=mongodb-replica'
 Environment='DIR=/media/ephemeral/mongodb/mgrast-config/services/mongod'
 EnvironmentFile=-/etc/environment
@@ -14,10 +13,10 @@ EnvironmentFile=-/etc/environment
 # 1. update virtual IP - add if primary, remove if not
 # 2. update mongo hosts on primary - add if missing, remove if not in etcd
 
-ExecStart=/bin/bash ${DIR}/update_hosts.sh ${CONTAINER} ${SERVICE} %i ${DIR}/mongod.env
+ExecStart=/bin/bash ${DIR}/update_hosts.sh ${SERVICE} %i ${DIR}/mongod.env
 
 # remove virtual IP on stop, its ok to run 'ip addr del' if doesn't exist
-ExecStop=-/bin/bash ${DIR}/stop_host.sh ${CONTAINER} %i ${DIR}/mongod.env
+ExecStop=-/bin/bash ${DIR}/stop_host.sh ${SERVICE} %i ${DIR}/mongod.env
 
 [X-Fleet]
 MachineOf=mongodb-replica-discovery@%i.service
