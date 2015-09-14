@@ -2,8 +2,8 @@
 
 FROM ubuntu:14.10
 
-ENV CASSANDRA_VERSION 2.1.8
-ENV CASSANDRA_URL http://apache.cs.utah.edu/cassandra/${CASSANDRA_VERSION}/apache-cassandra-${CASSANDRA_VERSION}-bin.tar.gz
+ENV CASSANDRA_VERSION 2.1.9
+ENV CASSANDRA_URL http://apache.mirrors.ionfish.org/cassandra/${CASSANDRA_VERSION}/apache-cassandra-${CASSANDRA_VERSION}-bin.tar.gz
 
 ENV AGENT_VERSION 5.2.0
 ENV AGENT_URL http://downloads.datastax.com/community/datastax-agent-${AGENT_VERSION}.tar.gz
