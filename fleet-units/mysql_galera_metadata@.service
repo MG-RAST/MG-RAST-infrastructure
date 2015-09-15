@@ -28,13 +28,14 @@ Environment='PORT4568=4568'
 Environment='PORT4444=4444'
 
 
+ExecStartPre=-/bin/rm -rf ${SERVICE_DIR}
+
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'set -x ; eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 
 # prepare directories
-ExecStartPre=-/bin/rm -rf ${SERVICE_DIR}
 ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/log/ ${SERVICE_DIR}/data/ ${SERVICE_DIR}/log-bin/ ${SERVICE_DIR}/staging
 ExecStartPre=/bin/chmod 777 ${SERVICE_DIR}/log/ ${SERVICE_DIR}/data/ ${SERVICE_DIR}/log-bin/ ${SERVICE_DIR}/staging
 
