@@ -17,7 +17,7 @@ while getopts i:a:v:r:d: option; do
             a) ALL_IPS=${OPTARG};;
             v) VERSION=${OPTARG};;
             r) REP_NUM=${OPTARG};;
-            o) DATA_DIR=${OPTARG};;
+            d) DATA_DIR=${OPTARG};;
     esac
 done
 
@@ -29,6 +29,11 @@ if [ -z "$REP_NUM" ]; then
 fi
 if [ -z "$DATA_DIR" ]; then
     DATA_DIR="/var/lib/cassandra"
+fi
+
+if [ -z "$MY_IP" ] || [ -z "$ALL_IPS" ]; then
+    echo "Missing IPs"
+    exit 1
 fi
 
 set -x
