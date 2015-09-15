@@ -17,28 +17,26 @@ Environment='CONTAINER=mysql-galera-metadata'
 Environment='IMAGE=mysql-galera'
 Environment='SERVICE=mysql_galera_metadata'
 
+Environment='SERVICE_DIR=/media/ephemeral/mysql_galera_metadata'
+
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
 
-
-
-
-# data directory
-Environment='DIR=/media/ephemeral/mysql_galera_metadata'
 Environment='PORT3306=3306'
 Environment='PORT4567=4567'
 Environment='PORT4568=4568'
 Environment='PORT4444=4444'
 
 
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; if cd /home/core/mgrast-config; then git pull; else cd /home/core/ ; git clone git@git.mcs.anl.gov:mgrast-config.git ; fi'
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 
 # prepare directories
-ExecStartPre=-/bin/rm -rf ${DIR}
-ExecStartPre=/bin/mkdir -p ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
-ExecStartPre=/bin/chmod 777 ${DIR}/log/ ${DIR}/data/ ${DIR}/log-bin/ ${DIR}/staging
+ExecStartPre=-/bin/rm -rf ${SERVICE_DIR}
+ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/log/ ${SERVICE_DIR}/data/ ${SERVICE_DIR}/log-bin/ ${SERVICE_DIR}/staging
+ExecStartPre=/bin/chmod 777 ${SERVICE_DIR}/log/ ${SERVICE_DIR}/data/ ${SERVICE_DIR}/log-bin/ ${SERVICE_DIR}/staging
 
 
 # remove old container
@@ -54,10 +52,10 @@ ExecStartPre=/bin/bash -c "set -x ; \
   export CONTAINER=${CONTAINER} ; \
   export PORT=${PORT3306} ; \
   export DIR=${DIR} ; \
-  /home/core/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
+  ${SERVICE_DIR}/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
 # create arguments for init / follower nodes
-ExecStartPre=/home/core/mgrast-config/services/mysql_metadata/create_args.sh ${SERVICE} ${COREOS_PUBLIC_IPV4} %i
+ExecStartPre=${SERVICE_DIR}/mgrast-config/services/mysql_metadata/create_args.sh ${SERVICE} ${COREOS_PUBLIC_IPV4} %i
 
 
 
@@ -72,11 +70,11 @@ ExecStart=/bin/bash -c "set -x ; \
     -p ${PORT4567}:4567 \
     -p ${PORT4568}:4568 \
     -p ${PORT4444}:4444 \
-    -v ${DIR}/log-bin/:/log-bin/:rw \
-    -v ${DIR}/data/:/var/lib/mysql/:rw \
-    -v ${DIR}/log/:/var/log/mysql/:rw \
-    -v ${DIR}/staging/:/staging:ro \
-    -v /home/core/mgrast-config/services/mysql_metadata/mysql_galera.cnf:/etc/my.cnf \
+    -v ${SERVICE_DIR}/log-bin/:/log-bin/:rw \
+    -v ${SERVICE_DIR}/data/:/var/lib/mysql/:rw \
+    -v ${SERVICE_DIR}/log/:/var/log/mysql/:rw \
+    -v ${SERVICE_DIR}/staging/:/staging:ro \
+    -v ${SERVICE_DIR}/mgrast-config/services/mysql_metadata/mysql_galera.cnf:/etc/my.cnf \
     --entrypoint=/bin/bash \
     ${IMAGE} \
    -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i --wsrep_node_address=${COREOS_PUBLIC_IPV4}:${PORT4567} $COMMAND \""
