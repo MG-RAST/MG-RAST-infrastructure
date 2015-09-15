@@ -51,7 +51,7 @@ ExecStartPre=/bin/bash -c "set -x ; \
   export IMAGE=${IMAGE} ; \
   export CONTAINER=${CONTAINER} ; \
   export PORT=${PORT3306} ; \
-  export DIR=${DIR} ; \
+  export DIR=${SERVICE_DIR} ; \
   ${SERVICE_DIR}/mgrast-config/services/mysql_metadata/mysql_replica_init.sh "
 
 # create arguments for init / follower nodes
