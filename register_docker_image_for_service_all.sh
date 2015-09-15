@@ -64,6 +64,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT
 
 # production services:
 
+# fleetctl start mysql_galera_metadata{,-discovery}@{1,2,3}.service
 # fleetctl start mg-rast-confd.service # global unit that runs on multiple machines
 # fleetctl start mg-rast-nginx@1.service
 # fleetctl start solr-m5nr@1.service
