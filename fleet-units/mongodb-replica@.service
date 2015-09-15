@@ -5,7 +5,7 @@ Requires=docker.service
 Wants=mongodb-replica-discovery@%i.service
 
 [Service]
-Environment='IMAGE=mongo'
+Environment='IMAGE=mongo:3.0.6'
 Environment='SERVICE=mongodb-replica'
 Environment='SERVICE_DIR=/media/ephemeral/mongodb'
 
@@ -21,7 +21,7 @@ ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
-ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # set data dir
 ExecStartPre=/bin/bash -c ' \
