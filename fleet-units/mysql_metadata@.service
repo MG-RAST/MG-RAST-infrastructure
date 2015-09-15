@@ -7,7 +7,7 @@ Requires=docker.service
 Environment='CONTAINER=mysql-metadata-%i'
 Environment='IMAGE=mysql/mysql-server'
 Environment='SERVICE=mysql_metadata'
-Environment='DIR=/media/ephemeral/mysql-metadata-%i'
+Environment='DIR=/media/ephemeral/mysql_metadata-%i'
 
 Environment='VIRTUAL_IP=140.221.76.248'
 Environment='DEVICE=enp2s0f0'
