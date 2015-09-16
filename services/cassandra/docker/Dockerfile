@@ -12,6 +12,7 @@ ENV AGENT_BIN /opt/agent/bin
 ENV CASSANDRA_HOME /opt/cassandra
 ENV CASSANDRA_BIN ${CASSANDRA_HOME}/bin
 ENV CASSANDRA_CONFIG ${CASSANDRA_HOME}/conf
+ENV OPTIONAL_CONFIG /config
 
 # dependencies
 RUN apt-get update && \

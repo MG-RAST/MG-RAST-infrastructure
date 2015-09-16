@@ -30,7 +30,7 @@ ExecStart=/bin/bash -c ' \
   /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 \
   -v ${SERVICE_DIR}/mgrast-config/services/cassandra/log4j.properties:/opt/agent/conf/log4j.properties \
   -v ${SERVICE_DIR}/mgrast-config/services/cassandra/logback.xml:/opt/cassandra/conf/logback.xml \
-  -v ${SERVICE_DIR}/mgrast-config/services/cassandra/cassandra.yaml:/opt/cassandra/conf/cassandra.yaml \
+  -v ${SERVICE_DIR}/mgrast-config/services/cassandra:/config:ro \
   -v ${SERVICE_DIR}/mgrast-config/services/cassandra/address.yaml:/opt/agent/conf/address.yaml \
   -v ${SERVICE_DIR}/data:/var/lib/cassandra/data:rw \
   -v ${SERVICE_DIR}/commitlog:/var/lib/cassandra/commitlog:rw \
