@@ -47,14 +47,8 @@ ExecStart=/bin/bash -c ' \
 ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker stop ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 
 [X-Fleet]
-MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker12-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker7-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker8-10g.mcs.anl.gov
-#Conflicts=mongodb-replica@*.service
-#Conflicts=solr-metagenome@*.service
-#MachineMetadata=RAM_GB=39
-#MachineMetadata=RAM_GB=47
-#MachineMetadata=RAM_GB=71
+Conflicts=mongodb-replica@*.service
+Conflicts=solr-metagenome@*.service
+MachineMetadata=RAM_GB=39
+MachineMetadata=RAM_GB=47
+MachineMetadata=RAM_GB=71
