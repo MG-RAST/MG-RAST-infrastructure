@@ -10,16 +10,8 @@ ENV AGENT_URL http://downloads.datastax.com/community/datastax-agent-${AGENT_VER
 
 ENV AGENT_BIN /opt/agent/bin
 ENV CASSANDRA_HOME /opt/cassandra
-ENV CASSANDRA_BIN /opt/cassandra/bin
-ENV CASSANDRA_CONFIG /opt/cassandra/conf
-
-# change memory lock / address space limit
-RUN awk '/# End of file/{print "root\thard\tmemlock\tunlimited"}1' /etc/security/limits.conf > tmp.file.1 && \
-    awk '/# End of file/{print "root\thard\tas\tunlimited"}1' tmp.file.1 > tmp.file.2 && \
-    rm -f tmp.file.1 && \
-    mv tmp.file.2 /etc/security/limits.conf && \
-    echo "vm.max_map_count = 131072" | cat /etc/sysctl.conf - > tmp.file && \
-    mv tmp.file /etc/sysctl.conf
+ENV CASSANDRA_BIN ${CASSANDRA_HOME}/bin
+ENV CASSANDRA_CONFIG ${CASSANDRA_HOME}/conf
 
 # dependencies
 RUN apt-get update && \
@@ -31,6 +23,14 @@ RUN apt-get update && \
     echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections && \
     apt-get install -y oracle-java8-installer && \
     apt-get clean
+
+# change memory lock / address space limit
+RUN awk '/# End of file/{print "root\thard\tmemlock\tunlimited"}1' /etc/security/limits.conf > tmp.file.1 && \
+    awk '/# End of file/{print "root\thard\tas\tunlimited"}1' tmp.file.1 > tmp.file.2 && \
+    rm -f tmp.file.1 && \
+    mv tmp.file.2 /etc/security/limits.conf && \
+    echo "vm.max_map_count = 131072" | cat /etc/sysctl.conf - > tmp.file && \
+    mv tmp.file /etc/sysctl.conf
 
 RUN mkdir -p /opt /data /bin && \
     cd /bin && \
