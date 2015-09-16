@@ -26,7 +26,7 @@ ExecStartPre=/bin/bash -c "mkdir -p ${DIR}/conf.d && echo \"SetEnv V4URL $(echo 
 # get image
 ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
-ExecStart=/bin/bash -c ' \
+ExecStart=/bin/bash -c 'set -x ; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${CONFD}:/conf.d/:ro -v ${DIR}/mgrast-config/services/web_v4:/config/:rw ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
 
