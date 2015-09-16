@@ -19,7 +19,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8888:8888 -p 61620:61620 ${IMAGE} /opt/opscenter/bin/opscenter -f
 
-ExecStop=-/usr/bin/docker stop ${CONTAINER}
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov

@@ -31,7 +31,7 @@ ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/sbin/arping -A -c 2 -I $
 
 
 ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
-ExecStop=-/usr/bin/docker stop ${CONTAINER}
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 #MachineID=
