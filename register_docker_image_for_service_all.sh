@@ -93,6 +93,7 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT
 # fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 # fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web-dev.service
 # fleetctl start mg-rast-v3-web{,-discovery}@1.v3-web-dev.service
+# fleetctl start api-server{,-discovery,-update}@1.api-dev.service
 # fleetctl start cadvisor.service
 # fleetctl start opscenter@1.service
 # fleetctl start fleetui@.1.service
