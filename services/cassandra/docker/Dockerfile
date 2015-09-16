@@ -9,9 +9,17 @@ ENV AGENT_VERSION 5.2.0
 ENV AGENT_URL http://downloads.datastax.com/community/datastax-agent-${AGENT_VERSION}.tar.gz
 
 ENV AGENT_BIN /opt/agent/bin
+ENV CASSANDRA_HOME /opt/cassandra
 ENV CASSANDRA_BIN /opt/cassandra/bin
 ENV CASSANDRA_CONFIG /opt/cassandra/conf
-ENV OPTIONAL_CONFIG /config
+
+# change memory lock / address space limit
+RUN awk '/# End of file/{print "root\thard\tmemlock\tunlimited"}1' /etc/security/limits.conf > tmp.file.1 && \
+    awk '/# End of file/{print "root\thard\tas\tunlimited"}1' tmp.file.1 > tmp.file.2 && \
+    rm -f tmp.file.1 && \
+    mv tmp.file.2 /etc/security/limits.conf && \
+    echo "vm.max_map_count = 131072" | cat /etc/sysctl.conf - > tmp.file && \
+    mv tmp.file /etc/sysctl.conf
 
 # dependencies
 RUN apt-get update && \
@@ -35,10 +43,7 @@ RUN curl -s $CASSANDRA_URL | tar -zxvf - -C /opt && \
     ln -s /opt/apache-cassandra-${CASSANDRA_VERSION} /opt/cassandra
 
 RUN curl -s $AGENT_URL | tar -zxvf - -C /opt && \
-    ln -s /opt/datastax-agent-${AGENT_VERSION} /opt/agent && \
-    cd /opt/agent/conf && \
-    rm -f address.yaml && \
-    curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/opscenter/address.yaml
+    ln -s /opt/datastax-agent-${AGENT_VERSION} /opt/agent
 
 VOLUME /var/lib/cassandra
 

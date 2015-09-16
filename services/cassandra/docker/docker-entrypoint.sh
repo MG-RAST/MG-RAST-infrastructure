@@ -19,11 +19,6 @@ if [ "$1" = 'cassandra' ]; then
         sed -ri "s/INFO/$CASSANDRA_LOG_LEVEL/" "$CASSANDRA_CONFIG/logback.xml"
     fi
     
-    # check if modified config exists
-    if [ -f "$OPTIONAL_CONFIG/cassandra.yaml" ]; then
-        cp "$OPTIONAL_CONFIG/cassandra.yaml" "$CASSANDRA_CONFIG/cassandra.yaml"
-    fi
-    
 	# TODO detect if this is a restart if necessary
 	: ${CASSANDRA_LISTEN_ADDRESS='auto'}
 	if [ "$CASSANDRA_LISTEN_ADDRESS" = 'auto' ]; then
