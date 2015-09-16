@@ -7,7 +7,7 @@ Wants=%p-discovery@%i.service
 [Service]
 Environment='IMAGE=mgrast/v4-web'
 Environment='SERVICE=mg-rast-v4-web'
-Environment='DIR=/media/ephemeral/%p/%i'
+Environment='SERVICE_DIR=/media/ephemeral/%p/%i'
 
 Restart=always
 TimeoutStartSec=0
@@ -18,20 +18,20 @@ ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/
 
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 # Set v4url.confd
-ExecStartPre=/bin/bash -c "mkdir -p ${DIR}/conf.d && echo \"SetEnv V4URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${DIR}/conf.d/v4url.conf"
+ExecStartPre=/bin/bash -c "mkdir -p ${SERVICE_DIR}/conf.d && echo \"SetEnv V4URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${SERVICE_DIR}/conf.d/v4url.conf"
 
 # get image
 ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 
 ExecStart=/bin/bash -c 'set -x ; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${CONFD}:/conf.d/:ro -v ${DIR}/mgrast-config/services/web_v4:/config/:rw ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND'
+  docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${SERVICE_DIR}/conf.d/:/conf.d/:ro -v ${SERVICE_DIR}/mgrast-config/services/web_v4:/config/:rw ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND'
 
 ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker stop ${SERVICE}-$CHANNEL > /dev/null 2>&1"
-ExecStop=-/bin/rm -rf ${DIR}
+ExecStop=-/bin/rm -rf ${SERVICE_DIR}
 
 [X-Fleet]
 Conflicts=mg-rast-v4-web@*.service
