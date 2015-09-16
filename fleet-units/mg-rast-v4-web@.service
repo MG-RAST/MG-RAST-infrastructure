@@ -28,7 +28,7 @@ ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-
 
 ExecStart=/bin/bash -c 'set -x ; \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${CONFD}:/conf.d/:ro -v ${DIR}/mgrast-config/services/web_v4:/config/:rw ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND
+  docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${CONFD}:/conf.d/:ro -v ${DIR}/mgrast-config/services/web_v4:/config/:rw ${IMAGE}:latest /usr/sbin/apache2ctl -D FOREGROUND'
 
 ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker stop ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${DIR}
