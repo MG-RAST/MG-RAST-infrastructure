@@ -25,14 +25,6 @@ RUN apt-get update && \
     apt-get install -y oracle-java8-installer && \
     apt-get clean
 
-# change memory lock / address space limit
-RUN awk '/# End of file/{print "root\thard\tmemlock\tunlimited"}1' /etc/security/limits.conf > tmp.file.1 && \
-    awk '/# End of file/{print "root\thard\tas\tunlimited"}1' tmp.file.1 > tmp.file.2 && \
-    rm -f tmp.file.1 && \
-    mv tmp.file.2 /etc/security/limits.conf && \
-    echo "vm.max_map_count = 131072" | cat /etc/sysctl.conf - > tmp.file && \
-    mv tmp.file /etc/sysctl.conf
-
 RUN mkdir -p /opt /data /bin && \
     cd /bin && \
     curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/load-cassandra-m5nr.sh && \
