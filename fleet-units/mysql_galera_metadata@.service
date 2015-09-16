@@ -81,7 +81,7 @@ ExecStart=/bin/bash -c "set -x ; \
    -c \"chmod -R 777 /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; chown -R mysql:mysql /var/log/mysql/ /log-bin/ /var/lib/mysql/ ; mysqld  --wsrep_node_name=%i --wsrep_node_address=${COREOS_PUBLIC_IPV4}:${PORT4567} $COMMAND \""
 
 
-ExecStop=-/usr/bin/docker stop ${CONTAINER}
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 Conflicts=mysql_galera_metadata@*.service

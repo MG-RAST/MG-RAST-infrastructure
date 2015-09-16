@@ -30,7 +30,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v ${DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/  ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE}
 
-ExecStop=-/usr/bin/docker stop ${CONTAINER}
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
