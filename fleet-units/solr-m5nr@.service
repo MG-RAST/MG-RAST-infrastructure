@@ -5,28 +5,33 @@ Requires=docker.service
 Wants=%p-discovery@%i.service
 
 [Service]
-# service name:   solr-m5nr
-# image name:     mgrast/solr-m5nr
 Environment='CONTAINER=solr-m5nr'
+Environment='IMAGE=mgrast/solr-m5nr'
+Environment='SERVICE_DIR=/media/ephemeral/solr-m5nr'
+Environment='SERVICE_BIN=/MG-RAST-infrastructure/services/solr-m5nr'
 
 Restart=always
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
+
 ExecStartPre=-/usr/bin/docker kill ${CONTAINER} 
 ExecStartPre=-/usr/bin/docker rm ${CONTAINER} 
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:solr-m5nr
 
+ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}
+ExecStartPre=/bin/chattr -R +C ${SERVICE_DIR}
+
 # preprocessing: solr loading
-ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/solr-m5nr/:/mnt mgrast/solr-m5nr:latest /MG-RAST-infrastructure/services/solr-m5nr/download-solr-index.sh
+ExecStartPre=/usr/bin/docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}:/mnt ${IMAGE} ${SERVICE_BIN}/download-solr-index.sh
 ExecStartPre=-/usr/bin/docker kill solr-m5nr
 ExecStartPre=-/usr/bin/docker rm solr-m5nr
 
+#ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE} bash -c 'cd /MG-RAST-infrastructure/ && git pull && cd services/solr-m5nr && ${SERVICE_BIN}/setup-m5nr-core.sh && ${SERVICE_BIN}/run-solr.sh'
 
-#ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER} -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 mgrast/solr-m5nr:latest bash -c 'cd /MG-RAST-infrastructure/ && git pull && cd services/solr-m5nr && /MG-RAST-infrastructure/services/solr-m5nr/setup-m5nr-core.sh && /MG-RAST-infrastructure/services/solr-m5nr/run-solr.sh'
-ExecStart=/usr/bin/docker    run --rm --name ${CONTAINER} -v /media/ephemeral/solr-m5nr/:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 mgrast/solr-m5nr:latest /MG-RAST-infrastructure/services/solr-m5nr/run-solr.sh
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --ulimit memlock=-1:-1 --ulimit nofile=100000:100000 --ulimit nproc=-1:-1 -v ${SERVICE_DIR}:/mnt -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE} ${SERVICE_BIN}/run-solr.sh
+
 ExecStop=/usr/bin/docker exec ${CONTAINER} /opt/solr/bin/solr stop -p 8983
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
-
 
 [X-Fleet]
 MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov
