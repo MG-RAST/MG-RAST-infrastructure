@@ -21,7 +21,7 @@ This starts two instances of a service together with their discovery units.
 
 When you restart a service that you stopped earlier, it will be started on the same machine.
 
-## Destroy service:
+### Destroy service:
 
 When you stop a service, the fleet unit definition is still loaded. To remove it, e.g. because you have a newer version that you want to use instead, run:
 
