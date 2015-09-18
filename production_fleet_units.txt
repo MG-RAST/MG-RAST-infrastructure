@@ -35,4 +35,4 @@ Before starting any fleet units in new cluster, configure etcd:
 
 # fleetctl start cadvisor.service
 # fleetctl start opscenter@1.service
-# fleetctl start fleetui@.1.service
+# fleetctl start fleetui@1.service
