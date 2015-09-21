@@ -1,0 +1,88 @@
+--- 
+repositories: 
+  mgrast/v3-web: 
+    tags: 
+      latest: 
+        branch: master
+        dockerfile: dockerfiles/web/Dockerfile
+        repository: "https://github.com/MG-RAST/MG-RAST.git"
+      develop: 
+        branch: develop
+        dockerfile: dockerfiles/web/Dockerfile
+        repository: "https://github.com/MG-RAST/MG-RAST.git"
+  mgrast/api:
+    tags:
+      latest:
+        branch: master
+        dockerfile: dockerfiles/api/Dockerfile
+        repository: "https://github.com/MG-RAST/MG-RAST.git"
+  mgrast/nginxconfd:
+    tags:
+      latest:
+        branch: master
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        dockerfile: services/nginx/docker/Dockerfile
+  mgrast/mongodb:
+    tags:
+      2.4.14:
+        branch: master
+        repository: "https://github.com/MG-RAST/AWE.git"
+        dockerfile: dockerfiles/mongodb/2.4.14/Dockerfile
+      2.6.0:
+        branch: master
+        repository: "https://github.com/MG-RAST/AWE.git"
+        dockerfile: dockerfiles/mongodb/2.6.0/Dockerfile
+  mgrast/awe:
+    tags:
+      latest:
+        branch: master
+        repository: "https://github.com/MG-RAST/AWE.git"
+        dockerfile: dockerfiles/awe/Dockerfile
+  mgrast/cassandra:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/cassandra/docker/Dockerfile
+  mgrast/log-courier:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/log-courier/docker/Dockerfile
+  mgrast/memcached:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/memcached/docker/Dockerfile
+  mgrast/v4-web:      
+    tags:
+      latest:
+        repository: "https://github.com/wgerlach/MG-RASTv4.git"
+        branch: master
+        dockerfile: docker/Dockerfile
+  mysql-galera:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/mysql-galera/docker/Dockerfile
+  mgrast/opscenter:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/opscenter/docker/Dockerfile
+  mgrast/solr-m5nr:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/solr-m5nr/docker/Dockerfile
+  mgrast/solr-metagenome:
+    tags:
+      latest:
+        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+        branch: master
+        dockerfile: services/solr-metagenome/docker/Dockerfile

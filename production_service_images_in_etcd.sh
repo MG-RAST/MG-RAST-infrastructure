@@ -62,38 +62,3 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d va
 # mongo replica
 #curl -L http://127.0.0.1:4001/v2/keys/service_images/mongodb-replica/shock -XPUT -d value="shock.metagenomics.anl.gov/node/7426ffca-9554-4412-98a2-d392ada8a2c7"
 
-# production services:
-
-# fleetctl start mysql_galera_metadata{,-discovery}@{1,2,3}.service
-# fleetctl start mg-rast-confd.service # global unit that runs on multiple machines
-# fleetctl start mg-rast-nginx@1.service
-# fleetctl start solr-m5nr@1.service
-# fleetctl start solr-metagenome@1.service
-# fleetctl start mongodb-replica{,-discovery}@1.shock.service
-#### manualy set / load primary node before starting update service
-# docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
-# fleetctl start mongodb-replica-update@1.shock.service
-# fleetctl start mongodb-replica{,-discovery,-update}@{2,3}.shock.service
-# fleetctl start mongodb-replica{,-discovery}@1.awe.service
-#### manualy set / load primary node before starting update service
-# docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
-# fleetctl start mongodb-replica-update@1.awe.service
-# fleetctl start mongodb-replica{,-discovery,-update}@{2,3}.awe.service
-# fleetctl start awe-server{,-discovery}@1.service
-# fleetctl start mysql_metadata@1.service
-# fleetctl start memcached.service # global unit that runs on multiple machines
-# fleetctl start memcached-discovery.service # global unit that runs on multiple machines
-# fleetctl start cassandra-seed{,-discovery}@{1,2}.service
-# fleetctl start cassandra-node@{1,2,3,4,5,6}.service
-# fleetctl start api-server{,-discovery,-update}@{1,2,3}.api.service
-# fleetctl start mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
-
-# develop services:
-
-# fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
-# fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web-dev.service
-# fleetctl start mg-rast-v3-web{,-discovery}@1.v3-web-dev.service
-# fleetctl start api-server{,-discovery,-update}@1.api-dev.service
-# fleetctl start cadvisor.service
-# fleetctl start opscenter@1.service
-# fleetctl start fleetui@.1.service
