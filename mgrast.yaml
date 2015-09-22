@@ -11,17 +11,11 @@ repositories:
         dockerfile: dockerfiles/web/Dockerfile
         repository: "https://github.com/MG-RAST/MG-RAST.git"
   mgrast/api:
-    tags:
-      latest:
-        branch: master
-        dockerfile: dockerfiles/api/Dockerfile
-        repository: "https://github.com/MG-RAST/MG-RAST.git"
+    dockerfile: dockerfiles/api/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST.git"
   mgrast/nginxconfd:
-    tags:
-      latest:
-        branch: master
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        dockerfile: services/nginx/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    dockerfile: services/nginx/docker/Dockerfile
   mgrast/mongodb:
     tags:
       2.4.14:
@@ -33,11 +27,12 @@ repositories:
         repository: "https://github.com/MG-RAST/AWE.git"
         dockerfile: dockerfiles/mongodb/2.6.0/Dockerfile
   mgrast/awe:
+    repository: "https://github.com/MG-RAST/AWE.git"
+    dockerfile: dockerfiles/awe/Dockerfile
     tags:
-      latest:
-        branch: master
-        repository: "https://github.com/MG-RAST/AWE.git"
-        dockerfile: dockerfiles/awe/Dockerfile
+      wgerlach:
+        repository: "https://github.com/wgerlach/AWE.git"
+        dockerfile: Dockerfile
   mgrast/cassandra:
     tags:
       latest:
