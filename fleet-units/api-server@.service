@@ -7,7 +7,7 @@ Wants=api-server-discovery@%i.service
 [Service]
 Environment='IMAGE=mgrast/api'
 Environment='SERVICE=api-server'
-Environment='DIR=/media/ephemeral/api-server-%i'
+Environment='SERVICE_DIR=/media/ephemeral/api-server-%i'
 
 Restart=always
 TimeoutStartSec=0
