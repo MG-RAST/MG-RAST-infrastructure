@@ -46,38 +46,26 @@ repositories:
         branch: master
         dockerfile: services/log-courier/docker/Dockerfile
   mgrast/memcached:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/memcached/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/memcached/docker/Dockerfile
   mgrast/v4-web:      
-    tags:
-      latest:
-        repository: "https://github.com/wgerlach/MG-RASTv4.git"
-        branch: master
-        dockerfile: docker/Dockerfile
+    repository: "https://github.com/wgerlach/MG-RASTv4.git"
+    branch: master
+    dockerfile: docker/Dockerfile
   mysql-galera:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/mysql-galera/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/mysql-galera/docker/Dockerfile
   mgrast/opscenter:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/opscenter/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/opscenter/docker/Dockerfile
   mgrast/solr-m5nr:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/solr-m5nr/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/solr-m5nr/docker/Dockerfile
   mgrast/solr-metagenome:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/solr-metagenome/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/solr-metagenome/docker/Dockerfile
