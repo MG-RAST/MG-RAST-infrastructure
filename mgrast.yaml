@@ -29,6 +29,7 @@ repositories:
   mgrast/awe:
     repository: "https://github.com/MG-RAST/AWE.git"
     dockerfile: dockerfiles/awe/Dockerfile
+    recursive: true
     tags:
       wgerlach:
         repository: "https://github.com/wgerlach/AWE.git"
