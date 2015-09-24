@@ -1,11 +1,10 @@
 --- 
 repositories: 
   mgrast/v3-web: 
+    branch: master
+    dockerfile: dockerfiles/web/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST.git"
     tags: 
-      latest: 
-        branch: master
-        dockerfile: dockerfiles/web/Dockerfile
-        repository: "https://github.com/MG-RAST/MG-RAST.git"
       develop: 
         branch: develop
         dockerfile: dockerfiles/web/Dockerfile
@@ -17,6 +16,9 @@ repositories:
     repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
     dockerfile: services/nginx/docker/Dockerfile
   mgrast/mongodb:
+    branch: master
+    repository: "https://github.com/MG-RAST/AWE.git"
+    dockerfile: dockerfiles/mongodb/2.6.0/Dockerfile
     tags:
       2.4.14:
         branch: master
@@ -35,17 +37,13 @@ repositories:
         repository: "https://github.com/wgerlach/AWE.git"
         dockerfile: Dockerfile
   mgrast/cassandra:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/cassandra/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/cassandra/docker/Dockerfile
   mgrast/log-courier:
-    tags:
-      latest:
-        repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
-        branch: master
-        dockerfile: services/log-courier/docker/Dockerfile
+    repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
+    branch: master
+    dockerfile: services/log-courier/docker/Dockerfile
   mgrast/memcached:
     repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
     branch: master
@@ -70,3 +68,6 @@ repositories:
     repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
     branch: master
     dockerfile: services/solr-metagenome/docker/Dockerfile
+  mgrast/dockbuild:
+    repository: "https://github.com/MG-RAST/dockbuild.git"
+    dockerfile: Dockerfile
