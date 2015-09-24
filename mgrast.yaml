@@ -68,3 +68,6 @@ repositories:
     repository: "https://github.com/MG-RAST/MG-RAST-infrastructure.git"
     branch: master
     dockerfile: services/solr-metagenome/docker/Dockerfile
+  mgrast/dockbuild:
+    repository: "https://github.com/MG-RAST/dockbuild.git"
+    dockerfile: Dockerfile
