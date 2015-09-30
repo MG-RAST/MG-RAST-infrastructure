@@ -8,7 +8,7 @@ TARGET=/srv/www/html/coreos/
 TEMPLATE_DIR=~/MG-RAST-infrastructure/cloud-config/
 CONFIG=~/mgrast-config/
 
-TEMPLATE=${TEMPLATE_DIR}cloud-config-pxe.yml.template
+TEMPLATE=${TEMPLATE_DIR}cloud-config-pxe.yaml.template
 
 for i in ${TEMPLATE_DIR} ${CONFIG} ; do 
   cd ${i}
@@ -26,4 +26,6 @@ PRIVATE_KEY=$(sed 's/^/        /' ${CONFIG}ssh_key/mgrast_coreos.pem | sed ':a;N
 
 
 
-sed -e "s;%ssh_authorized_keys%;${PUBLIC_KEYS};g" -e "s;%network_interface%;${NETWORK_INTERFACE};g" -e "s;%discovery_token%;${DISCOVERY_TOKEN};g" -e "s;%config_private_ssh_key%;${PRIVATE_KEY};g" ${TEMPLATE} > ${TARGET}cloud-config-pxe.yml
+sed -e "s;%ssh_authorized_keys%;${PUBLIC_KEYS};g" -e "s;%network_interface%;${NETWORK_INTERFACE};g" -e "s;%discovery_token%;${DISCOVERY_TOKEN};g" -e "s;%config_private_ssh_key%;${PRIVATE_KEY};g" ${TEMPLATE} > ${TARGET}cloud-config-pxe.yaml
+
+chmod 664 ${TARGET}cloud-config-pxe.yaml

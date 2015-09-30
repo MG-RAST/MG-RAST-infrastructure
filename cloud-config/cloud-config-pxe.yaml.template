@@ -13,7 +13,7 @@ ssh_authorized_keys:
 %ssh_authorized_keys%
 
 write_files:
-    - path: /run/cloud-config.yml
+    - path: /run/cloud-config.yaml
       permissions: '0644'
       content: |
         #cloud-config
@@ -155,9 +155,9 @@ write_files:
 
         ETCD_NAME=node_$(get_mac %network_interface%)
         echo ETCD_NAME=${ETCD_NAME} >> $ENV
-        #sed 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yml > /tmp/cconfigtmp
-        #mv /tmp/cconfigtmp /run/cloud-config.yml
-        sed -i 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yml
+        #sed 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yaml > /tmp/cconfigtmp
+        #mv /tmp/cconfigtmp /run/cloud-config.yaml
+        sed -i 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yaml
 
         #fleet metadata:
         VERSION_ID=`grep VERSION_ID /etc/os-release | grep -o '[0-9]*\.[0-9]*\.[0-9]*'`
@@ -166,12 +166,12 @@ write_files:
         mkdir -p /etc/fleet/        
         export METADATA="HOSTNAME=${HOSTNAME},ETCD_NAME=${ETCD_NAME},RAM_GB=${RAM_GB},CORES=${CORES},CoreOS=${VERSION_ID}"
         echo metatadata=\"METADATA=${METADATA}\" >> /etc/fleet/fleet.conf
-        sed -i 's/\$METADATA/'${METADATA}'/g' /run/cloud-config.yml
+        sed -i 's/\$METADATA/'${METADATA}'/g' /run/cloud-config.yaml
         
         # md0 or md127
         export RAID_DEVICE=`cat /proc/mdstat | grep active | cut -f 1 -d ' '`
 
-        sed -i 's/\${RAID_DEVICE}/'${RAID_DEVICE}'/g' /run/cloud-config.yml
+        sed -i 's/\${RAID_DEVICE}/'${RAID_DEVICE}'/g' /run/cloud-config.yaml
 
         # wait for array partitions
 
@@ -218,10 +218,10 @@ write_files:
       content: |
         #!/bin/bash
         
-        sed 's/\$_private/$private/g' /run/cloud-config.yml > /tmp/cconfigtmp
+        sed 's/\$_private/$private/g' /run/cloud-config.yaml > /tmp/cconfigtmp
         sed -i 's/\$_public/$public/g'  /tmp/cconfigtmp
         
-        mv /tmp/cconfigtmp /run/cloud-config.yml
+        mv /tmp/cconfigtmp /run/cloud-config.yaml
     - path: /home/core/.toolboxrc
       owner: core
       content: |
@@ -320,5 +320,5 @@ coreos:
         Type=oneshot
         RemainAfterExit=yes
         EnvironmentFile=/etc/environment
-        ExecStart=/usr/bin/coreos-cloudinit --from-file=/run/cloud-config.yml
+        ExecStart=/usr/bin/coreos-cloudinit --from-file=/run/cloud-config.yaml
 
