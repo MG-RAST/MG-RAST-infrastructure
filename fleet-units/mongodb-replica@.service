@@ -20,7 +20,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/$CHANNEL/mgrast-config; mkdir -p ${SERVICE_DIR}/$CHANNEL; cd ${SERVICE_DIR}/$CHANNEL; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 #ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
@@ -33,14 +33,14 @@ ExecStartPre=/bin/bash -c ' \
 # preprocessing: users
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod:/config:ro -v ${SERVICE_DIR}-$CHANNEL:/data/db ${IMAGE} bash -c "mongod --dbpath /data/db --fork --logpath /mongod.log; /config/add_users.sh $CHANNEL /config/mongod.env; mongod --dbpath /data/db --shutdown; sleep 5"'
+  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/$CHANNEL/mgrast-config/services/mongod:/config:ro -v ${SERVICE_DIR}-$CHANNEL:/data/db ${IMAGE} bash -c "mongod --dbpath /data/db --fork --logpath /mongod.log; /config/add_users.sh $CHANNEL /config/mongod.env; mongod --dbpath /data/db --shutdown; sleep 5"'
 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgrast-config/services/mongod/key-file:/keyfile:rw -v ${SERVICE_DIR}-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --quiet --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
+  docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/$CHANNEL/mgrast-config/services/mongod/key-file:/keyfile:rw -v ${SERVICE_DIR}-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --quiet --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
 
 #This should only run on primary after mongo is running first time
 # docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
