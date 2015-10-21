@@ -165,8 +165,12 @@ write_files:
         CORES=`nproc --all`
         mkdir -p /etc/fleet/        
         export METADATA="HOSTNAME=${HOSTNAME},ETCD_NAME=${ETCD_NAME},RAM_GB=${RAM_GB},CORES=${CORES},CoreOS=${VERSION_ID}"
-        echo metatadata=\"METADATA=${METADATA}\" >> /etc/fleet/fleet.conf
         sed -i 's/\$METADATA/'${METADATA}'/g' /run/cloud-config.yaml
+        
+        #fleet config
+        echo "metatadata=\"METADATA=${METADATA}\"" >> /etc/fleet/fleet.conf
+        echo "etcd_request_timeout=3.0" >> /etc/fleet/fleet.conf
+        echo "agent_ttl=\"300s\"" >> /etc/fleet/fleet.conf
         
         # md0 or md127
         export RAID_DEVICE=`cat /proc/mdstat | grep active | cut -f 1 -d ' '`
@@ -174,12 +178,9 @@ write_files:
         sed -i 's/\${RAID_DEVICE}/'${RAID_DEVICE}'/g' /run/cloud-config.yaml
 
         # wait for array partitions
-
         if [ ! -e /dev/${RAID_DEVICE}p1 ] ; then sleep 3; echo 'Waiting for /dev/${RAID_DEVICE}p1'; fi
         if [ ! -e /dev/${RAID_DEVICE}p2 ] ; then sleep 3; echo 'Waiting for /dev/${RAID_DEVICE}p2'; fi
-
         if [ ! -e /dev/${RAID_DEVICE}p1 ] ; then echo "/dev/${RAID_DEVICE}p1 not found, exit script" ; exit ; fi
-
 
         # wipe filesystem if mount fails or "keep_filesystem" does not exist
         WIPE_FS=0
