@@ -49,7 +49,13 @@ ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 Conflicts=mongodb-replica@*.service
-Conflicts=solr-metagenome@*.service
-MachineMetadata=RAM_GB=39
-MachineMetadata=RAM_GB=47
-MachineMetadata=RAM_GB=71
+MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker7-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker8-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker10-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
+#Conflicts=solr-metagenome@*.service
