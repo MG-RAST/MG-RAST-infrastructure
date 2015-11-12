@@ -1,0 +1,33 @@
+[Unit]
+Description=mysql server backup
+BindsTo=mysql_metadata@%i.service
+After=mysql_metadata@%i.service
+
+[Service]
+Environment='SERVICE=mysql_metadata'
+Environment='CONTAINER=mysql-metadata-%i'
+Environment='DIR=/media/ephemeral/mysql_metadata-%i'
+
+EnvironmentFile=-/media/ephemeral/mysql_metadata-%i/mgrast-config/services/mysql_metadata/mysql.env
+
+ExecStartPre=/bin/mkdir -p ${DIR}/data/backup
+
+# loop that runs 1x day, dump mysql than store in shock. 7 day ttl
+ExecStart=/bin/bash -c ' \
+  while true; do \
+    CTIME=`date +%s`; \
+    docker exec mysql-metadata-%i mysqldump -u root --password=${ROOT_PASSWORD} --all-databases --result-file /var/lib/mysql/backup/mysqldump.$CTIME.sql; \
+    gzip -v ${DIR}/data/backup/mysqldump.$CTIME.sql; \
+    curl -X POST \
+      -H "authorization: mgrast ${SHOCK_AUTH}" \
+      -F "expiration=7D" \
+      -F "upload=@${DIR}/data/backup/mysqldump.$CTIME.sql.gz" \
+      -F "attributes_str={\"type\":\"backup\",\"name\":\"JobDB\",\"data_type\":\"sql\",\"created\":\"$CTIME\"}" \
+      ${SHOCK_URL}/node; \
+    rm -fv ${DIR}/data/backup/mysqldump.$CTIME.sql.gz'; \
+    sleep 86100; \
+  done'
+
+
+[X-Fleet]
+MachineOf=mysql_metadata@%i.service
