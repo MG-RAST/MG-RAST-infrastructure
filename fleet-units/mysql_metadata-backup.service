@@ -11,6 +11,7 @@ Environment='DIR=/media/ephemeral/mysql_metadata-%i'
 EnvironmentFile=-/media/ephemeral/mysql_metadata-%i/mgrast-config/services/mysql_metadata/mysql.env
 
 ExecStartPre=/bin/mkdir -p ${DIR}/data/backup
+ExecStartPre=/bin/chmod 777 ${DIR}/data/backup
 
 # loop that runs 1x day, dump mysql than store in shock. 7 day ttl
 ExecStart=/bin/bash -c ' \
