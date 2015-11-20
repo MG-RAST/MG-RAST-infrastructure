@@ -16,7 +16,7 @@ ExecStartPre=/bin/chmod 777 ${DIR}/data/backup
 # loop that runs 1x day, dump mysql than store in shock. 7 day ttl
 ExecStart=/bin/bash -c ' \
   while true; do \
-    CTIME=$(date +%s); \
+    CTIME=$(date +%%s); \
     echo "backing up mysql DB at $CTIME"; \
     docker exec mysql-metadata-%i mysqldump -u root --password=${ROOT_PASSWORD} --all-databases --result-file /var/lib/mysql/backup/mysqldump.$CTIME.sql; \
     gzip -v ${DIR}/data/backup/mysqldump.$CTIME.sql; \
