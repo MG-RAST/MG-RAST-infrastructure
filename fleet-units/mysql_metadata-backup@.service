@@ -14,7 +14,7 @@ ExecStartPre=/bin/chmod 777 ${SERVICE_DIR}/data/backup
 # loop that runs 1x day, dump mysql than store in shock. 7 day ttl
 ExecStart=/bin/bash ${CONFIG_DIR}/backup.sh ${SERVICE_DIR} ${CONFIG_DIR}/mysql.env ${CONTAINER} 86100
 
-ExecStop=/bin/rm -rfv ${DIR}/data/backup
+ExecStop=/bin/rm -rfv ${SERVICE_DIR}/data/backup
 
 [X-Fleet]
 MachineOf=mysql_metadata@%i.service
