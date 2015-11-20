@@ -2,6 +2,7 @@
 Description=Solr metagenome
 After=docker.service
 Requires=docker.service
+Wants=solr-metagenome-backup@%i.service
 
 [Service]
 Environment='CONTAINER=solr-metagenome'
