@@ -10,11 +10,13 @@ export PARTITIONS=$(eval echo ${DEVICES_STR}1)
 
 #create /dev/sda1
 
+set +e
 for device in ${DEVICES} ; do 
   echo "device: ${device}"
   echo -e -n "n\\n1\\n\\n\\n\\nw\\ny\\n" | gdisk ${device}
 done
 sleep 3
+set -e
 
 # wipe /dev/sda1 /dev/sdb1 to avoid detection of previous RAID
 for device in  ${PARTITIONS} ; do 
