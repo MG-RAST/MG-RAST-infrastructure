@@ -11,7 +11,7 @@ Environment='CONFIG_DIR=/media/ephemeral/solr-metagenome/mgrast-config/services/
 ExecStartPre=/bin/mkdir -p ${DATA_DIR}/backup
 
 # loop that runs 1x week, tar solr data than store in shock. 1 month ttl
-ExecStart=/bin/bash ${CONFIG_DIR}/backup.sh ${DATA_DIR} ${CONFIG_DIR}/sorl.env ${CONTAINER} ${TIME}
+ExecStart=/bin/bash ${CONFIG_DIR}/backup.sh ${DATA_DIR} ${CONFIG_DIR}/sorl.env ${CONTAINER} 602000
 
 ExecStop=/bin/rm -rfv ${DATA_DIR}/backup
 
