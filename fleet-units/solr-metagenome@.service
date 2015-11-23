@@ -25,7 +25,7 @@ ExecStartPre=/home/core/skycore pull --tag=latest etcd:${CONTAINER}
 ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data
 ExecStartPre=/bin/chattr -R +C ${SERVICE_DIR}/data
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --ulimit memlock=-1:-1 --ulimit nofile=100000:100000 --ulimit nproc=-1:-1 -v ${SERVICE_DIR}/data:/mnt -v ${SERVICE_DIR}/mgrast-config:/config -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE} ${SERVICE_BIN}/run-solr.sh
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --ulimit memlock=-1:-1 --ulimit nofile=100000:100000 --ulimit nproc=-1:-1 -v ${SERVICE_DIR}/data:/mnt -v ${SERVICE_DIR}/mgrast-config/services/solr-metagenome:/config -p ${COREOS_PRIVATE_IPV4}:8983:8983 ${IMAGE} ${SERVICE_BIN}/run-solr.sh
 
 ExecStop=/usr/bin/docker exec ${CONTAINER} /opt/solr/bin/solr stop -p 8983
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
