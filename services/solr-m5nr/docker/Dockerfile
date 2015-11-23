@@ -1,10 +1,10 @@
 
 # M5NR Solr
 
-FROM ubuntu:14.10
+FROM ubuntu:15.04
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
-                libtemplate-perl \
+        libtemplate-perl \
 		git \
 		curl \
 		openjdk-8-jre \
