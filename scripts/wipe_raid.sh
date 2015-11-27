@@ -5,7 +5,7 @@ export DEVICES_STR="/dev/sd{a,b}"
 export DEVICES=$(eval echo ${DEVICES_STR})
 export PARTITIONS=$(eval echo ${DEVICES_STR}1)
 
-export OLD_RAID=`cat /proc/mdstat | grep active | cut -f 1 -d ' '`
+export OLD_RAID=`cat /proc/mdstat | grep active | cut -f 1 -d ' ' | head -n 1`
 
 umount /media/ephemeral/
 
