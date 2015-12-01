@@ -25,10 +25,13 @@ ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); eval $(ssh
 #ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 # set data dir
+# if exists remove old local config, but not real data
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
-  chattr -R +C /media/ephemeral/mongodb-$CHANNEL'
+  chattr -R +C /media/ephemeral/mongodb-$CHANNEL; \
+  rm -fv /media/ephemeral/mongodb-$CHANNEL/local.*; \
+  rm -fv /media/ephemeral/mongodb-$CHANNEL/mongod.lock'
 
 # preprocessing: users
 ExecStartPre=/bin/bash -c ' \
@@ -49,13 +52,12 @@ ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 Conflicts=mongodb-replica@*.service
-MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker4-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker7-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker8-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker10-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
-#Conflicts=solr-metagenome@*.service
+MachineMetadata=HOSTNAME=bio-worker12-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker15-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker16-10g.mcs.anl.gov
