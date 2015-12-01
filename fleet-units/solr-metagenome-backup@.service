@@ -8,8 +8,8 @@ Environment='CONTAINER=solr-metagenome'
 Environment='DATA_DIR=/media/ephemeral/solr-metagenome/data'
 Environment='CONFIG_DIR=/media/ephemeral/solr-metagenome/mgrast-config/services/solr-metagenome'
 
-# 1 week - 3 hours in seconds
-Environment='DELAY=594000'
+# 6 day wait
+Environment='DELAY=518400'
 
 EnvironmentFile=-/etc/environment
 
