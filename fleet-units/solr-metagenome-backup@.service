@@ -16,7 +16,7 @@ EnvironmentFile=-/etc/environment
 ExecStartPre=/bin/mkdir -p ${DATA_DIR}/backup
 
 # loop that runs 1x week, tar solr data than store in shock. 1 month ttl
-ExecStart=/bin/bash ${CONFIG_DIR}/backup.sh ${DATA_DIR} ${CONFIG_DIR}/sorl.env ${CONTAINER} ${COREOS_PRIVATE_IPV4}:8983 ${DELAY}
+ExecStart=/bin/bash ${CONFIG_DIR}/backup.sh ${DATA_DIR} ${CONFIG_DIR}/solr.env ${CONTAINER} ${COREOS_PRIVATE_IPV4}:8983 ${DELAY}
 
 ExecStop=/bin/rm -rfv ${DATA_DIR}/backup
 

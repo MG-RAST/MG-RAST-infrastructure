@@ -42,6 +42,7 @@ ExecStart=/bin/bash -c ' \
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
+Conflicts=solr-metagenome@*.service
 Conflicts=cassandra-seed@*.service
 Conflicts=cassandra-node@*.service
 Conflicts=opscenter@*.service
