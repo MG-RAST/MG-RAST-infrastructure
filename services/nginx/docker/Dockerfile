@@ -11,8 +11,8 @@ RUN cd / && \
   mkdir -p /etc/nginx/sites-enabled/
 
 # install confd (docker required to reload nginx in separate nginx container)
-ADD https://github.com/kelseyhightower/confd/releases/download/v0.9.0/confd-0.9.0-linux-amd64 /usr/bin/confd
-ADD https://get.docker.com/builds/Linux/x86_64/docker-1.5.0 /usr/bin/docker
+ADD https://github.com/kelseyhightower/confd/releases/download/v0.11.0/confd-0.11.0-linux-amd64 /usr/bin/confd
+ADD https://get.docker.com/builds/Linux/x86_64/docker-1.7.1 /usr/bin/docker
 RUN chmod +x /usr/bin/confd /usr/bin/docker
 
 
