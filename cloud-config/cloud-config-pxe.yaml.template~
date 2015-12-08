@@ -17,38 +17,37 @@ write_files:
       owner: core:core
       permissions: 0755
       content: |
-      # /etc/skel/.bash_profile
-      # MLN
-      # This file is sourced by bash for login shells.  The following line
-      # runs your .bashrc and is recommended by the bash info pages.
-      [[ -f ~/.bashrc ]] && . ~/.bashrc
-      #
-      # if a shelll 
-      #
-      if  test -t 0 ; then
-         # interactive shell
-     	    export TERM="xterm-256color"
-       	     export CLICOLOR=1
-             set -o vi
-             BO='[1m'
-             BOFF='[m'
-             PROMPT_COMMAND='[\t] ${BO}\h${BOFF}:\w \n$?>'
-      fi
-      #	     
-      # set aliases
-      #
-      if [ -f ~/.aliases ]; then
-         . ~/.aliases
-      fi
-    - path: /home/core/.aliases
-      owner: core:core
-      permissions: 0755
-      content: |
-      #
-      # customize for self
-      #
-      alias la='ls -laF'
-      alias ll='ls -laF'
+    # /etc/skel/.bash_profile
+    # MLN
+    # This file is sourced by bash for login shells.  The following line
+    # runs your .bashrc and is recommended by the bash info pages.
+    [[ -f ~/.bashrc ]] && . ~/.bashrc
+    #
+    # if a shelll 
+    #
+    if  test -t 0 ; then
+        # interactive shell
+        export TERM="xterm-256color"
+        export CLICOLOR=1
+        set -o vi
+        export MY_IP=`ip addr show dev enp0s25 | grep "inet "  | cut -d " " -f6 | cut -d "/" -f1`
+        export PROMPT_COMMAND='echo -ne "\033]0;NUC-$MY_IP:$PWD\007"'
+    fi
+    #
+    # set aliases
+    #
+    if [ -f ~/.aliases ]; then
+        . ~/.aliases
+    fi
+- path: /home/core/.aliases
+  owner: core:core
+  permissions: 0755
+  content: |
+    #
+    # customize for self
+    #
+    alias la='ls -laF'
+    alias ll='ls -laF'
     - path: /run/cloud-config.yaml
       permissions: '0644'
       content: |
