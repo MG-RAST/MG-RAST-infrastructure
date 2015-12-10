@@ -1,44 +1,41 @@
 
-Before starting any fleet units in new cluster, configure etcd:
+### Before starting any fleet units in new cluster, configure etcd ###
 
 ./production_service_images_in_etcd.sh 
 
 
-#### production services ####
+#### start production services ####
 
-## mongodb first
+## mongodb first to get shock up
+## identify host that had latest mongodb on it, edit fleet-unit so it only starts on that host
 
+## on host: ONLY do this first if there was an unclean shutdown
+sudo rm -f /media/ephemeral/mongodb-shock/local.*; \
+sudo rm -f /media/ephemeral/mongodb-shock/mongod.lock'
+sudo rm -rf /media/ephemeral/mongodb-shock/journal
+docker exec mongodb-replica mongod --recover
+
+## on host: start first instance and initiate replica set on it
 fleetctl start mongodb-replica{,-discovery}@1.shock.service
-#### manualy set / load primary node before starting update service
-# docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
+docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.initiate({_id:"shock",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
 fleetctl start mongodb-replica-update@1.shock.service
-fleetctl start mongodb-replica{,-discovery,-update}@{2,3}.shock.service
-fleetctl start mongodb-replica{,-discovery}@1.awe.service
-#### manualy set / load primary node before starting update service
-# docker exec ${CONTAINER} mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
-fleetctl start mongodb-replica-update@1.awe.service
-fleetctl start mongodb-replica{,-discovery,-update}@{2,3}.awe.service
+
+# now start the other two, wait for one to finish replicating before start next
+# on host: run this to check replica status, 'STARTUP2' mode means still replicating
+docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.status())' admin
+fleetctl start mongodb-replica{,-discovery,-update}@2.shock.service
+fleetctl start mongodb-replica{,-discovery,-update}@3.shock.service
+
+## for awe mongodb repeat above, replace 'shock' with 'awe'
 
 ## mysql / solr / memcache / awe
 
 fleetctl start mysql_metadata{,-backup}@1.service
-# fleetctl start mysql_galera_metadata{,-discovery}@{1,2,3}.service
 fleetctl start solr-m5nr@1.service
 fleetctl start solr-metagenome@1.service
 fleetctl start memcached.service # global unit
 fleetctl start memcached-discovery.service # global unit / start after above completes
 fleetctl start awe-server{,-discovery}@1.service
-
-## confd / nginx
-
-fleetctl start mg-rast-confd.service # global unit
-fleetctl start mg-rast-nginx@1.service
-
-## cassandra
-## need to manually load data on one seed if starting from scratch
-
-fleetctl start cassandra-seed{,-discovery}@{1,2}.service
-fleetctl start cassandra-node@{1,2,3,4,5,6}.service
 
 ## api / web
 
@@ -46,10 +43,54 @@ fleetctl start api-server{,-discovery,-update}@{1,2,3}.api.service
 fleetctl start mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
 fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 
-#### develop services ####
+## confd / nginx
+
+fleetctl start mg-rast-confd.service # global unit
+fleetctl start mg-rast-nginx@1.service
+
+## cassandra
+# first start the nodes, wait for each seed to finish before starting next
+fleetctl start cassandra-seed{,-discovery}@1.service
+fleetctl start cassandra-seed{,-discovery}@2.service
+fleetctl start cassandra-node@{1,2,3,4,5,6,7}.service
+
+# need to manually load data on one seed if starting from scratch
+# on one seed host: download load script and run it in seed container
+docker exec cassandra curl https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/load-cassandra-m5nr.sh > /var/lib/cassandra/load-cassandra-m5nr.sh
+docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
+
+#### start develop services ####
 
 # fleetctl start mg-rast-v3-web{,-discovery}@1.v3-web-dev.service
 # fleetctl start api-server{,-discovery,-update}@1.api-dev.service
 # fleetctl start cadvisor.service  # global unit
 # fleetctl start opscenter@1.service
 # fleetctl start fleetui@1.service
+
+
+### clean shurdown of fleet-units ###
+
+# first save a snapshot what whats running and on what host (mainly need for getting mongodb back up)
+fleetctl list-units > fleetunits.txt
+
+# shutdown the production services in the proper order
+
+fleetctl stop mg-rast-nginx@1.service
+fleetctl stop mg-rast-confd.service
+fleetctl stop mg-rast-v4-web{,-discovery}@1.v4-web.service
+fleetctl stop mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
+fleetctl stop api-server{,-discovery,-update}@{1,2,3}.api.service
+fleetctl stop awe-server{,-discovery}@1.service
+fleetctl stop cassandra-node@{1,2,3,4,5,6,7}.service
+fleetctl stop cassandra-seed{,-discovery}@{1,2}.service
+fleetctl stop memcached{,-discovery}.service
+fleetctl stop solr-m5nr@1.service
+fleetctl stop solr-metagenome@1.service
+fleetctl stop mysql_metadata{,-backup}@1.service
+fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3}.awe.service
+fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3}.shock.service
+
+# now shutdown any others that were missed
+
+for UNIT in `fleetctl list-units -no-legend -fields=unit`; do fleetctl stop ${UNIT}; done
+
