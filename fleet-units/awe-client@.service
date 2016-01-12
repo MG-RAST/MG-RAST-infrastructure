@@ -3,7 +3,7 @@ Description=AWE client %i
 After=docker.service
 Requires=docker.service
 
-Service]
+[Service]
 Environment='CONTAINER=awe-client-%i'
 Environment='IMAGE=mgrast/awe'
 Environment='SERVICE=awe-client'
