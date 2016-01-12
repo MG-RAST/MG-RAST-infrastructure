@@ -37,5 +37,3 @@ ExecStart=/bin/bash -c ' \
     ${IMAGE} /gopath/bin/awe-client --conf=/awe.cfg --group=$GROUP --name=%H.$GROUP.$NUMBER'
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
-
-[X-Fleet]
