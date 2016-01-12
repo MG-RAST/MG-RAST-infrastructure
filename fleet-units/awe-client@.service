@@ -40,3 +40,4 @@ ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 Conflicts=solr-metagenome@*.service
+Conflicts=awe-server@*.service
