@@ -8,7 +8,6 @@ Environment='CONTAINER=awe-client-%i'
 Environment='IMAGE=mgrast/awe'
 Environment='SERVICE=awe-client'
 Environment='DIR=/media/ephemeral/awe-client/%i'
-Environment='AWE_URL=
 
 Restart=always
 TimeoutStartSec=0
