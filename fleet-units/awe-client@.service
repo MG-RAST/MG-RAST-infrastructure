@@ -31,6 +31,7 @@ ExecStart=/bin/bash -c ' \
   export GROUP=$(echo %i | cut -d . -f 2); \
   docker run --rm --name ${CONTAINER} \
     -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /sys/fs/cgroup/memory/:/cgroup_memory/:ro \
     -v ${DIR}/mgrast-config/services/awe-client/awe.cfg:/awe.cfg:ro \
     -v ${DIR}/logs/:/mnt/awe/logs/ \
     -v ${DIR}/data/:/mnt/awe/data/ \
