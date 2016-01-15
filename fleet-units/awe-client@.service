@@ -12,16 +12,17 @@ Restart=always
 TimeoutStartSec=0
 EnvironmentFile=-/etc/environment
 
+# set dirs
+ExecStartPre=/bin/rm -rf ${DIR}
+ExecStartPre=/bin/mkdir -p ${DIR} ${DIR}/logs ${DIR}/data ${DIR}/work
+
 # get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 # get binary
-ExecStartPre=/usr/bin/curl -L -o ${DIR}/awe-client https://github.com/MG-RAST/AWE/releases/download/v${VERSION}/awe-client
-ExecStartPre=/usr/bin/chmod +x ${DIR}/awe-client
-
-# set dirs
-ExecStartPre=/bin/mkdir -p ${DIR}/logs ${DIR}/data ${DIR}/work
+ExecStartPre=/bin/curl -L -o ${DIR}/awe-client https://github.com/MG-RAST/AWE/releases/download/v${VERSION}/awe-client
+ExecStartPre=/bin/chmod +x ${DIR}/awe-client
 
 ExecStart=/bin/bash -c ' \
   export NUMBER=$(echo %i | cut -d . -f 1); \
