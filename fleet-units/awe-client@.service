@@ -27,7 +27,13 @@ ExecStartPre=/bin/chmod +x ${DIR}/awe-client
 ExecStart=/bin/bash -c ' \
   export NUMBER=$(echo %i | cut -d . -f 1); \
   export GROUP=$(echo %i | cut -d . -f 2); \
-  ${DIR}/awe-client --conf ${DIR}/mgrast-config/services/awe-client/awe.cfg --group $GROUP --name %H.$GROUP.$NUMBER'
+  ${DIR}/awe-client \
+    --conf ${DIR}/mgrast-config/services/awe-client/awe.cfg \
+    --workpath ${DIR}/work \
+    --data ${DIR}/data \
+    --logs ${DIR}/logs \
+    --group $GROUP \
+    --name %H.$GROUP.$NUMBER'
 
 [X-Fleet]
 Conflicts=solr-metagenome@*.service
