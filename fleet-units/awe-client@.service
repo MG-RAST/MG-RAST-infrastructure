@@ -5,7 +5,7 @@ Requires=docker.service
 
 [Service]
 Environment='SERVICE=awe-client'
-Environment='VERSION=0.9.21'
+Environment='VERSION=0.9.22'
 Environment='DIR=/media/ephemeral/awe-client/%i'
 
 Restart=always
@@ -38,3 +38,7 @@ ExecStart=/bin/bash -c ' \
 [X-Fleet]
 Conflicts=solr-metagenome@*.service
 Conflicts=awe-server@*.service
+MachineMetadata=RAM_GB=24
+MachineMetadata=RAM_GB=47
+MachineMetadata=RAM_GB=71
+MachineMetadata=RAM_GB=79
