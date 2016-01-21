@@ -49,9 +49,9 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api/shock -XPUT 
 curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/5b26c996-740c-4e6f-abd2-4a4ea149a4c6"
 
 #awe server
-curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/0522ffa4-acda-439d-8908-7489e699786b"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ac7cc377-029a-427c-9b55-9be4145fe885"
 #awe client
-curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-client/shock -XPUT -d value="shock.metagenomics.anl.gov/node/0522ffa4-acda-439d-8908-7489e699786b"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-client/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ac7cc377-029a-427c-9b55-9be4145fe885"
 
 #memcached server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
