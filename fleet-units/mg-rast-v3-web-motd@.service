@@ -5,7 +5,7 @@ After=mg-rast-v3-web-discovery@%i.service
 
 [Service]
 Environment='SERVICE=mg-rast-v3-web'
-Environment='DIR=/media/ephemeral/%p/%i'
+Environment='DIR=/media/ephemeral/mg-rast-v3-web/%i'
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/curl -L -o ${DIR}/MGRAST.motd https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/web-v3/MGRAST.motd
