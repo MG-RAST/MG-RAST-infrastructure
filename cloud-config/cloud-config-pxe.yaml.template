@@ -17,38 +17,38 @@ write_files:
       owner: core:core
       permissions: 0755
       content: |
-      # /etc/skel/.bash_profile
-      # MLN
-      # This file is sourced by bash for login shells.  The following line
-      # runs your .bashrc and is recommended by the bash info pages.
-      [[ -f ~/.bashrc ]] && . ~/.bashrc
-      #
-      # if a shelll 
-      #
-      if  test -t 0 ; then
-         # interactive shell
-     	    export TERM="xterm-256color"
-       	     export CLICOLOR=1
-             set -o vi
-             BO='[1m'
-             BOFF='[m'
-             PROMPT_COMMAND='[\t] ${BO}\h${BOFF}:\w \n$?>'
-      fi
-      #	     
-      # set aliases
-      #
-      if [ -f ~/.aliases ]; then
-         . ~/.aliases
-      fi
+        # /etc/skel/.bash_profile
+        # MLN
+        # This file is sourced by bash for login shells.  The following line
+        # runs your .bashrc and is recommended by the bash info pages.
+        [[ -f ~/.bashrc ]] && . ~/.bashrc
+        #
+        # if a shelll 
+        #
+        if  test -t 0 ; then
+           # interactive shell
+               export TERM="xterm-256color"
+               export CLICOLOR=1
+               set -o vi
+               BO='[1m'
+               BOFF='[m'
+               PROMPT_COMMAND='[\t] ${BO}\h${BOFF}:\w \n$?>'
+        fi
+        #    
+        # set aliases
+        #
+        if [ -f ~/.aliases ]; then
+           . ~/.aliases
+        fi
     - path: /home/core/.aliases
       owner: core:core
       permissions: 0755
       content: |
-      #
-      # customize for self
-      #
-      alias la='ls -laF'
-      alias ll='ls -laF'
+        #
+        # customize for self
+        #
+        alias la='ls -laF'
+        alias ll='ls -laF'
     - path: /run/cloud-config.yaml
       permissions: '0644'
       content: |
