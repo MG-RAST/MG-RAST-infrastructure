@@ -57,14 +57,18 @@ write_files:
         coreos:
             update:
                 reboot-strategy: etcd-lock
-            etcd:
+            etcd2:
                 # name this is required because pxe-booting would create new ETCD instance names on boot.
                 name: $ETCD_NAME
-                # generate a new token for each unique cluster from https://discovery.etcd.io/new
-                discovery: https://discovery.etcd.io/%discovery_token%
+                # generate a new token for each unique cluster from https://discovery.etcd.io/new?size=3
+                discovery: "https://discovery.etcd.io/%discovery_token%"
                 # multi-region and multi-cloud deployments need to use $public_ipv4
-                addr: $_public_ipv4:4001
-                peer-addr: $_private_ipv4:7001
+                advertise-client-urls: "http://$public_ipv4:2379"
+                initial-advertise-peer-urls: "http://$private_ipv4:2380"
+                # listen on both the official ports and the legacy ports
+                # legacy ports can be omitted if your application doesn't depend on them
+                listen-client-urls: "http://0.0.0.0:2379,http://0.0.0.0:4001"
+                listen-peer-urls: "http://$private_ipv4:2380,http://$private_ipv4:7001"
             fleet:
                 public-ip: $_public_ipv4
                 # etcd-request-timeout: 15
@@ -119,7 +123,7 @@ write_files:
                         [Service]
                         Environment='TMPDIR=/media/ephemeral/tmp/'
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
-                - name: etcd.service
+                - name: etcd2.service
                   command: start
                 - name: fleet.service
                   command: start
