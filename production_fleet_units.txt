@@ -61,6 +61,8 @@ for i in `seq 1 7`; do fleetctl start cassandra-node@$i.service; sleep 60; done
 # list of all IPS: fleetctl list-units | grep cassandra | cut -f2 -d"/" | cut -f1 | sort -u | tr "\n" ","; echo
 docker exec cassandra curl -o /var/lib/cassandra/load-cassandra-m5nr.sh https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/load-cassandra-m5nr.sh
 docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
+docker exec cassandra /opt/cassandra/bin/nodetool status <keyspace>
+
 
 #### start develop services ####
 
