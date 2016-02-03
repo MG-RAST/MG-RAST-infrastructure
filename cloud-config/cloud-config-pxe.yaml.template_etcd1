@@ -13,6 +13,42 @@ ssh_authorized_keys:
 %ssh_authorized_keys%
 
 write_files:
+    - path: /home/core/.bash_profile
+      owner: core:core
+      permissions: 0755
+      content: |
+      # /etc/skel/.bash_profile
+      # MLN
+      # This file is sourced by bash for login shells.  The following line
+      # runs your .bashrc and is recommended by the bash info pages.
+      [[ -f ~/.bashrc ]] && . ~/.bashrc
+      #
+      # if a shelll 
+      #
+      if  test -t 0 ; then
+         # interactive shell
+     	    export TERM="xterm-256color"
+       	     export CLICOLOR=1
+             set -o vi
+             BO='[1m'
+             BOFF='[m'
+             PROMPT_COMMAND='[\t] ${BO}\h${BOFF}:\w \n$?>'
+      fi
+      #	     
+      # set aliases
+      #
+      if [ -f ~/.aliases ]; then
+         . ~/.aliases
+      fi
+    - path: /home/core/.aliases
+      owner: core:core
+      permissions: 0755
+      content: |
+      #
+      # customize for self
+      #
+      alias la='ls -laF'
+      alias ll='ls -laF'
     - path: /run/cloud-config.yaml
       permissions: '0644'
       content: |
@@ -21,18 +57,14 @@ write_files:
         coreos:
             update:
                 reboot-strategy: etcd-lock
-            etcd2:
+            etcd:
                 # name this is required because pxe-booting would create new ETCD instance names on boot.
                 name: $ETCD_NAME
-                # generate a new token for each unique cluster from https://discovery.etcd.io/new?size=3
-                discovery: "https://discovery.etcd.io/%discovery_token%"
+                # generate a new token for each unique cluster from https://discovery.etcd.io/new
+                discovery: https://discovery.etcd.io/%discovery_token%
                 # multi-region and multi-cloud deployments need to use $public_ipv4
-                advertise-client-urls: "http://$_public_ipv4:2379"
-                initial-advertise-peer-urls: "http://$_private_ipv4:2380"
-                # listen on both the official ports and the legacy ports
-                # legacy ports can be omitted if your application doesn't depend on them
-                listen-client-urls: "http://0.0.0.0:2379,http://0.0.0.0:4001"
-                listen-peer-urls: "http://$_private_ipv4:2380,http://$_private_ipv4:7001"
+                addr: $_public_ipv4:4001
+                peer-addr: $_private_ipv4:7001
             fleet:
                 public-ip: $_public_ipv4
                 # etcd-request-timeout: 15
@@ -87,7 +119,7 @@ write_files:
                         [Service]
                         Environment='TMPDIR=/media/ephemeral/tmp/'
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
-                - name: etcd2.service
+                - name: etcd.service
                   command: start
                 - name: fleet.service
                   command: start
