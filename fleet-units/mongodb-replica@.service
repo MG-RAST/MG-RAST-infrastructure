@@ -31,7 +31,8 @@ ExecStartPre=/bin/bash -c ' \
   mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
   chattr -R +C /media/ephemeral/mongodb-$CHANNEL; \
   rm -fv /media/ephemeral/mongodb-$CHANNEL/local.*; \
-  rm -fv /media/ephemeral/mongodb-$CHANNEL/mongod.lock'
+  rm -fv /media/ephemeral/mongodb-$CHANNEL/mongod.lock; \
+  rm -rfv /media/ephemeral/mongodb-$CHANNEL/journal'
 
 # preprocessing: users
 ExecStartPre=/bin/bash -c ' \

@@ -45,4 +45,7 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 Conflicts=solr-metagenome@*.service
 Conflicts=cassandra-seed@*.service
 Conflicts=cassandra-node@*.service
-Conflicts=opscenter@*.service
+MachineMetadata=RAM_GB=24
+MachineMetadata=RAM_GB=47
+MachineMetadata=RAM_GB=71
+MachineMetadata=RAM_GB=79
