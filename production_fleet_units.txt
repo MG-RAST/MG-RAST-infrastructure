@@ -1,10 +1,12 @@
 
 ### Before starting any fleet units in new cluster, configure etcd ###
 
-./production_service_images_in_etcd.sh 
+./production_service_images_in_etcd.sh
 
 
 #### start production services ####
+
+### NOTE: if a fleet unit is constantly starting and stoping there is a problem, use journalctl to troubleshoot
 
 ## mongodb first to get shock up
 ## identify host that had latest mongodb on it, edit fleet-unit so it only starts on that host
@@ -52,7 +54,7 @@ fleetctl start mg-rast-nginx@1.service
 # first start the nodes, wait for each seed to finish before starting next
 fleetctl start cassandra-seed{,-discovery}@1.service
 fleetctl start cassandra-seed{,-discovery}@2.service
-fleetctl start cassandra-node@{1,2,3,4,5,6,7}.service
+for i in `seq 1 7`; do fleetctl start cassandra-node@$i.service; sleep 60; done
 
 # need to manually load data on one seed if starting from scratch
 # on one seed host: download load script and run it in seed container
