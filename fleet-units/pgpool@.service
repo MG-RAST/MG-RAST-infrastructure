@@ -1,0 +1,34 @@
+[Unit]
+Description=PgPool
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=pgpool-%i'
+Environment='IMAGE=mgrast/pgpool'
+Environment='SERVICE=pgpool'
+Environment='SERVICE_DIR=/media/ephemeral/pgpool'
+
+Restart=always
+TimeoutStartSec=0
+
+EnvironmentFile=-/etc/environment
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 5432:5432 -v ${SERVICE_DIR}/mgrast-config/services/pgpool:/config ${IMAGE} pgpool -n -d
+
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
+
+[X-Fleet]
+Conflicts=solr-metagenome@*.service
+MachineMetadata=RAM_GB=24
+MachineMetadata=RAM_GB=47
+MachineMetadata=RAM_GB=71
+MachineMetadata=RAM_GB=79

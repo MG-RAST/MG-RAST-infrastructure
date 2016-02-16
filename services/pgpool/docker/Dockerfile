@@ -12,4 +12,6 @@ RUN cd /pgpool-II-3.5.0 && \
 
 RUN rm -rfv pgpool-II-3.5.0 pgpool-II-3.5.0.tar.gz
 
-RUN mkdir -p /var/log/pgpool /var/run/pgpool
+RUN mkdir -p /var/log/pgpool /var/run/pgpool /config
+
+RUN ln -s /config/pgpool.conf /usr/local/etc/pgpool.conf

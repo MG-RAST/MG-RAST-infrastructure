@@ -59,6 +59,9 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d va
 #cassandra node
 curl -L http://127.0.0.1:4001/v2/keys/service_images/cassandra/shock -XPUT -d value="shock.metagenomics.anl.gov/node/f5d56f74-fd96-4ea2-87b9-2ecf62717a14"
 
+#pgpool
+curl -L http://127.0.0.1:4001/v2/keys/service_images/pgpool/shock -XPUT -d value="shock.metagenomics.anl.gov/node/c9e3a19e-3c17-47c3-aac1-9fb6580b6844"
+
 #opscenter server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/opscenter/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a030ea5b-3971-43c6-8574-6f82c510fca2"
 
