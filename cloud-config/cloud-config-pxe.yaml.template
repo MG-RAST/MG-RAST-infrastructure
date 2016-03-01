@@ -90,6 +90,11 @@ write_files:
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
                 - name: etcd2.service
                   command: start
+                  drop-ins:
+                    - name: "timeout.conf"
+                      content: |
+                        [Service]
+                        TimeoutStartSec=10m
                 - name: fleet.service
                   command: start
                 - name: skycore.service
