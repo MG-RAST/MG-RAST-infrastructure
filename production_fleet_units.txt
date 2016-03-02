@@ -41,7 +41,7 @@ fleetctl start awe-server{,-discovery}@1.service
 
 ## api / web
 
-fleetctl start api-server{,-discovery,-update}@{1,2,3}.api.service
+fleetctl start api-server{,-discovery,-update}@{1,2,3,4}.api.service
 fleetctl start mg-rast-v3-web{,-discovery,-motd}@{1,2,3,4}.v3-web.service
 fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 
@@ -96,6 +96,10 @@ fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3}.awe.service
 fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3}.shock.service
 
 # now shutdown any others that were missed
-
 for UNIT in `fleetctl list-units -no-legend -fields=unit`; do fleetctl stop ${UNIT}; done
 
+# stop and remove docker containers
+for c in `docker ps -a -q`; do docker stop $c; docker rm -f $c; done
+
+# stop via systemd (need to be on host)
+sudo systemctl stop <fleet unit>
