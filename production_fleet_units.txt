@@ -42,7 +42,7 @@ fleetctl start awe-server{,-discovery}@1.service
 ## api / web
 
 fleetctl start api-server{,-discovery,-update}@{1,2,3,4}.api.service
-fleetctl start mg-rast-v3-web{,-discovery,-motd}@{1,2,3,4}.v3-web.service
+fleetctl start mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
 fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 
 ## confd / nginx
