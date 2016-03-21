@@ -63,7 +63,6 @@ docker exec cassandra curl -o /var/lib/cassandra/load-cassandra-m5nr.sh https://
 docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
 docker exec cassandra /opt/cassandra/bin/nodetool status <keyspace>
 
-
 #### start develop services ####
 
 # fleetctl start mg-rast-v3-web{,-discovery}@1.v3-web-dev.service
@@ -72,8 +71,12 @@ docker exec cassandra /opt/cassandra/bin/nodetool status <keyspace>
 # fleetctl start opscenter@1.service
 # fleetctl start fleetui@1.service
 
+### reboot of web and api fleet-units
 
-### clean shurdown of fleet-units ###
+for i in 1 2 3 4; do fleetctl stop mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 10; fleetctl start mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 120; done
+for i in 1 2 3 4; do fleetctl stop api-server{,-discovery,-update}@${i}.api.service; sleep 10; fleetctl start api-server{,-discovery,-update}@${i}.api.service; sleep 180; done
+
+### clean shutdown of fleet-units ###
 
 # first save a snapshot what whats running and on what host (mainly need for getting mongodb back up)
 fleetctl list-units > fleetunits.txt
