@@ -28,7 +28,6 @@ ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 Conflicts=solr-metagenome@*.service
-MachineMetadata=RAM_GB=24
 MachineMetadata=RAM_GB=47
 MachineMetadata=RAM_GB=71
 MachineMetadata=RAM_GB=79
