@@ -5,9 +5,9 @@ use warnings;
 use DBI;
 use Getopt::Long;
 
-my $cdir = "";
+my $cdir = "/config/postgresql";
 my $host = "";
-my $user = "";
+my $user = "mgrastprod";
 my $pswd = "";
 
 GetOptions (
@@ -23,7 +23,7 @@ my $dbname = "mgrast_analysis";
 my $dbh = DBI->connect("DBI:Pg:dbname=$dbname;host=$host", $user, $pswd, { RaiseError => 1, AutoCommit => 0, PrintError => 0 }) || die $DBI::errstr;
 
 my @names = $dbh->tables;
-sort @names
+sort @names;
 foreach (@names) { print $_."\n"; }
 
 $dbh->disconnect;
