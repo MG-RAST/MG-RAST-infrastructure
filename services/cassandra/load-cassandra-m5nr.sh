@@ -25,7 +25,7 @@ if [ -z "$VERSION" ]; then
     VERSION="1"
 fi
 if [ -z "$REP_NUM" ]; then
-    REP_NUM="3"
+    REP_NUM="4"
 fi
 if [ -z "$DATA_DIR" ]; then
     DATA_DIR="/var/lib/cassandra"
