@@ -22,7 +22,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 5432:5432 -v ${SERVICE_DIR}/mgrast-config/services/pgpool:/config ${IMAGE} pgpool -n -d
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 5432:5432 -v ${SERVICE_DIR}/mgrast-config/services/pgpool:/config ${IMAGE} pgpool -f /config/pgpool.conf -a /config/pool_hba.conf -n -d
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
