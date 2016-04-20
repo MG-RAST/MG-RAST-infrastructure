@@ -87,12 +87,15 @@ if [ ! -d $M5NR_DATA ]; then
     curl -s "${DATA_URL}" | tar -zxvf - -C $M5NR_DATA
 fi
 
+# fix organism table
+sed -i 's\""$\"0"\' ${M5NR_DATA}/m5nr_v${VERSION}.taxonomy.all
+
 # load tables
 echo "Loading schema ..."
 $CQLSH -f $SCHEMA_TABLE $MY_IP
 
 echo "Copying small data ..."
-sed -i "s;\(^import csv$\);\1\ncsv.field_size_limit(1000000000);" $CQLSH
+sed -i "s;\(^import csv$\);\1\ncsv.field_size_limit(1000000000);" ${CQLSH}.py
 $CQLSH -f $SCHEMA_COPY $MY_IP
 
 echo "Creating / loading sstables ..."
