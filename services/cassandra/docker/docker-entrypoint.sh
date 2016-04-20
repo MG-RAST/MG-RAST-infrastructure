@@ -11,8 +11,8 @@ if [ "$1" = 'cassandra' ]; then
     export PATH=$PATH:$AGENT_BIN:$CASSANDRA_BIN
     
     # start agent in background
-    datastax-agent
-    sleep 10
+    #datastax-agent
+    #sleep 10
     
     # change log level
     if [ "$CASSANDRA_LOG_LEVEL" ]; then
