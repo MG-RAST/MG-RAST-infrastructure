@@ -42,7 +42,7 @@ ExecStart=/bin/bash -c ' \
     -v ${SERVICE_DIR}/data:/var/lib/cassandra/data:rw \
     -v ${SERVICE_DIR}/commitlog:/var/lib/cassandra/commitlog:rw \
     -v ${SERVICE_DIR}/saved_caches:/var/lib/cassandra/saved_caches:rw \
-    -e CASSANDRA_SEEDS=$SEEDS -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} ${IMAGE} cassandra -f'
+    -e CASSANDRA_SEEDS=$SEEDS -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} ${IMAGE} cassandra -R -f'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
