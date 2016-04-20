@@ -3,7 +3,7 @@
 FROM ubuntu:15.10
 
 ENV CASSANDRA_VERSION 3.5
-ENV CASSANDRA_URL http://www.apache.org/dyn/closer.lua/cassandra/${CASSANDRA_VERSION}/apache-cassandra-${CASSANDRA_VERSION}-bin.tar.gz
+ENV CASSANDRA_URL ftp://apache.mirrors.pair.com/cassandra/${CASSANDRA_VERSION}/apache-cassandra-${CASSANDRA_VERSION}-bin.tar.gz
 
 ENV AGENT_VERSION 5.2.4
 ENV AGENT_URL http://downloads.datastax.com/community/datastax-agent-${AGENT_VERSION}.tar.gz
