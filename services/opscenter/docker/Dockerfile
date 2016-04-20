@@ -1,8 +1,8 @@
 # opscenter
 
-FROM ubuntu:14.10
+FROM ubuntu:15.10
 
-ENV VERSION 5.2.0
+ENV VERSION 5.2.4
 ENV URL http://downloads.datastax.com/community/opscenter-${VERSION}.tar.gz
 
 # dependencies
