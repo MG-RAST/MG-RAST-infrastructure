@@ -13,7 +13,8 @@ Restart=always
 EnvironmentFile=-/etc/environment
 
 # clear dirs
-ExecStartPre=/bin/rm -rf ${SERVICE_DIR}
+## don't delete data
+## ExecStartPre=/bin/rm -rf ${SERVICE_DIR}
 ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVICE_DIR}/saved_caches
 ExecStartPre=/bin/chattr -R +C ${SERVICE_DIR}/data
 

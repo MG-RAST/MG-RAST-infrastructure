@@ -65,7 +65,7 @@ curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/
 # download data
 DATA_URL=""
 if [ "$VERSION" == "1" ]; then
-    DATA_URL="http://shock.metagenomics.anl.gov/node/cc14a6d4-77c9-46ba-94a8-90921657d0fa?download"
+    DATA_URL="http://shock.metagenomics.anl.gov/node/23506280-e153-4834-b98e-3102b6672a15?download"
 elif [ "$VERSION" == "10" ]; then
     DATA_URL="http://shock.metagenomics.anl.gov/node/foo?download"
 fi
@@ -88,7 +88,7 @@ if [ ! -d $M5NR_DATA ]; then
 fi
 
 # fix organism table
-sed -i 's\""$\"0"\' ${M5NR_DATA}/m5nr_v${VERSION}.taxonomy.all
+#sed -i 's\""$\"0"\' ${M5NR_DATA}/m5nr_v${VERSION}.taxonomy.all
 
 # load tables
 echo "Loading schema ..."
@@ -102,7 +102,7 @@ echo "Creating / loading sstables ..."
 SST_DIR=$DATA_DIR/sstable
 KEYSPACE=m5nr_v${VERSION}
 mkdir -p $SST_DIR
-for TYPE in id md5; do
+for TYPE in index id; do
     # split large file
     cd $M5NR_DATA
     split -a 2 -d -l 2500000 ${KEYSPACE}.annotation.${TYPE} ${KEYSPACE}.annotation.${TYPE}.
