@@ -38,9 +38,11 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v4-web-v4-web-dev/s
 
 # mg-rast-v3-web-[channel]
 #channel: v3-web
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/3f310174-7e0d-4cdd-b704-86c422d91487"
+#curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/3f310174-7e0d-4cdd-b704-86c422d91487"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/9d434cd7-711c-4261-aeb7-f096ee3535b9"
 #channel: v3-web-dev
-curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/3f310174-7e0d-4cdd-b704-86c422d91487"
+#curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/3f310174-7e0d-4cdd-b704-86c422d91487"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/9d434cd7-711c-4261-aeb7-f096ee3535b9"
 
 #api-server-[channel]
 #channel: api
@@ -49,9 +51,12 @@ curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api/shock -XPUT 
 curl -L http://127.0.0.1:4001/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/65b87f20-45a3-4c43-b6e4-fc80929ec4ce"
 
 #awe server
-curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/061c74ec-83b2-4931-a8d1-9b6ff300291b"
+#curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/061c74ec-83b2-4931-a8d1-9b6ff300291b"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/73897a0a-6a5c-4127-ae82-d54fe6920139"
+
 #awe client
-curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-client/shock -XPUT -d value="shock.metagenomics.anl.gov/node/061c74ec-83b2-4931-a8d1-9b6ff300291b"
+#curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-client/shock -XPUT -d value="shock.metagenomics.anl.gov/node/061c74ec-83b2-4931-a8d1-9b6ff300291b"
+curl -L http://127.0.0.1:4001/v2/keys/service_images/awe-client/shock -XPUT -d value="shock.metagenomics.anl.gov/node/73897a0a-6a5c-4127-ae82-d54fe6920139"
 
 #memcached server
 curl -L http://127.0.0.1:4001/v2/keys/service_images/memcached/shock -XPUT -d value="shock.metagenomics.anl.gov/node/cc8df996-0682-461f-b1f3-616c23cb433e"
