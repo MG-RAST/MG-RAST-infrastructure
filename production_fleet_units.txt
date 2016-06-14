@@ -54,7 +54,7 @@ fleetctl start mg-rast-nginx@1.service
 # first start the nodes, wait for each seed to finish before starting next
 fleetctl start cassandra-seed{,-discovery}@1.service
 fleetctl start cassandra-seed{,-discovery}@2.service
-for i in `seq 1 7`; do sleep 300; fleetctl start cassandra-node@$i.service; done
+for i in `seq 1 10`; do sleep 300; fleetctl start cassandra-node@$i.service; done
 
 # need to manually load data on one seed if starting from scratch
 # on one seed host: download load script and run it in seed container
