@@ -1,13 +1,7 @@
 
-The image contains both cnginx and confd, but they will be executed in separate containers.
+The image contains both nginx and confd, but they will be executed in separate containers.
 
-Build image:
-```bash
-git clone https://github.com/MG-RAST/MG-RAST-infrastructure.git
-cd MG-RAST-infrastructure/services/nginx/docker
-docker rm -f mgrast_nginx mgrast_confd ; docker rmi mgrast/nginxconfd
-docker build  --no-cache -t mgrast/nginxconfd:`date +"%Y%m%d.%H%M"` .
-```
+For instructions to build this image see build.sh.
 
 ### Start nginx
 ```bash
