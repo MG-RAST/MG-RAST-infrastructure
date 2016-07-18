@@ -5,7 +5,7 @@ Requires=docker.service
 Wants=mongodb-replica-discovery@%i.service
 
 [Service]
-Environment='IMAGE=mongo:3.0.6'
+Environment='IMAGE=mongo:3.2.8'
 Environment='SERVICE=mongodb-replica'
 Environment='CONTAINER=mongodb-replica'
 Environment='SERVICE_DIR=/media/ephemeral/mongodb'
