@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # template requires discovery token
-# this hack below is needed to get IP address
-# tested on magellan
+# run before creating VMs: sed -i "s/%discovery_token%/${DISCOVERY_TOKEN}/" cloud-config-openstack.sh
  
 until ! [[ -z "${COREOS_PRIVATE_IPV4}" ]]; do
     COREOS_PUBLIC_IPV4=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
