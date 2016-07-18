@@ -6,7 +6,7 @@ Wants=mysql_metadata-backup@%i.service
 
 [Service]
 Environment='CONTAINER=mysql-metadata-%i'
-Environment='IMAGE=mysql/mysql-server'
+Environment='IMAGE=mysql:5.7.13'
 Environment='SERVICE=mysql_metadata'
 Environment='DIR=/media/ephemeral/mysql_metadata-%i'
 Environment='DEVICE=enp2s0f0'
@@ -29,9 +29,6 @@ ExecStartPre=/bin/chmod 777 ${DIR}/log/ ${DIR}/data/
 # remove old container
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
-
-# download docker image
-ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v ${DIR}/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD} ${IMAGE}
 
