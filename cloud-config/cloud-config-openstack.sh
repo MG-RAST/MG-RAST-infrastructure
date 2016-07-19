@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # template requires discovery token
+# generate a new token for each unique cluster from https://discovery.etcd.io/new?size=3
 # run before creating VMs: sed -i "s/%discovery_token%/${DISCOVERY_TOKEN}/" cloud-config-openstack.sh
  
 until ! [[ -z "${COREOS_PRIVATE_IPV4}" ]]; do
