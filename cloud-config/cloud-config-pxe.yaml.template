@@ -159,11 +159,11 @@ write_files:
         # get assigned IPs
         COREOS_PUBLIC_IPV4=$(get_ip %network_interface%)
         COREOS_PRIVATE_IPV4=$(get_ip %network_interface%)
-        echo COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} >> $ENV # Also assigned to same IP
-        echo COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} >> $ENV #eno1 should be changed to your device name
+        echo "COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4}" >> $ENV # Also assigned to same IP
+        echo "COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4}" >> $ENV #eno1 should be changed to your device name
 
         ETCD_NAME=node_$(get_mac %network_interface%)
-        echo ETCD_NAME=${ETCD_NAME} >> $ENV
+        echo "ETCD_NAME=${ETCD_NAME}" >> $ENV
         #sed 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yaml > /tmp/cconfigtmp
         #mv /tmp/cconfigtmp /run/cloud-config.yaml
         sed -i 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yaml
@@ -175,6 +175,13 @@ write_files:
         mkdir -p /etc/fleet/        
         export METADATA="HOSTNAME=${HOSTNAME},ETCD_NAME=${ETCD_NAME},RAM_GB=${RAM_GB},CORES=${CORES},CoreOS=${VERSION_ID}"
         sed -i 's/\$METADATA/'${METADATA}'/g' /run/cloud-config.yaml
+        
+        # add to env file
+        echo "HOSTNAME=${HOSTNAME}" >> $ENV
+        echo "ETCD_NAME=${ETCD_NAME}" >> $ENV
+        echo "RAM_GB=${RAM_GB}" >> $ENV
+        echo "CORES=${CORES}" >> $ENV
+        echo "CoreOS=${VERSION_ID}" >> $ENV
         
         #fleet config
         echo "metatadata=\"METADATA=${METADATA}\"" >> /etc/fleet/fleet.conf
