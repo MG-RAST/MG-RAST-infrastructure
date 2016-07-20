@@ -7,9 +7,9 @@
 set -e
 
 
-TARGET_DIR="/media/ephemeral"
+export TARGET_DIR="/media/ephemeral"
 
-DOCKER_VERSION=$(/usr/bin/docker --version | grep -o '[0-9]*\.[0-9]*\.[0-9]')
+export DOCKER_VERSION=$(/usr/bin/docker --version | grep -o '[0-9]*\.[0-9]*\.[0-9]')
 
 if [ ! -e ${TARGET_DIR}/docker-${DOCKER_VERSION} ] ; then
     set -x
