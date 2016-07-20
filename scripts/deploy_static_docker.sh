@@ -17,4 +17,6 @@ if [ ! -e ${TARGET_DIR}/docker-${DOCKER_VERSION} ] ; then
     chmod +x ${TARGET_DIR}/docker-${DOCKER_VERSION}_part
     mv ${TARGET_DIR}/docker-${DOCKER_VERSION}_part ${TARGET_DIR}/docker-${DOCKER_VERSION}
     echo "Downloaded: ${TARGET_DIR}/docker-${DOCKER_VERSION}"
+else
+    echo "found ${TARGET_DIR}/docker-${DOCKER_VERSION}"
 fi
