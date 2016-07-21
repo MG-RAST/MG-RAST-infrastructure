@@ -33,7 +33,7 @@ write_files:
                 # legacy ports can be omitted if your application doesn't depend on them
                 listen-client-urls: "http://0.0.0.0:2379"
                 listen-peer-urls: "http://$_private_ipv4:2380"
-                data_dir: "/media/ephemeral/etcd2"
+                data_dir: "/media/ephemeral/etcd2/%discovery_token%"
             fleet:
                 public-ip: $_public_ipv4
                 # etcd-request-timeout: 15
