@@ -312,7 +312,7 @@ coreos:
 
         [Service]
         Type=oneshot
-        RemainAfterExit=no
+        RemainAfterExit=yes
         ExecStart=/run/setup-environment.sh
     - name: prep-cloud-config.service
       command: start
