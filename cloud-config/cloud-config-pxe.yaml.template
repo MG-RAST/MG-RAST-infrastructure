@@ -34,6 +34,16 @@ write_files:
                 listen-client-urls: "http://0.0.0.0:2379"
                 listen-peer-urls: "http://$_private_ipv4:2380"
                 data_dir: "/media/ephemeral/etcd2"
+                drop-ins:
+                    - name: wait-for-setup.conf
+                        content: |
+                          [Unit]
+                          After=setup-environment.service
+                          Requires=setup-environment.service
+                    - name: "timeout.conf"
+                        content: |
+                          [Service]
+                          TimeoutStartSec=10m
             fleet:
                 public-ip: $_public_ipv4
                 # etcd-request-timeout: 15
@@ -88,13 +98,6 @@ write_files:
                         [Service]
                         Environment='TMPDIR=/media/ephemeral/tmp/'
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
-                - name: etcd2.service
-                  command: start
-                  drop-ins:
-                    - name: "timeout.conf"
-                      content: |
-                        [Service]
-                        TimeoutStartSec=10m
                 - name: fleet.service
                   command: start
                 - name: skycore.service
@@ -308,7 +311,7 @@ coreos:
 
         [Service]
         Type=oneshot
-        RemainAfterExit=yes
+        RemainAfterExit=no
         ExecStart=/run/setup-environment.sh
     - name: prep-cloud-config.service
       command: start
