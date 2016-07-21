@@ -6,7 +6,7 @@ Wants=mysql_metadata-backup@%i.service
 
 [Service]
 Environment='CONTAINER=mysql-metadata-%i'
-Environment='IMAGE=mysql:5.7.13'
+Environment='IMAGE=mysql/mysql-server:5.7'
 Environment='SERVICE=mysql_metadata'
 Environment='DIR=/media/ephemeral/mysql_metadata-%i'
 Environment='DEVICE=enp2s0f0'
