@@ -234,9 +234,10 @@ write_files:
             fi
         fi
 
-        mkdir -p /media/ephemeral/etcd2
-        chown etcd:etcd /media/ephemeral/etcd2
-        chmod 755 /media/ephemeral/etcd2
+        ETCD2_DIR=/media/ephemeral/etcd2/%discovery_token%
+        mkdir -p ${ETCD2_DIR}
+        chown etcd:etcd ${ETCD2_DIR}
+        chmod 755 ${ETCD2_DIR}
 
 
     - path: /run/prep-cloud-config.sh
