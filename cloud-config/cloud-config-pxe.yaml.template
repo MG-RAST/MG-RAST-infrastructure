@@ -31,8 +31,9 @@ write_files:
                 initial-advertise-peer-urls: "http://$_private_ipv4:2380"
                 # listen on both the official ports and the legacy ports
                 # legacy ports can be omitted if your application doesn't depend on them
-                listen-client-urls: "http://0.0.0.0:2379,http://0.0.0.0:4001"
-                listen-peer-urls: "http://$_private_ipv4:2380,http://$_private_ipv4:7001"
+                listen-client-urls: "http://0.0.0.0:2379"
+                listen-peer-urls: "http://$_private_ipv4:2380"
+                data_dir: "/media/ephemeral/etcd2"
             fleet:
                 public-ip: $_public_ipv4
                 # etcd-request-timeout: 15
@@ -88,7 +89,6 @@ write_files:
                         Environment='TMPDIR=/media/ephemeral/tmp/'
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
                 - name: etcd2.service
-                  command: start
                   drop-ins:
                     - name: "timeout.conf"
                       content: |
@@ -228,6 +228,12 @@ write_files:
                 echo "Error: Could not create filesystem"
             fi
         fi
+
+        ETCD2_DIR=/media/ephemeral/etcd2/%discovery_token%
+        mkdir -p ${ETCD2_DIR}
+        chown etcd:etcd ${ETCD2_DIR}
+        chmod 755 ${ETCD2_DIR}
+
 
     - path: /run/prep-cloud-config.sh
       permissions: '0755'
