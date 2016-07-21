@@ -88,7 +88,7 @@ write_files:
                         [Service]
                         Environment='TMPDIR=/media/ephemeral/tmp/'
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
-                - name: etcd2
+                - name: etcd2.service
                   drop-ins:
                     - name: wait-for-setup.conf
                       content: |
