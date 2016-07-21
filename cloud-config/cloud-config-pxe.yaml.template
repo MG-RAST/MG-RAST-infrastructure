@@ -90,11 +90,6 @@ write_files:
                         Environment='DOCKER_OPTS="-g=/media/ephemeral/docker"'
                 - name: etcd2.service
                   drop-ins:
-                    - name: wait-for-setup.conf
-                      content: |
-                        [Unit]
-                        After=setup-environment.service
-                        Requires=setup-environment.service
                     - name: "timeout.conf"
                       content: |
                         [Service]
