@@ -1,7 +1,7 @@
 
 # M5NR Solr
 
-FROM ubuntu:15.04
+FROM debian:jessie-backports
 
 RUN apt-get update && apt-get upgrade -y && apt-get install -y \
         libtemplate-perl \

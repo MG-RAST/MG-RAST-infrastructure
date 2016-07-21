@@ -5,7 +5,7 @@ Requires=docker.service
 
 [Service]
 Environment='CONTAINER=cassandra'
-Environment='IMAGE=mgrast/cassandra'
+Environment='IMAGE=cassandra:3.7'
 Environment='SERVICE_DIR=/media/ephemeral/cassandra'
 
 TimeoutStartSec=0
@@ -25,7 +25,6 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 # clear containers
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
-ExecStartPre=/home/core/skycore pull --tag=latest etcd:cassandra
 
 # wait for a seed to be available before starting
 ExecStart=/bin/bash -c ' \
@@ -34,12 +33,9 @@ ExecStart=/bin/bash -c ' \
     SEEDS=$(for X in `etcdctl ls /services/cassandra-seed 2> /dev/null`; do etcdctl get $X; done | grep -o "[0-9]*\.[0-9]*\.[0-9]*\.[0-9]*" | sort -u | tr "\n" "," | sed s/.$//); \
     sleep 1; \
   done; \
-  /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 -p 61621:61621 \
+  /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 \
     --ulimit memlock=-1:-1 --ulimit nofile=100000:100000 --ulimit nproc=-1:-1 \
-    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/log4j.properties:/opt/agent/conf/log4j.properties \
-    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/logback.xml:/opt/cassandra/conf/logback.xml \
-    -v ${SERVICE_DIR}/mgrast-config/services/cassandra:/config:ro \
-    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/address.yaml:/opt/agent/conf/address.yaml \
+    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml \
     -v ${SERVICE_DIR}/data:/var/lib/cassandra/data:rw \
     -v ${SERVICE_DIR}/commitlog:/var/lib/cassandra/commitlog:rw \
     -v ${SERVICE_DIR}/saved_caches:/var/lib/cassandra/saved_caches:rw \

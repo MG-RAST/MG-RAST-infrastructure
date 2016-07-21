@@ -6,7 +6,7 @@ Wants=memcached-discovery.service
 
 [Service]
 Environment='CONTAINER=memcached'
-Environment='IMAGE=mgrast/memcached'
+Environment='IMAGE=memcached:1.4-alpine'
 Environment='SERVICE=memcached'
 
 TimeoutStartSec=0
@@ -15,7 +15,6 @@ EnvironmentFile=-/etc/environment
 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
-ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 11211:11211 ${IMAGE} memcached -m 4096
 
