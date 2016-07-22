@@ -1,9 +1,10 @@
 #!/bin/bash
 
 # example:
-# alias coreos='ssh -i ~/.ssh/<key>.pem -oBatchMode=yes -oStrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -l core '
-# for i in 5 10 11 14 20 21 ; do scp -i ~/.ssh/<key>.pem -oBatchMode=yes -oStrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null wipe_docker_dirs.sh core@bio-worker${i}: ; done
-# for i in 5 10 11 14 20 21 ; do coreos bio-worker${i} sudo wipe_docker_dirs.sh ; done
+# KEYFILE=~/.ssh/<key>.pem
+# SSH_OPTIONS="-i ${KEYFILE} -oBatchMode=yes -oStrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+# for i in 5 10 11 14 20 21 ; do scp -i ${KEYFILE} -oBatchMode=yes -oStrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null wipe_docker_dirs.sh core@bio-worker${i}: ; done
+# for i in 5 10 11 14 20 21 ; do ssh ${SSH_OPTIONS} -l core bio-worker${i} sudo ./wipe_docker_dirs.sh ; done
 
 set -x
 
