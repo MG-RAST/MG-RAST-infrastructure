@@ -38,7 +38,7 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api/shock -XPUT 
 curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/8ed9cf48-c2b1-4583-a533-b9d2e85354b4"
 
 #awe server
-curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d3f4ed8e-3932-4c04-830a-75c12bd3b293"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d1058716-af9b-4aba-9821-b631988e575c"
 # this was the new container, but did nowork: curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/5aaa1244-bb27-4b4a-b84a-ce65e1cc3242"
 
 #awe client
