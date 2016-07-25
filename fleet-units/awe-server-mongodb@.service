@@ -27,7 +27,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v /media/ephemeral/awe-server-%i/mongodb/:/data/db --expose=27017 ${IMAGE} /usr/bin/mongod
 
-ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
+#ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
 
 ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
