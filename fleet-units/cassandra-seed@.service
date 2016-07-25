@@ -33,11 +33,13 @@ ExecStart=/bin/bash -c ' \
   SEEDS+=${COREOS_PUBLIC_IPV4}; \
   /usr/bin/docker run --rm --name ${CONTAINER} -p 7000:7000 -p 7199:7199 -p 9042:9042 -p 9160:9160 \
     --ulimit memlock=-1:-1 --ulimit nofile=100000:100000 --ulimit nproc=-1:-1 \
-    -v ${SERVICE_DIR}/mgrast-config/services/cassandra/cassandra.yaml:/etc/cassandra/cassandra.yaml \
     -v ${SERVICE_DIR}/data:/var/lib/cassandra/data:rw \
     -v ${SERVICE_DIR}/commitlog:/var/lib/cassandra/commitlog:rw \
     -v ${SERVICE_DIR}/saved_caches:/var/lib/cassandra/saved_caches:rw \
-    -e CASSANDRA_SEEDS=$SEEDS -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} ${IMAGE} cassandra -R -f'
+    -e CASSANDRA_SEEDS=$SEEDS \
+    -e CASSANDRA_BROADCAST_ADDRESS=${COREOS_PUBLIC_IPV4} \
+    -e CASSANDRA_CLUSTER_NAME="MG-RAST Cluster" \
+    ${IMAGE} cassandra -R -f'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 

@@ -24,10 +24,8 @@ ExecStart=/bin/bash -c " \
   echo \"port detected: $CQL\"; \
   export THRIFT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"9160/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
   echo \"port detected: $THRIFT\"; \
-  export AGENT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"61621/tcp\") 0).HostPort}}' ${CONTAINER} | tr -d '\n'); \
-  echo \"port detected: $AGENT\"; \
   while true; do \
-    etcdctl set /services/${SERVICE}/${SERVICE}@%i \'{\"host\":\"%H\",\"node\":\'\"$NODE\"\',\"JMX\":\'\"$JMX\"\',\"CQL\":\'\"$CQL\"\',\"thrift\":\'\"$THRIFT\"\',\"agent\":\'\"$AGENT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+    etcdctl set /services/${SERVICE}/${SERVICE}@%i \'{\"host\":\"%H\",\"node\":\'\"$NODE\"\',\"JMX\":\'\"$JMX\"\',\"CQL\":\'\"$CQL\"\',\"thrift\":\'\"$THRIFT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
     sleep 45; \
   done"
 
