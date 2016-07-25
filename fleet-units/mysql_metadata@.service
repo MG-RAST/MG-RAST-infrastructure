@@ -32,7 +32,7 @@ ExecStartPre=/bin/chattr -R +C ${DIR}/data
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
-ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v ${DIR}/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD} --entrypoint=/bin/bash ${IMAGE} /bin/bash -c 'ln -s /dev/stderr /mysqld.err && /entrypoint.sh mysqld'
+ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v ${DIR}/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}  ${IMAGE}
 
 # ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
