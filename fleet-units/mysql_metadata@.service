@@ -25,6 +25,8 @@ ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL
 # prepare directories
 ExecStartPre=/bin/mkdir -p ${DIR}/log/ ${DIR}/data/
 ExecStartPre=/bin/chmod 777 ${DIR}/log/ ${DIR}/data/
+ExecStartPre=/bin/chattr -R +C ${DIR}/data
+
 
 # remove old container
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
