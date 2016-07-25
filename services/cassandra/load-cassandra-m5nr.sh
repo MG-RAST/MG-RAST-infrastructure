@@ -8,7 +8,9 @@ ALL_IPS=""
 VERSION=""
 REP_NUM=""
 DATA_DIR=""
-CASS_DIR="/opt/cassandra"
+CASS_BIN="/usr/bin"
+CASS_LIB="/usr/share/cassandra/lib"
+CASS_CONF="/etc/cassandra/cassandra.yaml"
 
 while getopts i:a:v:r:d: option; do
     case "${option}"
@@ -44,8 +46,8 @@ M5NR_DATA=$DATA_DIR/src/v${VERSION}
 SCHEMA_TABLE=$SCHEMA_DIR/m5nr_table_v${VERSION}.cql
 SCHEMA_COPY=$SCHEMA_DIR/m5nr_copy_v${VERSION}.cql
 
-CQLSH=$CASS_DIR/bin/cqlsh
-SST_LOAD=$CASS_DIR/bin/sstableloader
+CQLSH=$CASS_BIN/cqlsh
+SST_LOAD=$CASS_BIN/sstableloader
 
 # download schema template
 mkdir -p $SCHEMA_DIR
@@ -109,7 +111,7 @@ for TYPE in index id; do
     # create sstables
     cd $LOAD_DIR
     for FILE in `ls $M5NR_DATA/${KEYSPACE}.annotation.${TYPE}.*`; do
-        /bin/bash BulkLoader.sh -c $CASS_DIR -k $KEYSPACE -t ${TYPE}_annotation -i $FILE -o $SST_DIR
+        /bin/bash BulkLoader.sh -c $CASS_CONF -l $CASS_LIB -k $KEYSPACE -t ${TYPE}_annotation -i $FILE -o $SST_DIR
         rm $FILE
     done
     # load sstable
