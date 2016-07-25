@@ -9,7 +9,7 @@ VERSION=""
 REP_NUM=""
 DATA_DIR=""
 CASS_BIN="/usr/bin"
-CASS_LIB="/usr/share/cassandra/lib"
+CASS_DIR="/usr/share/cassandra"
 CASS_CONF="/etc/cassandra/cassandra.yaml"
 
 while getopts i:a:v:r:d: option; do
@@ -111,7 +111,7 @@ for TYPE in index id; do
     # create sstables
     cd $LOAD_DIR
     for FILE in `ls $M5NR_DATA/${KEYSPACE}.annotation.${TYPE}.*`; do
-        /bin/bash BulkLoader.sh -c $CASS_CONF -l $CASS_LIB -k $KEYSPACE -t ${TYPE}_annotation -i $FILE -o $SST_DIR
+        /bin/bash BulkLoader.sh -c $CASS_CONF -d $CASS_DIR -k $KEYSPACE -t ${TYPE}_annotation -i $FILE -o $SST_DIR
         rm $FILE
     done
     # load sstable
