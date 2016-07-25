@@ -60,9 +60,9 @@ curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Sch
 # download bulkloader
 mkdir -p $LOAD_DIR
 cd $LOAD_DIR
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/BulkLoader.sh
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/BulkLoader.java
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/tools/BulkLoader/opencsv-3.4.jar
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/BulkLoader.sh
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/BulkLoader.java
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/opencsv-3.4.jar
 
 # download data
 DATA_URL=""
