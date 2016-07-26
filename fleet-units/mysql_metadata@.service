@@ -32,7 +32,8 @@ ExecStartPre=/bin/chmod 777 ${DIR}/log/ ${DIR}/data/
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
-ExecStartPre=/bin/chattr -R +C ${DIR}/data
+# error message: ??? /bin/chattr: Operation not supported while reading flags on /media/ephemeral/mysql_metadata-1/data/mysql.sock
+#ExecStartPre=/bin/chattr -R +C ${DIR}/data
 
 
 ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v ${DIR}/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD} --entrypoint=/bin/bash ${IMAGE} -c 'ln -s /dev/stderr /mysqld.err && /entrypoint.sh mysqld'
