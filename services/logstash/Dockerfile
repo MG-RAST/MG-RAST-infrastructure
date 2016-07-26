@@ -1,6 +1,7 @@
 
 
-FROM logstash:1.5.4-1
+FROM logstash:2.3.4-1
+#FROM logstash:1.5.4-1
 
 
 RUN cd /opt/logstash && bin/plugin install logstash-input-courier
