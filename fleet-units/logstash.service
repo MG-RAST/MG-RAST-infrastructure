@@ -1,0 +1,36 @@
+[Unit]
+Description=logstash 
+Requires=docker.service
+After=docker.service
+
+[Service]
+Environment='IMAGE=mgrast/logstash'
+Environment='SERVICE=logstash'
+Environment='CONTAINER=logstash'
+
+
+
+Environment='SERVICE_DIR=/media/ephemeral/logstash'
+Environment='CONFDIR=${SERVICE_DIR}/mgrast-config/services/logstash'
+
+
+
+Restart=always
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+
+
+# get image
+# ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}"
+
+
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" logstash
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1" logstash
+
+
+ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logstash -v=${CONFDIR}/grok-patterns.conf:/etc/logstash/patterns/grok-patterns.conf -v=${CONFDIR}/logstash.conf:/logstash.conf -v=${CONFDIR}/logstash.crt:/logstash.crt -v=${CONFDIR}/logstash.pem:/logstash.pem -i mgrast/logstash logstash -f /logstash.conf
+
+
+[X-Fleet]
+MachineMetadata=HOSTNAME=bio-worker21-10g.mcs.anl.gov
