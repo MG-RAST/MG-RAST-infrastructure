@@ -29,7 +29,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1" log-courier
 
 #ExecStartPre=-/usr/bin/docker pull log-courier
-ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logcourier -v=${CONFDIR}/lc.yaml:/lc.yaml -v=${CONFDIR}/logstash.crt:/logstash.crt.crt -i mgrast/log-courier log-courier --stdin=true -config=/lc.yaml"
+ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logcourier -v=${CONFDIR}/lc.yaml:/lc.yaml -v=${CONFDIR}/logstash.crt:/logstash.crt -i mgrast/log-courier log-courier --stdin=true -config=/lc.yaml"
 
 
 [X-Fleet]
