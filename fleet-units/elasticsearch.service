@@ -16,7 +16,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
-ExecStart=docker run --name=${CONTAINER} -p 9200:9200 -p 9300:9300 -v /media/ephemeral/elasticsearch/data:/usr/share/elasticsearch/data:rw ${IMAGE} -Dhttp.cors.enabled=true -Dhttp.cors.allow-origin=*
+ExecStart=/usr/bin/docker run --name=${CONTAINER} -p 9200:9200 -p 9300:9300 -v /media/ephemeral/elasticsearch/data:/usr/share/elasticsearch/data:rw ${IMAGE} -Dhttp.cors.enabled=true -Dhttp.cors.allow-origin=*
 
 
 [X-Fleet]
