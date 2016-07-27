@@ -27,7 +27,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1" logstash
 
 
-ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logstash  -p 5000:5000 -v=${CONFDIR}/grok-patterns.conf:/etc/logstash/patterns/grok-patterns.conf:ro -v=${CONFDIR}/logstash.conf:/logstash.conf:ro -v=${CONFDIR}/logstash.crt:/logstash.crt:ro -v=${CONFDIR}/logstash.pem:/logstash.pem:ro -i ${IMAGE} logstash -f /logstash.conf
+ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logstash  -p 5000:5000 -v=${CONFDIR}/grok-patterns.conf:/etc/logstash/patterns/grok-patterns.conf:ro -v=${CONFDIR}/logstash.conf:/logstash.conf:ro -v=${CONFDIR}/logstash.crt:/logstash.crt:ro -v=${CONFDIR}/logstash.pem:/logstash.pem:ro -i ${IMAGE} logstash -f /logstash.conf"
 
 
 [X-Fleet]
