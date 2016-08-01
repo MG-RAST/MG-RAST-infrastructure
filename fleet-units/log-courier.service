@@ -16,7 +16,7 @@ Environment='CONFDIR=${SERVICE_DIR}/mgrast-config/services/log-courier'
 
 
 Restart=always
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 
