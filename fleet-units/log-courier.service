@@ -16,20 +16,20 @@ Environment='CONFDIR=${SERVICE_DIR}/mgrast-config/services/log-courier'
 
 
 Restart=always
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F git.mcs.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H git.mcs.anl.gov >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@git.mcs.anl.gov:mgrast-config.git'
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 
 
 # get image
-ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}"
+# ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}"
 
 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" log-courier
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1" log-courier
 
 #ExecStartPre=-/usr/bin/docker pull log-courier
-ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logcourier -v=${CONFDIR}/lc.conf:/lc.conf -v=${CONFDIR}/lc.crt:/lc.crt -i mgrast/log-courier log-courier --stdin=true -config=/lc.conf "
+ExecStart=/bin/bash -c "/usr/bin/journalctl -b -o json -f 2>&1 | /usr/bin/docker run --name logcourier -v=${CONFDIR}/lc.yaml:/lc.yaml -v=${CONFDIR}/logstash.crt:/logstash.crt -i mgrast/log-courier log-courier --stdin=true -config=/lc.yaml"
 
 
 [X-Fleet]
