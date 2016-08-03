@@ -63,7 +63,7 @@ curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/
 docker cp load-cassandra-m5nr.sh cassandra:/var/lib/cassandra/load-cassandra-m5nr.sh
 docker exec cassandra bash -c 'apt-get update && apt-get install -y curl vim openjdk-8-jdk'
 docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
-docker exec cassandra /usr/bin/nodetool status <keyspace>
+docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
 
 #### start develop services ####
 
