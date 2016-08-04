@@ -65,6 +65,10 @@ docker exec cassandra bash -c 'apt-get update && apt-get install -y curl vim ope
 docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
 docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
 
+
+## log-courier
+# fleetctl start log-courier.service # global unit
+
 #### start develop services ####
 
 # fleetctl start mg-rast-v3-web{,-discovery}@1.v3-web-dev.service
