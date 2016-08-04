@@ -36,7 +36,7 @@ write_files:
                 data_dir: "/media/ephemeral/etcd2/%discovery_token%"
             fleet:
                 public-ip: $_public_ipv4
-                # etcd-request-timeout: 15
+                etcd-request-timeout: 15
                 metadata: $METADATA
             units:
                 - name: settimezone.service
