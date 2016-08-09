@@ -34,6 +34,8 @@ write_files:
                 listen-client-urls: "http://0.0.0.0:2379,http://0.0.0.0:4001"
                 listen-peer-urls: "http://$_private_ipv4:2380,http://$_private_ipv4:7001"
                 data_dir: "/media/ephemeral/etcd2/%discovery_token%"
+                heartbeat-interval: 250
+                election-timeout: 1250
             fleet:
                 public-ip: $_public_ipv4
                 etcd-request-timeout: 15
