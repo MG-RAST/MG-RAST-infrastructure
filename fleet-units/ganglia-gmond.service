@@ -22,7 +22,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pe
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
-ExecStart=/usr/bin/docker run -i -p 8649:8649/udp --privileged -v /sys:/sys -v /dev/:/dev/ --ipc host --net host --pid host -v ${SERVICE_DIR}/mgrast-config/services/ganglia-gmond/gmond.conf:/etc/ganglia/gmond.conf --name ${CONTAINER} ${IMAGE} /usr/sbin/gmond -f
+ExecStart=/usr/bin/docker run -i -p 8649:8649/udp --privileged -v /sys:/sys -v /dev/:/dev/ --ipc host --net host --pid host -v ${SERVICE_DIR}/mgrast-config/services/ganglia-gmond/:/etc/ganglia/ --name ${CONTAINER} ${IMAGE} /usr/sbin/gmond -f
 
 [X-Fleet]
 Global=true
