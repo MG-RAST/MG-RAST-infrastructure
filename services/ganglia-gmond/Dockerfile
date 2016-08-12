@@ -9,5 +9,8 @@ RUN sed -i -e "s:'/proc/:'/host_proc/:" /usr/lib/ganglia/python_modules/diskstat
 # delete other python modules (one or more are crashing gmond)
 RUN ls -1 /etc/ganglia/conf.d/*  | grep -v diskstat.pyconf | xargs rm
 
+RUN sed -i -e "s/value = .*/value = 'md0 sda sdb sdc sdd'/" /etc/ganglia/conf.d/diskstat.pyconf
+
+
 EXPOSE 8649
 CMD ["/usr/sbin/gmond"]
