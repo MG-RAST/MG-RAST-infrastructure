@@ -1,0 +1,30 @@
+[Unit]
+Description=ganglia gmond 
+Requires=docker.service
+After=docker.service
+
+[Service]
+Environment='IMAGE=mgrast/ganglia-gmond:latest'
+Environment='SERVICE=ganglia-gmond'
+Environment='CONTAINER=gmond'
+
+
+
+Environment='SERVICE_DIR=/media/ephemeral/ganglia-gmond'
+
+
+
+Restart=always
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1" 
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+
+ExecStartPre=-/usr/bin/docker pull ${IMAGE}
+
+ExecStart=/usr/bin/docker run -i -p 8649:8649/udp --privileged -v /sys:/sys -v /dev/:/dev/ -v /proc/:/host_proc/ --ipc host --net host --pid host -v ${SERVICE_DIR}/mgrast-config/services/ganglia-gmond/gmond.conf:/etc/ganglia/gmond.conf --name ${CONTAINER} ${IMAGE} /usr/sbin/gmond -f
+
+[X-Fleet]
+Global=true
