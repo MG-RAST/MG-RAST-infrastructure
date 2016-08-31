@@ -20,7 +20,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 #ExecStartPre=-/usr/bin/docker pull log-courier
 ExecStart=/bin/bash -c "while [ true ] ; do sleep 10s ; \
     export JSON=$(docker run -i --rm --name ${CONTAINER} ${IMAGE}) ; \
-    curl -L -X PUT http://localhost:2379/v2/keys/services/api-testing -d value='$JSON' ; \
+    curl -L -X PUT http://localhost:2379/v2/keys/services/api-testing -d value='${JSON}' ; \
     done"
 
 
