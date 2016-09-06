@@ -23,7 +23,7 @@ write_files:
                 reboot-strategy: etcd-lock
             etcd2:
                 # name this is required because pxe-booting would create new ETCD instance names on boot.
-                #name: $ETCD_NAME
+                name: $ETCD_NAME
                 # generate a new token for each unique cluster from https://discovery.etcd.io/new?size=3
                 discovery: "https://discovery.etcd.io/%discovery_token%"
                 # multi-region and multi-cloud deployments need to use $public_ipv4
