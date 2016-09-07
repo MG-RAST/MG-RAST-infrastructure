@@ -1,5 +1,6 @@
 ## Add new member to etcd cluster
 
+(note: these instructions more a collection of commands I have used, they are not yet in the right order necessarily. I will improve that in the future.)
 
 ```bash
 export member_id=
