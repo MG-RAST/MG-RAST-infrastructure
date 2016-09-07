@@ -295,7 +295,7 @@ write_files:
         -----------------------------------------------------------------------------
     - path: /etc/systemd/journald.conf 
       permissions: 0644 
-      content: | 
+      content: |
         [Journal] 
         SystemMaxUse=20M 
         RuntimeMaxUse=20M
