@@ -24,8 +24,8 @@ rm -rf /media/ephemeral/etcd2/*
 curl ${discovery_url}/${member_id} -X DELETE
 ```
 
-make sure the new member is in ETCD_INITIAL_CLUSTER!
-
+The value for ETCD_INITIAL_CLUSTER is given to you when you add a new member. If you do not get the value, you can build it manually:  
+(make sure the new member is in ETCD_INITIAL_CLUSTER!)
 ```bash
 GREP_OBJ=$(for i in $(etcdctl member list | grep -o "140.221.76.[0-9]*" | uniq) ; do echo -n $i ; echo -n "\|" ; done)
 
