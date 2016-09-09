@@ -15,4 +15,5 @@ rm -rf /media/ephemeral/docker/
 systemctl start docker
 
 # restart fleet, this should restart all services on that host
+sleep 10
 systemctl restart fleet
