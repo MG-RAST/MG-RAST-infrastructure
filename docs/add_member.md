@@ -44,14 +44,23 @@ GREP_OBJ=$(for i in $(etcdctl member list | grep -o "140.221.76.[0-9]*" | uniq) 
 export ETCD_INITIAL_CLUSTER=$(fleetctl list-machines -no-legend  | grep "${GREP_OBJ}${member_ip}" | sed  's/.*\(140[0-9\.]*\).*\(node_[0-9a-z:]*\).*/\2=http:\/\/\1:2380/g' | tr '\n' ',')
 ```
 
-On new member:
+Create file on new member:
 vi etcd-add.sh
 ```bash
 #!/bin/bash
+### INSERT ETCD_INITIAL_CLUSTER HERE
+
+
+source /etc/environment
+export discovery_token=$(cat /run/systemd/system/etcd2.service.d/20-cloudinit.conf | grep ETCD_DISCOVERY | grep -o "[0-9a-f]\{32\}")
+export discovery_url=https://discovery.etcd.io/${discovery_token}
+export member_name=${ETCD_NAME}
+export member_id=$(curl ${discovery_url} | grep -o "[0-9a-z]*\",\"value\":\"${member_name}" | grep -o "^[0-9a-z]*") # risky JSON parsing!
+export member_ip=${COREOS_PRIVATE_IPV4}
+
 export ETCD_INITIAL_CLUSTER_STATE="existing"
 export ETCD_ADVERTISE_CLIENT_URLS=http://${member_ip}:2379
 export ETCD_DATA_DIR=/media/ephemeral/etcd2/${discovery_token}
-# (defined above) export ETCD_INITIAL_CLUSTER="..."
 export ETCD_DISCOVERY=""
 export ETCD_ELECTION_TIMEOUT=1250
 export ETCD_HEARTBEAT_INTERVAL=250
