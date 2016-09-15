@@ -4,11 +4,20 @@
 
 ```bash
 source /etc/environment
-export member_id=       # curl https://discovery.etcd.io/... find ID using member_name
-export member_name=     # source /etc/environment ; echo ${ETCD_NAME}
-export member_ip=       # source /etc/environment ; echo ${COREOS_PRIVATE_IPV4}
-export discovery_token= # cat  /run/systemd/system/etcd2.service.d/20-cloudinit.conf | grep ETCD_DISCOVERY | grep -o "[0-9a-f]\{32\}"
+export discovery_token=$(cat /run/systemd/system/etcd2.service.d/20-cloudinit.conf | grep ETCD_DISCOVERY | grep -o "[0-9a-f]\{32\}")
 export discovery_url=https://discovery.etcd.io/${discovery_token}
+export member_name=${ETCD_NAME}
+export member_id=$(curl ${discovery_url} | grep -o "[0-9a-z]*\",\"value\":\"${member_name}" | grep -o "^[0-9a-z]*") # risky JSON parsing!
+export member_ip=${COREOS_PRIVATE_IPV4}
+
+# verify results
+echo -e \
+"export discovery_token=${discovery_token}\n"\
+"export discovery_url=${discovery_url}\n"\
+"export member_name=${member_name}\n"\
+"export member_id=${member_id}\n"\
+"export member_ip=${member_ip}\n"
+
 ```
 
 delete data on new member
