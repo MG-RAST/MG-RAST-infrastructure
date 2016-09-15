@@ -30,6 +30,8 @@ curl ${discovery_url}/${member_id} -X DELETE
 
 On an active cluster machine
 ```bash
+etcdctl member remove ${member_id}
+
 etcdctl member add ${member_name} http://${member_ip}:2380
 ```
 copy ETCD_NAME and ETCD_INITIAL_CLUSTER !
@@ -69,7 +71,7 @@ export ETCD_INITIAL_ADVERTISE_PEER_URLS=http://${member_ip}:2380
 export ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
 export ETCD_LISTEN_PEER_URLS=http://${member_ip}:2380,http://${member_ip}:7001
 export ETCD_NAME=${member_name}
-/usr/bin/etcd2
+/usr/bin/etcd2 --initial-cluster ${ETCD_INITIAL_CLUSTER} --initial-cluster-state existing
 ```
 
 Let new node join the cluster
