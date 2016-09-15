@@ -48,7 +48,10 @@ echo "export ETCD_INITIAL_CLUSTER=\"${ETCD_INITIAL_CLUSTER}${member_name}=http:/
 ```
 
 Create file on new member:
+```bash
 vi etcd-add.sh
+```
+and paste content:
 ```bash
 #!/bin/bash
 ### INSERT ETCD_INITIAL_CLUSTER HERE
