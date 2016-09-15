@@ -1,4 +1,4 @@
-## Add new member to etcd cluster
+## Add new member or proxy to etcd cluster
 
 (note: these instructions more a collection of commands I have used, they are not yet in the right order necessarily. I will improve that in the future.)
 
@@ -28,7 +28,7 @@ rm -rf /media/ephemeral/etcd2/*
 curl ${discovery_url}/${member_id} -X DELETE
 ```
 
-On an active cluster machine
+On an active cluster machine (not for proxy mode !)
 ```bash
 etcdctl member remove ${member_id}
 
@@ -72,6 +72,8 @@ export ETCD_LISTEN_CLIENT_URLS=http://0.0.0.0:2379,http://0.0.0.0:4001
 export ETCD_LISTEN_PEER_URLS=http://${member_ip}:2380,http://${member_ip}:7001
 export ETCD_NAME=${member_name}
 /usr/bin/etcd2 --initial-cluster ${ETCD_INITIAL_CLUSTER} --initial-cluster-state existing
+# ***PROXY *** Add this flag to the above command to activate as an proxy: --proxy on
+
 ```
 
 Let new node join the cluster
@@ -85,4 +87,10 @@ chmod +x .
 sudo -u etcd ./etcd-add.sh 
 ```
 
-Once node joins, stop node and do normal systemctl start etcd2.
+Once node joins, stop node and do normal 
+```bash
+systemctl start etcd2.
+```
+
+# proxy mode
+The above script will fail in proxy mode ("etcdmain: failed to notify systemd for readiness: No socket"), but it generates the required files. Just run "systemctl start etcd2".
