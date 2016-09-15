@@ -44,7 +44,7 @@ The value for ETCD_INITIAL_CLUSTER is given to you when you add a new member. If
 GREP_OBJ=$(for i in $(etcdctl member list | grep -o "140.221.76.[0-9]*" | uniq) ; do echo -n $i ; echo -n "\|" ; done)
 
 export ETCD_INITIAL_CLUSTER=$(fleetctl list-machines -no-legend  | grep "${GREP_OBJ}${member_ip}" | sed  's/.*\(140[0-9\.]*\).*\(node_[0-9a-z:]*\).*/\2=http:\/\/\1:2380/g' | tr '\n' ',')
-echo "export ETCD_INITIAL_CLUSTER=${ETCD_INITIAL_CLUSTER}${member_name}=http://${member_ip}:2380"
+echo "export ETCD_INITIAL_CLUSTER=\"${ETCD_INITIAL_CLUSTER}${member_name}=http://${member_ip}:2380\""
 ```
 
 Create file on new member:
