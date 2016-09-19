@@ -30,7 +30,7 @@ curl ${discovery_url}/${member_id} -X DELETE
 
 On an active cluster machine (not for proxy mode !)
 ```bash
-etcdctl member remove ${member_id}
+etcdctl member remove ${member_id} # if this fails, your member might have been a proxy in fact.
 
 etcdctl member add ${member_name} http://${member_ip}:2380
 ```
@@ -92,7 +92,7 @@ sudo -u etcd ./etcd-add.sh
 
 Once node joins, stop node and do normal 
 ```bash
-systemctl start etcd2.
+systemctl start etcd2
 ```
 
 # proxy mode
