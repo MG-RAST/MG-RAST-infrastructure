@@ -19,6 +19,8 @@ echo -e \
 "export member_ip=${member_ip}\n"
 
 ```
+Copy-Paste last three lines into terminal of existing cluster member.
+
 
 delete data on new member
 ```bash
