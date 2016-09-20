@@ -24,9 +24,11 @@ fleetctl start mongodb-replica-update@1.shock.service
 
 # now start the other two, wait for one to finish replicating before start next
 # on host: run this to check replica status, 'STARTUP2' mode means still replicating
-docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.status())' admin
 fleetctl start mongodb-replica{,-discovery,-update}@2.shock.service
 fleetctl start mongodb-replica{,-discovery,-update}@3.shock.service
+
+# this command lets you see cluster hosts and their status
+docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.status())' admin
 
 ## for awe mongodb repeat above, replace 'shock' with 'awe'
 
@@ -63,6 +65,8 @@ curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/
 docker cp load-cassandra-m5nr.sh cassandra:/var/lib/cassandra/load-cassandra-m5nr.sh
 docker exec cassandra bash -c 'apt-get update && apt-get install -y curl vim openjdk-8-jdk'
 docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
+
+# this command lets you see cluster hosts and their status
 docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
 
 
