@@ -30,6 +30,9 @@ fleetctl start mongodb-replica{,-discovery,-update}@3.shock.service
 # this command lets you see cluster hosts and their status
 docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.status())' admin
 
+# this command removes missing host from cluster list - run on primary only
+docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.remove("${COREOS_PUBLIC_IPV4}:27017"))' admin
+
 ## for awe mongodb repeat above, replace 'shock' with 'awe'
 
 ## mysql / solr / memcache / awe
@@ -69,6 +72,8 @@ docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this ho
 # this command lets you see cluster hosts and their status
 docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
 
+# this command removes missing host from cluster list - run on any host
+docker exec cassandra /usr/bin/nodetool removenode HostID
 
 ## log-courier
 # fleetctl start log-courier.service # global unit
