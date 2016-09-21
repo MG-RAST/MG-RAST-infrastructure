@@ -19,6 +19,8 @@ echo -e \
 "export member_ip=${member_ip}\n"
 
 ```
+Copy-Paste last three lines into terminal of existing cluster member.
+
 
 delete data on new member
 ```bash
@@ -82,7 +84,7 @@ export ETCD_NAME=${member_name}
 Let new node join the cluster
 ```bash
 chmod +x etcd-add.sh 
-
+mkdir -p /media/ephemeral/etcd2/${discovery_token} 
 chown etcd:etcd  /media/ephemeral/etcd2/
 chown etcd:etcd  /media/ephemeral/etcd2/${discovery_token}
 
