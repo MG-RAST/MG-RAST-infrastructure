@@ -1,0 +1,38 @@
+[Unit]
+Description=Cassandra Node %i
+After=docker.service
+Requires=docker.service
+
+[Service]
+Environment='CONTAINER=cassandra'
+Environment='IMAGE=cassandra:3.7'
+Environment='SERVICE_DIR=/media/ephemeral/cassandra-simple'
+
+TimeoutStartSec=0
+Restart=always
+RestartSec=10
+EnvironmentFile=-/etc/environment
+
+# clear dirs
+## don't delete data
+## ExecStartPre=/bin/rm -rf ${SERVICE_DIR}
+ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVICE_DIR}/saved_caches
+ExecStartPre=/bin/chattr -R +C ${SERVICE_DIR}/data
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+# clear containers
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+
+# wait for a seed to be available before starting
+ExecStart=/bin/bash -c '${SERVICE_DIR}/mgrast-config/services/cassanda-simple/run_cassandra.sh'
+
+ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+[X-Fleet]
+Conflicts=solr-metagenome@*.service
+Conflicts=cassandra-simple@*.service
+
