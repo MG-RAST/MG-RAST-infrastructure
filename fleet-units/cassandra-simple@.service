@@ -1,11 +1,10 @@
 [Unit]
-Description=Cassandra Node %i
+Description=Cassandra Simple %i
 After=docker.service
 Requires=docker.service
 
 [Service]
-Environment='CONTAINER=cassandra'
-Environment='IMAGE=cassandra:3.7'
+Environment='CONTAINER=cassandra-simple'
 Environment='SERVICE_DIR=/media/ephemeral/cassandra-simple'
 
 TimeoutStartSec=0
@@ -13,9 +12,7 @@ Restart=always
 RestartSec=10
 EnvironmentFile=-/etc/environment
 
-# clear dirs
-## don't delete data
-## ExecStartPre=/bin/rm -rf ${SERVICE_DIR}
+
 ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVICE_DIR}/saved_caches
 ExecStartPre=/bin/chattr -R +C ${SERVICE_DIR}/data
 
@@ -27,8 +24,13 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
-# wait for a seed to be available before starting
-ExecStart=/bin/bash -c '${SERVICE_DIR}/mgrast-config/services/cassanda-simple/run_cassandra.sh'
+
+ExecStart=/bin/bash -c '\
+  export INSTANCE_NAME=%i ; \
+  export SERVICE_DIR=${SERVICE_DIR} ; \
+  export CONTAINER=${CONTAINER} ; \
+  export COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} ; \
+  ${SERVICE_DIR}/mgrast-config/services/cassanda-simple/run_cassandra.sh'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
