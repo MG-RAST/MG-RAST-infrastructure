@@ -104,7 +104,7 @@ echo "Creating / loading sstables ..."
 SST_DIR=$DATA_DIR/sstable
 KEYSPACE=m5nr_v${VERSION}
 mkdir -p $SST_DIR
-for TYPE in index id; do
+for TYPE in index id midx md5; do
     # split large file
     cd $M5NR_DATA
     split -a 2 -d -l 2500000 ${KEYSPACE}.annotation.${TYPE} ${KEYSPACE}.annotation.${TYPE}.
