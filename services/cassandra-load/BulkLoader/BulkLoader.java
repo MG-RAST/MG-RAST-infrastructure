@@ -201,7 +201,7 @@ public class BulkLoader {
                                   parseStringList(line[7]),
                                   parseStringList(line[8]));
                 } else if (table.equals("midx_annotation")) {
-                    writer.addRow(line[0]),
+                    writer.addRow(line[0],
                                   line[1],
                                   Boolean.valueOf(line[2]),
                                   Integer.parseInt(line[3]),
