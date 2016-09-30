@@ -65,6 +65,5 @@ done
 # load sstable
 echo "Loading sstables ..."
 $SST_LOAD -d $ALL_IPS $SST_DIR/$KEYSPACE/$TABLE
-done
 
 exit 0
