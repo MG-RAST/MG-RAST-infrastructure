@@ -268,7 +268,7 @@ public class BulkLoader {
     
     public static Long safeParseLong (String longStr) {
         if (longStr == "") {
-            return 0;
+            return new Long(0);
         } else {
             return Long.parseLong(longStr);
         }
