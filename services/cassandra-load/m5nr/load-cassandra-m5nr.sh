@@ -52,17 +52,17 @@ SST_LOAD=$CASS_BIN/sstableloader
 # download schema template
 mkdir -p $SCHEMA_DIR
 cd $SCHEMA_DIR
-curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Schema/m5nr_table.cql.tt | \
+curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/m5nr_table.cql.tt | \
     sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% replication \%\];$REP_NUM;g" > $SCHEMA_TABLE
-curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Schema/m5nr_copy.cql.tt | \
+curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/m5nr_copy.cql.tt | \
     sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% data_dir \%\];$M5NR_DATA;g" > $SCHEMA_COPY
 
 # download bulkloader
 mkdir -p $LOAD_DIR
 cd $LOAD_DIR
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/BulkLoader.sh
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/BulkLoader.java
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/opencsv-3.4.jar
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.sh
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.java
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/opencsv-3.4.jar
 
 # download data
 DATA_URL=""
