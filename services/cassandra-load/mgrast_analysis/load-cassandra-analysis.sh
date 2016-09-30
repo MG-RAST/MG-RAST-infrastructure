@@ -7,18 +7,20 @@ ALL_IPS=""
 DATA_DIR=""
 KEYSPACE=""
 TABLE=""
+PORT=""
 BASE_DIR="/var/lib/cassandra"
 CASS_BIN="/usr/bin"
 CASS_DIR="/usr/share/cassandra"
 CASS_CONF="/etc/cassandra/cassandra.yaml"
 
-while getopts a:d:k:t: option; do
+while getopts a:d:k:t:p: option; do
     case "${option}"
         in
             a) ALL_IPS=${OPTARG};;
             d) DATA_DIR=${OPTARG};;
             k) KEYSPACE=${OPTARG};;
             t) TABLE=${OPTARG};;
+            p) PORT=${OPTARG};;
     esac
 done
 
@@ -29,6 +31,10 @@ fi
 if [ -z "$ALL_IPS" ]; then
     echo "Missing IPs"
     exit 1
+fi
+
+if [ -z "$PORT" ]; then
+    PORT=9042
 fi
 
 set -x
@@ -64,6 +70,6 @@ done
 
 # load sstable
 echo "Loading sstables ..."
-$SST_LOAD -d $ALL_IPS $SST_DIR/$KEYSPACE/$TABLE
+$SST_LOAD -p $PORT -d $ALL_IPS $SST_DIR/$KEYSPACE/$TABLE
 
 exit 0
