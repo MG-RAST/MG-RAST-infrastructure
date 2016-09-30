@@ -2,7 +2,7 @@
 CREATE KEYSPACE IF NOT EXISTS mgrast_abundance
     WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 4 };
 
-use mgrast_abundances;
+use mgrast_abundance;
 
 CREATE TABLE IF NOT EXISTS job_info (
     version int,
@@ -46,7 +46,7 @@ CREATE INDEX job_lcas_exp_idx ON job_lcas (exp_avg);
 CREATE INDEX job_lcas_ident_idx ON job_lcas (ident_avg);
 CREATE INDEX job_lcas_len_idx ON job_lcas (len_avg);
 
-CREATE KEYSPACE IF NOT EXISTS mgrast_features
+CREATE KEYSPACE IF NOT EXISTS mgrast_feature
     WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 4 };
 
 use mgrast_feature;
