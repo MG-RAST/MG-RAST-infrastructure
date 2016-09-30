@@ -47,18 +47,24 @@ curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/mast
 curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.java
 curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/opencsv-3.4.jar
 
-echo "Creating / loading sstables ..."
+# split large files
+echo "Splitting input files ..."
 cd $DATA_DIR
 for FILE in *.${TABLE}; do
-    # split large files
     split -a 2 -d -l 2000000 ${FILE} ${FILE}.
-    # create sstables
-    for PART in ${FILE}.*; do
-        /bin/bash BulkLoader.sh -c $CASS_CONF -d $CASS_DIR -k $KEYSPACE -t $TABLE -i $PART -o $SST_DIR
-        rm -v $PART
-    done
-    # load sstable
-    $SST_LOAD -d $ALL_IPS $SST_DIR/$KEYSPACE/$TABLE
+done
+
+# create sstables
+echo "Creating sstables ..."
+cd $LOAD_DIR
+for FILE in `ls $DATA_DIR/*.${TABLE}.*`; do
+    /bin/bash BulkLoader.sh -c $CASS_CONF -d $CASS_DIR -k $KEYSPACE -t $TABLE -i $FILE -o $SST_DIR
+    rm -v $FILE
+done
+
+# load sstable
+echo "Loading sstables ..."
+$SST_LOAD -d $ALL_IPS $SST_DIR/$KEYSPACE/$TABLE
 done
 
 exit 0
