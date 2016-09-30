@@ -259,18 +259,18 @@ public class BulkLoader {
     }
     
     public static Integer safeParseInt (String intStr) {
-        if (intStr == "") {
-            return 0;
-        } else {
+        try {
             return Integer.parseInt(intStr);
+        } catch (NumberFormatException e) {
+            return 0;
         }
     }
     
     public static Long safeParseLong (String longStr) {
-        if (longStr == "") {
-            return new Long(0);
-        } else {
+        try {
             return Long.parseLong(longStr);
+        } catch (NumberFormatException e) {
+            return new Long(0);
         }
     }
     
