@@ -186,7 +186,7 @@ public class BulkLoader {
                                   line[1],
                                   line[2],
                                   Boolean.valueOf(line[3]),
-                                  Integer.parseInt(line[4]),
+                                  safeParseInt(line[4]),
                                   parseIntList(line[5]),
                                   parseIntList(line[6]),
                                   parseIntList(line[7]));
@@ -204,7 +204,7 @@ public class BulkLoader {
                     writer.addRow(line[0],
                                   line[1],
                                   Boolean.valueOf(line[2]),
-                                  Integer.parseInt(line[3]),
+                                  safeParseInt(line[3]),
                                   parseIntList(line[4]),
                                   parseIntList(line[5]),
                                   parseIntList(line[6]));
@@ -221,21 +221,21 @@ public class BulkLoader {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),
                                   line[2],
-                                  Integer.parseInt(line[3]),
+                                  safeParseInt(line[3]),
                                   Float.parseFloat(line[4]),
                                   Float.parseFloat(line[5]),
                                   Float.parseFloat(line[6]),
-                                  Long.parseLong(line[7]),
-                                  Integer.parseInt(line[8]));
+                                  safeParseLong(line[7]),
+                                  safeParseInt(line[8]));
                 } else if (table.equals("job_features")) {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),
                                   line[2],
                                   line[3],
-                                  Integer.parseInt(line[4]),
-                                  Integer.parseInt(line[5]),
-                                  Integer.parseInt(line[6]),
-                                  Integer.parseInt(line[7]));
+                                  safeParseInt(line[4]),
+                                  safeParseInt(line[5]),
+                                  safeParseInt(line[6]),
+                                  safeParseInt(line[7]));
                 }
                 // Print nK
                 lineNumber += 1;
@@ -256,6 +256,22 @@ public class BulkLoader {
         System.out.println("Successfully parsed " + lineNumber + " lines.");
         System.out.println("Execution time was " + ((end-start) / 1000) + " seconds.");
         System.exit(0);
+    }
+    
+    public static Integer safeParseInt (String intStr) {
+        if (intStr == "") {
+            return 0;
+        } else {
+            return Integer.parseInt(intStr);
+        }
+    }
+    
+    public static Long safeParseLong (String longStr) {
+        if (longStr == "") {
+            return 0;
+        } else {
+            return Long.parseLong(longStr);
+        }
     }
     
     public static List<String> parseStringList (String listStr) {
