@@ -6,6 +6,8 @@ Requires=docker.service
 [Service]
 Environment='CONTAINER=cassandra-simple'
 Environment='SERVICE_DIR=/media/ephemeral/cassandra-simple'
+Environment='IMAGE=mgrast/cassandra:3.7'
+
 
 TimeoutStartSec=0
 Restart=always
@@ -25,12 +27,19 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
+# create SSL keys/certificates
+ExecStartPre=/usr/bin/docker run -ti --rm -e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} -v ${SERVICE_DIR}/mgrast-config/services/cassandra/config:/config -v ${SERVICE_DIR}/ssl:/ssl ${IMAGE} /config/ssl.sh
+
+#  make sure seed gets lock
+ExecStartPre=${SERVICE_DIR}/mgrast-config/services/cassandra/get_lock.sh
+
 ExecStart=/bin/bash -c '\
   export INSTANCE_NAME=%i ; \
   export SERVICE_DIR=${SERVICE_DIR} ; \
   export CONTAINER=${CONTAINER} ; \
   export COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} ; \
-  ${SERVICE_DIR}/mgrast-config/services/cassanda-simple/run_cassandra.sh'
+  export IMAGE=${IMAGE} ; \
+  ${SERVICE_DIR}/mgrast-config/services/cassandra/run_cassandra.sh'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
