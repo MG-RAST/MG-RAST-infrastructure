@@ -111,6 +111,19 @@ public class BulkLoader {
                                     ") VALUES (" +
                                         "?, ?, ?, ?, ?, ?, ?, ?" +
                                     ")", keyspace, table);
+        } else if (table.equals("job_info")) {
+            schema = String.format("CREATE TABLE %s.%s (" +
+                                        "version int, " +
+                                        "job int, " +
+                                        "updated_on text, " +
+                                        "md5s int, " +
+                                        "PRIMARY KEY ((version, job), updated_on) " +
+                                    ")", keyspace, table);
+            insert = String.format("INSERT INTO %s.%s (" +
+                                        "version, job, updated_on, md5s" +
+                                    ") VALUES (" +
+                                        "?, ?, ?, ?" +
+                                    ")", keyspace, table);
         } else if (table.equals("job_md5s")) {
             schema = String.format("CREATE TABLE %s.%s (" +
                                         "version int, " +
@@ -126,6 +139,24 @@ public class BulkLoader {
                                     ")", keyspace, table);
             insert = String.format("INSERT INTO %s.%s (" +
                                         "version, job, md5, abundance, exp_avg, ident_avg, len_avg, seek, length" +
+                                    ") VALUES (" +
+                                        "?, ?, ?, ?, ?, ?, ?, ?, ?" +
+                                    ")", keyspace, table);
+        } else if (table.equals("job_lcas")) {
+            schema = String.format("CREATE TABLE %s.%s (" +
+                                        "version int, " +
+                                        "job int, " +
+                                        "lca text, " +
+                                        "abundance int, " +
+                                        "exp_avg float, " +
+                                        "ident_avg float, " +
+                                        "len_avg float, " +
+                                        "md5s int, " +
+                                        "level int, " +
+                                        "PRIMARY KEY ((version, job), lca) " +
+                                    ")", keyspace, table);
+            insert = String.format("INSERT INTO %s.%s (" +
+                                        "version, job, lca, abundance, exp_avg, ident_avg, len_avg, md5s, level" +
                                     ") VALUES (" +
                                         "?, ?, ?, ?, ?, ?, ?, ?, ?" +
                                     ")", keyspace, table);
@@ -217,6 +248,11 @@ public class BulkLoader {
                                   parseStringList(line[5]),
                                   parseStringList(line[6]),
                                   parseStringList(line[7]));
+                } else if (table.equals("job_info")) {
+                    writer.addRow(Integer.parseInt(line[0]),
+                                  Integer.parseInt(line[1]),
+                                  line[2],
+                                  safeParseInt(line[3]);
                 } else if (table.equals("job_md5s")) {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),
@@ -226,6 +262,16 @@ public class BulkLoader {
                                   Float.parseFloat(line[5]),
                                   Float.parseFloat(line[6]),
                                   safeParseLong(line[7]),
+                                  safeParseInt(line[8]));
+                } else if (table.equals("job_lcas")) {
+                    writer.addRow(Integer.parseInt(line[0]),
+                                  Integer.parseInt(line[1]),
+                                  line[2],
+                                  safeParseInt(line[3]),
+                                  Float.parseFloat(line[4]),
+                                  Float.parseFloat(line[5]),
+                                  Float.parseFloat(line[6]),
+                                  safeParseInt(line[7]),
                                   safeParseInt(line[8]));
                 } else if (table.equals("job_features")) {
                     writer.addRow(Integer.parseInt(line[0]),
