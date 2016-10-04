@@ -67,7 +67,8 @@ curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/mast
 # download data
 DATA_URL=""
 if [ "$VERSION" == "1" ]; then
-    DATA_URL="http://shock.metagenomics.anl.gov/node/23506280-e153-4834-b98e-3102b6672a15?download"
+    #DATA_URL="http://shock.metagenomics.anl.gov/node/23506280-e153-4834-b98e-3102b6672a15?download"
+    DATA_URL="http://shock.metagenomics.anl.gov/node/4ce1ec2f-58f1-48fa-86cd-3bff227db165?download"
 elif [ "$VERSION" == "10" ]; then
     DATA_URL="http://shock.metagenomics.anl.gov/node/foo?download"
 fi
