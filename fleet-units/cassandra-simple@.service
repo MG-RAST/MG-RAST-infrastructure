@@ -27,6 +27,9 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
+ExecStartPre=/usr/bin/docker pull ${IMAGE}
+
+
 # create SSL keys/certificates
 ExecStartPre=/usr/bin/docker run -i --rm -e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} -v ${SERVICE_DIR}/mgrast-config/services/cassandra/:/config -v ${SERVICE_DIR}/ssl:/ssl ${IMAGE} /config/ssl.sh
 
