@@ -95,11 +95,11 @@ fi
 
 # load tables
 echo "Loading schema ..."
-$CQLSH -f $SCHEMA_TABLE $MY_IP
+$CQLSH --request-timeout 600 -f $SCHEMA_TABLE $MY_IP
 
 echo "Copying small data ..."
 sed -i "s;\(^import csv$\);\1\ncsv.field_size_limit(1000000000);" ${CQLSH}.py
-$CQLSH -f $SCHEMA_COPY $MY_IP
+$CQLSH --request-timeout 600 -f $SCHEMA_COPY $MY_IP
 
 echo "Creating / loading sstables ..."
 SST_DIR=$DATA_DIR/sstable
