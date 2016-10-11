@@ -1,0 +1,21 @@
+[Unit]
+Description=cassandra-simple discovery
+BindsTo=cassandra-simple@%i.service
+After=cassandra-simple@%i.service
+
+[Service]
+Environment='SERVICE=cassandra-simple'
+EnvironmentFile=-/etc/environment
+
+
+ExecStart=/bin/bash -c " \
+  while true; do \
+    etcdctl set /services/${SERVICE}/instances/${SERVICE}@%i \'{\"host\":\"%H\",\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+    sleep 45; \
+  done"
+
+ExecStop=/bin/bash -c " \
+  /usr/bin/etcdctl rm /services/${SERVICE}/instances/${SERVICE}@%i"
+
+[X-Fleet]
+MachineOf=cassandra-simple@%i.service
