@@ -64,7 +64,7 @@ for i in `seq 1 10`; do sleep 300; fleetctl start cassandra-node@$i.service; don
 # need to manually load data on one seed if starting from scratch
 # on one seed host: download load script and run it in seed container
 # list of all IPS: fleetctl list-units | grep cassandra | cut -f2 -d"/" | cut -f1 | sort -u | tr "\n" ","; echo
-curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra/load-cassandra-m5nr.sh
+curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/load-cassandra-m5nr.sh
 docker cp load-cassandra-m5nr.sh cassandra:/var/lib/cassandra/load-cassandra-m5nr.sh
 docker exec cassandra bash -c 'apt-get update && apt-get install -y curl vim openjdk-8-jdk'
 docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>

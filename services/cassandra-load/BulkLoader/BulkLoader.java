@@ -252,7 +252,7 @@ public class BulkLoader {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),
                                   line[2],
-                                  safeParseInt(line[3]);
+                                  safeParseInt(line[3]));
                 } else if (table.equals("job_md5s")) {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),
