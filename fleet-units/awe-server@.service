@@ -28,7 +28,7 @@ ExecStartPre=/bin/mkdir -p ${DIR}/logs ${DIR}/data
 # get image
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v ${DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/  ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 8001:8001 -v ${DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE} --logoutput=both
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 

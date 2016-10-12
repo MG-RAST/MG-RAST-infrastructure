@@ -10,6 +10,7 @@ Environment='SERVICE_DIR=/media/ephemeral/cassandra'
 
 TimeoutStartSec=0
 Restart=always
+RestartSec=10
 EnvironmentFile=-/etc/environment
 
 # clear dirs
@@ -49,6 +50,3 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 Conflicts=solr-metagenome@*.service
 Conflicts=cassandra-seed@*.service
 Conflicts=cassandra-node@*.service
-MachineMetadata=RAM_GB=47
-MachineMetadata=RAM_GB=71
-MachineMetadata=RAM_GB=79

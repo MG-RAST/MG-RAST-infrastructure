@@ -44,7 +44,3 @@ ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/dock
 [X-Fleet]
 Conflicts=api-server@*.service
 Conflicts=solr-metagenome@*.service
-MachineMetadata=RAM_GB=24
-MachineMetadata=RAM_GB=47
-MachineMetadata=RAM_GB=71
-MachineMetadata=RAM_GB=79

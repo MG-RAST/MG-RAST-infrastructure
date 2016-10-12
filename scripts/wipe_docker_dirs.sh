@@ -13,3 +13,7 @@ sleep 1
 for b in `ls /media/ephemeral/docker/btrfs/subvolumes/`; do btrfs subvolume delete /media/ephemeral/docker/btrfs/subvolumes/$b; done
 rm -rf /media/ephemeral/docker/
 systemctl start docker
+
+# restart fleet, this should restart all services on that host
+sleep 10
+systemctl restart fleet

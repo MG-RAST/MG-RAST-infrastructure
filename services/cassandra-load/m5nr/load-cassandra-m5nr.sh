@@ -52,22 +52,23 @@ SST_LOAD=$CASS_BIN/sstableloader
 # download schema template
 mkdir -p $SCHEMA_DIR
 cd $SCHEMA_DIR
-curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Schema/m5nr_table.cql.tt | \
+curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/m5nr_table.cql.tt | \
     sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% replication \%\];$REP_NUM;g" > $SCHEMA_TABLE
-curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/Schema/m5nr_copy.cql.tt | \
+curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/m5nr_copy.cql.tt | \
     sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% data_dir \%\];$M5NR_DATA;g" > $SCHEMA_COPY
 
 # download bulkloader
 mkdir -p $LOAD_DIR
 cd $LOAD_DIR
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/BulkLoader.sh
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/BulkLoader.java
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST/develop/src/MGRAST/bin/BulkLoader/opencsv-3.4.jar
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.sh
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.java
+curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/opencsv-3.4.jar
 
 # download data
 DATA_URL=""
 if [ "$VERSION" == "1" ]; then
-    DATA_URL="http://shock.metagenomics.anl.gov/node/23506280-e153-4834-b98e-3102b6672a15?download"
+    #DATA_URL="http://shock.metagenomics.anl.gov/node/23506280-e153-4834-b98e-3102b6672a15?download"
+    DATA_URL="http://shock.metagenomics.anl.gov/node/4ce1ec2f-58f1-48fa-86cd-3bff227db165?download"
 elif [ "$VERSION" == "10" ]; then
     DATA_URL="http://shock.metagenomics.anl.gov/node/foo?download"
 fi
@@ -94,17 +95,17 @@ fi
 
 # load tables
 echo "Loading schema ..."
-$CQLSH -f $SCHEMA_TABLE $MY_IP
+$CQLSH --request-timeout 600 -f $SCHEMA_TABLE $MY_IP
 
 echo "Copying small data ..."
 sed -i "s;\(^import csv$\);\1\ncsv.field_size_limit(1000000000);" ${CQLSH}.py
-$CQLSH -f $SCHEMA_COPY $MY_IP
+$CQLSH --request-timeout 600 -f $SCHEMA_COPY $MY_IP
 
 echo "Creating / loading sstables ..."
 SST_DIR=$DATA_DIR/sstable
 KEYSPACE=m5nr_v${VERSION}
 mkdir -p $SST_DIR
-for TYPE in index id; do
+for TYPE in index id midx md5; do
     # split large file
     cd $M5NR_DATA
     split -a 2 -d -l 2500000 ${KEYSPACE}.annotation.${TYPE} ${KEYSPACE}.annotation.${TYPE}.

@@ -22,17 +22,4 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Global=true
-MachineMetadata=HOSTNAME=bio-worker1-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker6-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker7-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker8-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker10-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker12-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker15-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker16-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker17-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker18-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker19-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker20-10g.mcs.anl.gov
 

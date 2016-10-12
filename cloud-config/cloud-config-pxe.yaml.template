@@ -38,7 +38,9 @@ write_files:
                 election-timeout: 1250
             fleet:
                 public-ip: $_public_ipv4
+                engine-reconcile-interval: 5
                 etcd-request-timeout: 15
+                agent-ttl: 300s
                 metadata: $METADATA
             units:
                 - name: settimezone.service
@@ -187,9 +189,8 @@ write_files:
         echo "CoreOS=${VERSION_ID}" >> $ENV
         
         #fleet config
-        echo "metatadata=\"METADATA=${METADATA}\"" >> /etc/fleet/fleet.conf
-        echo "etcd_request_timeout=3.0" >> /etc/fleet/fleet.conf
-        echo "agent_ttl=\"300s\"" >> /etc/fleet/fleet.conf
+        #echo "etcd_request_timeout=15" >> /etc/fleet/fleet.conf
+        #echo "agent_ttl=\"300s\"" >> /etc/fleet/fleet.conf
         
         # md0 or md127
         export RAID_DEVICE=`cat /proc/mdstat | grep active | cut -f 1 -d ' '`
@@ -295,7 +296,7 @@ write_files:
         -----------------------------------------------------------------------------
     - path: /etc/systemd/journald.conf 
       permissions: 0644 
-      content: | 
+      content: |
         [Journal] 
         SystemMaxUse=20M 
         RuntimeMaxUse=20M
