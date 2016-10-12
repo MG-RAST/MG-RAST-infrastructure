@@ -1,0 +1,9 @@
+[connection]
+port = 9042
+ssl = true
+[ssl]
+certfile = /ssl/rootCa.crt
+userkey = /ssl/cassandra_client_cert.pem 
+usercert = /ssl/cassandra_client_cert.crt_signed
+validate = false
+factory = cqlshlib.ssl.ssl_transport_factory
