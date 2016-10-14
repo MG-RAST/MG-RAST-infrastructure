@@ -2,6 +2,7 @@
 Description=Cassandra Simple %i
 After=docker.service
 Requires=docker.service
+Wants=%p-discovery@%i.service
 
 [Service]
 Environment='CONTAINER=cassandra-simple'
