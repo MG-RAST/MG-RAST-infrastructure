@@ -116,7 +116,7 @@ for TYPE in index id midx md5; do
         rm $FILE
     done
     # load sstable
-    $SST_LOAD -d $ALL_IPS $SST_DIR/$KEYSPACE/${TYPE}_annotation
+    $SST_LOAD -f $CASS_CONF -d $ALL_IPS $SST_DIR/$KEYSPACE/${TYPE}_annotation
 done
 
 exit 0

@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS job_info (
     job int,
     updated_on timestamp,
     md5s int,
+    loaded boolean,
     PRIMARY KEY ((version, job), updated_on)
 );
 
