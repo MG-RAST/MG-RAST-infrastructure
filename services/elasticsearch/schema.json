@@ -1,0 +1,189 @@
+{
+    "settings" : {
+        "analysis" : {
+            "analyzer": {
+                "prefix_edge_ngram_analyzer": {
+                  "tokenizer": "prefix_edge_ngram_tokenizer",
+                  "filter": ["lowercase"]
+                },
+                "suffix_edge_ngram_analyzer": {
+                  "tokenizer": "keyword",
+                  "filter" : ["lowercase","reverse","suffix_edge_ngram_filter","reverse"]
+                }
+              },
+              "tokenizer": {
+                "prefix_edge_ngram_tokenizer": {
+                  "type": "edgeNGram",
+                  "min_gram": "2",
+                  "max_gram": "25"
+                }
+              },
+              "filter": {
+                "suffix_edge_ngram_filter": {
+                  "type": "edgeNGram",
+                  "min_gram": 2,
+                  "max_gram": 25
+                }
+              }
+        }
+    },
+    "mappings" : {
+        "metagenome" : { 
+            "dynamic_templates": [ { 
+                    "double_t": {
+                        "match" : "*_d", 
+                        "mapping": {
+                             "type":           "double"
+                        }
+                    }
+                },
+                { 
+                    "long_t": {
+                        "match":              "*_l", 
+                        "mapping": {
+                            "type":           "long"
+                         }
+                    }
+                }
+                ],
+            "properties" : {
+                "id" : {
+                    "type": "string"
+                },
+                "job" : {
+                    "type": "int"
+                },
+                "PI_firstname" : {
+                    "type": "string"
+                },
+                "PI_lastname" : {
+                    "type": "string"
+                },
+                "md5" : {
+                    "type": "string"
+                },
+                "function" : {
+                    "type": "string",
+                    "fields": {
+                                "prefix": {
+                                  "type": "string",
+                                  "analyzer": "prefix_edge_ngram_analyzer"
+                                },
+                                "suffix": {
+                                  "type": "string",
+                                  "analyzer": "suffix_edge_ngram_analyzer"
+                                }
+                            }
+                },
+                "organism" : {
+                    "type": "string",
+                    "fields": {
+                                "prefix": {
+                                  "type": "string",
+                                  "analyzer": "prefix_edge_ngram_analyzer"
+                                },
+                                "suffix": {
+                                  "type": "string",
+                                  "analyzer": "suffix_edge_ngram_analyzer"
+                                }
+                    }
+                },
+                "project_description" : {
+                    "type": "string"
+                },
+                "status" : {
+                    "type": "string"
+                },
+                "library" : {
+                    "type": "string"
+                },
+                "sequence_type" : {
+                    "type": "string"
+                },
+                "library_id" : {
+                    "type": "string"
+                },
+                "collection_date" : {
+                    "type": "date"
+                },
+                "feature" : {
+                    "type": "string"
+                },
+                "latitude" : {
+                    "type": "float"
+                },
+                "biome" : {
+                    "type": "string"
+                },
+                "sample_name" : {
+                    "type": "string"
+                },
+                "url" : {
+                    "type": "string"
+                },
+                "sample" : {
+                    "type": "string"
+                },
+                "project_name" : {
+                    "type": "string"
+                },
+                "project_id" : {
+                    "type": "string"
+                },
+                "country" : {
+                    "type": "string"
+                },
+                "env_package_type" : {
+                    "type": "string"
+                },
+                "longitude" : {
+                    "type": "float"
+                },
+                "location" : {
+                    "type": "string"
+                },
+                "version" : {
+                    "type": "int"
+                },
+                "library_name" : {
+                    "type": "string"
+                },
+                "name" : {
+                    "type": "string"
+                },
+                "env_package_name" : {
+                    "type": "string"
+                },
+                "env_package_id" : {
+                    "type": "string"
+                },
+                "seq_method" : {
+                    "type": "string"
+                },
+                "library_url" : {
+                    "type": "string"
+                },
+                "created": {
+                    "type": "date",
+                    "format": "strict_date_optional_time||epoch_millis"
+                },
+                "env_package" : {
+                    "type": "string"
+                },
+                "sample_id" : {
+                    "type": "string"
+                },
+                "sample_url" : {
+                    "type": "string"
+                },
+                "project_url" : {
+                    "type": "string"
+                },
+                "material" : {
+                    "type": "string"
+                }
+             }
+        }
+    }
+}
+
