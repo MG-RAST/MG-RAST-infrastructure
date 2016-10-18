@@ -117,12 +117,13 @@ public class BulkLoader {
                                         "job int, " +
                                         "updated_on text, " +
                                         "md5s int, " +
+                                        "loaded boolean", +
                                         "PRIMARY KEY ((version, job), updated_on) " +
                                     ")", keyspace, table);
             insert = String.format("INSERT INTO %s.%s (" +
                                         "version, job, updated_on, md5s" +
                                     ") VALUES (" +
-                                        "?, ?, ?, ?" +
+                                        "?, ?, ?, ?, ?" +
                                     ")", keyspace, table);
         } else if (table.equals("job_md5s")) {
             schema = String.format("CREATE TABLE %s.%s (" +
@@ -252,7 +253,8 @@ public class BulkLoader {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),
                                   line[2],
-                                  safeParseInt(line[3]));
+                                  safeParseInt(line[3]),
+                                  Boolean.valueOf(line[4]));
                 } else if (table.equals("job_md5s")) {
                     writer.addRow(Integer.parseInt(line[0]),
                                   Integer.parseInt(line[1]),

@@ -1,6 +1,6 @@
 
 
-# Solr M5NR
+# Solr metagenome
 
 Build image:
 ```bash

@@ -56,24 +56,22 @@ fleetctl start mg-rast-confd.service # global unit
 fleetctl start mg-rast-nginx@1.service
 
 ## cassandra
-# first start the nodes, wait for each seed to finish before starting next
-fleetctl start cassandra-seed{,-discovery}@1.service
-fleetctl start cassandra-seed{,-discovery}@2.service
-for i in `seq 1 10`; do sleep 300; fleetctl start cassandra-node@$i.service; done
+# first start the nodes, wait for each to finish before starting next
+for i in `seq 1 20`; do fleetctl start cassandra-simple{,-discovery}@$i.service; done
 
 # need to manually load data on one seed if starting from scratch
 # on one seed host: download load script and run it in seed container
 # list of all IPS: fleetctl list-units | grep cassandra | cut -f2 -d"/" | cut -f1 | sort -u | tr "\n" ","; echo
 curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/load-cassandra-m5nr.sh
-docker cp load-cassandra-m5nr.sh cassandra:/var/lib/cassandra/load-cassandra-m5nr.sh
-docker exec cassandra bash -c 'apt-get update && apt-get install -y curl vim openjdk-8-jdk'
-docker exec cassandra bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
+docker cp load-cassandra-m5nr.sh cassandra-simple:/var/lib/cassandra/load-cassandra-m5nr.sh
+docker exec cassandra-simple bash -c 'apt-get update && apt-get install -y curl vim openjdk-8-jdk'
+docker exec cassandra-simple bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
 
 # this command lets you see cluster hosts and their status
-docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
+docker exec cassandra-simple /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
 
 # this command removes missing host from cluster list - run on any host
-docker exec cassandra /usr/bin/nodetool removenode HostID
+docker exec cassandra-simple /usr/bin/nodetool removenode HostID
 
 ## log-courier
 # fleetctl start log-courier.service # global unit
@@ -104,8 +102,8 @@ fleetctl stop mg-rast-v4-web{,-discovery}@1.v4-web.service
 fleetctl stop mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
 fleetctl stop api-server{,-discovery,-update}@{1,2,3,4}.api.service
 fleetctl stop awe-server{,-discovery}@1.service
-fleetctl stop cassandra-node@{1,2,3,4,5,6,7}.service
-fleetctl stop cassandra-seed{,-discovery}@{1,2}.service
+fleetctl stop cassandra-node@{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}.service
+fleetctl stop cassandra-seed{,-discovery}@{1,2,3}.service
 fleetctl stop memcached{,-discovery}.service
 fleetctl stop solr-m5nr@1.service
 fleetctl stop solr-metagenome{,-backup}@1.service
