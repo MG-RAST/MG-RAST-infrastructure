@@ -73,7 +73,7 @@
                                   "type": "string",
                                   "analyzer": "suffix_edge_ngram_analyzer"
                                 }
-                            }
+                    }
                 },
                 "organism" : {
                     "type": "string",
