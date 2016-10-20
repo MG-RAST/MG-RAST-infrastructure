@@ -36,7 +36,7 @@ ExecStart=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}/cl
     NODES=${CLUSTER_INIT_NODES} ; \
   else \
     echo 'CLUSTER_INIT_NODES is not defined' ; \
-    NODES=$(for i in $(etcdctl ls /services/${SERVICE}/instances/) ; do etcdctl get $i ; done | tr "\n" "," |  sed "s/.$//")" ; \
+    NODES=$(for i in $(etcdctl ls /services/${SERVICE}/instances/) ; do etcdctl get $i ; done | tr \"\n\" \",\" |  sed 's/.$//') ; \
   fi ;\
   echo NODES=${NODES} ; \
   if [ -z ${CLUSTER_INIT_NODES} ] ; then echo 'NODES empty' ; exit 1 ; done ; \
