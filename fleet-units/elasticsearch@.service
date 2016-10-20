@@ -28,7 +28,7 @@ ExecStartPre=/bin/bash -c "docker pull ${IMAGE}"
 # create cluster if it does not exist.
 # if cluster exists, continue
 # if cluster does not exist, wait until enough nodes show up
-ExecStartPre=/bin/bash -c "export NODE_NAME=$(echo ${HOSTNAME} | grep -o "bio-worker[0-9]\+") ; ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/init_cluster.sh"
+ExecStartPre=/bin/bash -c "export NODE_NAME=$(echo ${HOSTNAME} | grep -o 'bio-worker[0-9]\+') ; ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/init_cluster.sh"
 
 
 ExecStart=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}/cluster_init_nodes); \
@@ -40,7 +40,7 @@ ExecStart=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}/cl
   fi ;\
   echo NODES=${NODES} ; \
   if [ -z ${CLUSTER_INIT_NODES} ] ; then echo 'NODES empty' ; exit 1 ; done ; \
-  docker run -ti --rm --name ${CONTAINER} -p 9200:9200 -p 9300:9300 ${IMAGE} -E node.name=\"$(echo ${HOSTNAME} | grep -o "bio-worker[0-9]\+")\" -E cluster.name=\"mgrast\" -E discovery.zen.minimum_master_nodes=3"
+  docker run -ti --rm --name ${CONTAINER} -p 9200:9200 -p 9300:9300 ${IMAGE} -E node.name=\"$(echo ${HOSTNAME} | grep -o 'bio-worker[0-9]\+')\" -E cluster.name=\"mgrast\" -E discovery.zen.minimum_master_nodes=3"
 
 
 [X-Fleet] 	
