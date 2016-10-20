@@ -3,7 +3,7 @@
 import json
 from pprint import pprint
 import requests
-
+import sys
 
 def load_metagenome(id):
     r = requests.put('http://localhost:9200/metagenome_index/metagenome/'+id, data=data_json)
