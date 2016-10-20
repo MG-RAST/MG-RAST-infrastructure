@@ -69,30 +69,30 @@
                 "function" : {
                     "type": "string",
                     "fields": {
-                                "prefix": {
-                                  "type": "string",
-                                  "analyzer": "prefix_edge_ngram_analyzer"
-                                },
-                                "suffix": {
-                                  "type": "string",
-                                  "analyzer": "suffix_edge_ngram_analyzer"
-                                }
+                        "prefix": {
+                          "type": "string",
+                          "analyzer": "prefix_edge_ngram_analyzer"
+                        },
+                        "suffix": {
+                          "type": "string",
+                          "analyzer": "suffix_edge_ngram_analyzer"
+                        }
                     }
                 },
                 "organism" : {
                     "type": "string",
                     "fields": {
-                                "prefix": {
-                                  "type": "string",
-                                  "analyzer": "prefix_edge_ngram_analyzer"
-                                },
-                                "suffix": {
-                                  "type": "string",
-                                  "analyzer": "suffix_edge_ngram_analyzer"
-                                }
+                        "prefix": {
+                          "type": "string",
+                          "analyzer": "prefix_edge_ngram_analyzer"
+                        },
+                        "suffix": {
+                          "type": "string",
+                          "analyzer": "suffix_edge_ngram_analyzer"
+                        }
                     }
                 },
-                "project_description" : {
+                "project" : {
                     "type": "string"
                 },
                 "status" : {
