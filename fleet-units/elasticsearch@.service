@@ -28,7 +28,7 @@ ExecStartPre=/bin/bash -c "docker pull ${IMAGE}"
 # create cluster if it does not exist.
 # if cluster exists, continue
 # if cluster does not exist, wait until enough nodes show up
-ExecStartPre=/bin/bash -c "export NODE_NAME=%p-%i ; ${SERVICE_DIR}/mgrast-config/service/${SERVICE}/init_cluster.sh"
+ExecStartPre=/bin/bash -c "export NODE_NAME=%p-%i ; ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/init_cluster.sh"
 
 
 ExecStart=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}/cluster_init_nodes); \
