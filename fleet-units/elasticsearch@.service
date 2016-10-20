@@ -31,7 +31,7 @@ ExecStartPre=/bin/bash -c "docker pull ${IMAGE}"
 ExecStartPre=/bin/bash -c "export NODE_NAME=%p-%i ; ${SERVICE_DIR}/mgrast-config/service/${SERVICE}/init_cluster.sh"
 
 
-ExecStartPre=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}/cluster_init_nodes); \
+ExecStart=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}/cluster_init_nodes); \
   if [ -z ${CLUSTER_INIT_NODES} ] ; then \
     NODES=${CLUSTER_INIT_NODES} ; \
   else \
@@ -39,6 +39,7 @@ ExecStartPre=/bin/bash -c "CLUSTER_INIT_NODES=$(etcdctl get /services/${SERVICE}
     NODES=$(for i in $(etcdctl ls /services/${SERVICE}/instances/) ; do etcdctl get $i ; done | tr "\n" "," |  sed "s/.$//")" ; \
   fi ;\
   echo NODES=${NODES} ; \
+  if [ -z ${CLUSTER_INIT_NODES} ] ; then echo 'NODES empty' ; exit 1 ; done ; \
   docker run -ti --rm --name ${CONTAINER} -p 9200:9200 -p 9300:9300 ${IMAGE} -E node.name=\"%p-%i\" -E cluster.name=\"mgrast\" -E discovery.zen.minimum_master_nodes=3"
 
 
