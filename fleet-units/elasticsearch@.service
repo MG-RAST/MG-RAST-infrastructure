@@ -35,7 +35,7 @@ ExecStart=/bin/bash -c "  \
   export SERVICE=${SERVICE} ; \
   export CONTAINER=${CONTAINER} ; \
   export IMAGE=${IMAGE} ; \
-  ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/run_ES.sh"
+  ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/start_ES.sh"
 
 
 [X-Fleet] 	
