@@ -1,6 +1,6 @@
 
 CREATE KEYSPACE IF NOT EXISTS mgrast_abundance
-    WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 4 };
+    WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
 
 use mgrast_abundance;
 
@@ -10,8 +10,11 @@ CREATE TABLE IF NOT EXISTS job_info (
     updated_on timestamp,
     md5s int,
     loaded boolean,
-    PRIMARY KEY ((version, job), updated_on)
+    PRIMARY KEY ((version, job))
 );
+
+CREATE INDEX job_info_md5s_idx ON job_info (md5s);
+CREATE INDEX job_info_update_idx ON job_info (updated_on);
 
 CREATE TABLE IF NOT EXISTS job_md5s (
     version int,
@@ -46,33 +49,3 @@ CREATE TABLE IF NOT EXISTS job_lcas (
 CREATE INDEX job_lcas_exp_idx ON job_lcas (exp_avg);
 CREATE INDEX job_lcas_ident_idx ON job_lcas (ident_avg);
 CREATE INDEX job_lcas_len_idx ON job_lcas (len_avg);
-
-CREATE KEYSPACE IF NOT EXISTS mgrast_feature
-    WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 4 };
-
-use mgrast_feature;
-
-CREATE TABLE IF NOT EXISTS job_info (
-    version int,
-    job int,
-    updated_on timestamp,
-    md5s int,
-    PRIMARY KEY ((version, job), updated_on)
-);
-
-CREATE TABLE IF NOT EXISTS job_features (
-    version int,
-    job int,
-    md5 text,
-    feature text,
-    exp int,
-    ident int,
-    len int,
-    md5_idx int,
-    PRIMARY KEY ((version, job), md5, feature)
-);
-
-CREATE INDEX job_features_exp_idx ON job_features (exp);
-CREATE INDEX job_features_ident_idx ON job_features (ident);
-CREATE INDEX job_features_len_idx ON job_features (len);
-
