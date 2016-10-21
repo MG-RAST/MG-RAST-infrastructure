@@ -1,0 +1,25 @@
+[Unit]
+Description=Elasticsearch Discovery Service
+
+After=elasticsearch@%i.service
+BindsTo=elasticsearch@%i.service
+
+[Service]
+Environment='SERVICE=elasticsearch'
+EnvironmentFile=/etc/environment
+
+ExecStart=/bin/bash -c '\
+  while true; do \
+    curl -fSs ${COREOS_PRIVATE_IPV4}:9200 > /dev/null; \
+    if [ "$?" = "0" ]; then \
+      etcdctl set /services/${SERVICE}/instances/${SERVICE}@%i \'${COREOS_PRIVATE_IPV4}\' --ttl 60; \
+    else \
+      etcdctl rm /services/elasticsearch/${COREOS_PRIVATE_IPV4}; \
+    fi; \
+    sleep 45; \
+  done'
+
+ExecStop=/bin/bash -c "/usr/bin/etcdctl rm /services/${SERVICE}/instances/${SERVICE}@%i"
+
+[X-Fleet]
+MachineOf=elasticsearch@%i.service
