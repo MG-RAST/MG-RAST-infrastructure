@@ -73,6 +73,9 @@ docker exec cassandra-simple /usr/bin/nodetool status m5nr_v<version #> eg. m5nr
 # this command removes missing host from cluster list - run on any host
 docker exec cassandra-simple /usr/bin/nodetool removenode HostID
 
+# docker exec cassandra-simple rm /root/.cassandra/cqlshrc
+# docker exec cassandra-simple /usr/bin/cqlsh -e 'desc keyspaces;'
+
 ## log-courier
 # fleetctl start log-courier.service # global unit
 
@@ -102,8 +105,7 @@ fleetctl stop mg-rast-v4-web{,-discovery}@1.v4-web.service
 fleetctl stop mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
 fleetctl stop api-server{,-discovery,-update}@{1,2,3,4}.api.service
 fleetctl stop awe-server{,-discovery}@1.service
-fleetctl stop cassandra-node@{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17}.service
-fleetctl stop cassandra-seed{,-discovery}@{1,2,3}.service
+fleetctl stop cassandra-simple{,-discovery}@{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}.service
 fleetctl stop memcached{,-discovery}.service
 fleetctl stop solr-m5nr@1.service
 fleetctl stop solr-metagenome{,-backup}@1.service
