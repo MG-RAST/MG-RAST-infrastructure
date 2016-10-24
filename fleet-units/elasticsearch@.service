@@ -31,6 +31,8 @@ ExecStartPre=/bin/bash -c "docker pull ${IMAGE}"
 ExecStartPre=/bin/bash -c "export NODE_NAME=$(echo ${HOSTNAME} | grep -o 'bio-worker[0-9]\\+') ; ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/init_cluster.sh"
 
 
+ExecStartPre=/usr/sbin/sysctl -w vm.max_map_count=262144
+
 ExecStart=/bin/bash -c "  \
   export SERVICE=${SERVICE} ; \
   export CONTAINER=${CONTAINER} ; \
