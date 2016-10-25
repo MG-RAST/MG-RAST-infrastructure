@@ -9,12 +9,10 @@ CREATE TABLE IF NOT EXISTS job_info (
     job int,
     updated_on timestamp,
     md5s int,
+    lcas int,
     loaded boolean,
     PRIMARY KEY ((version, job))
 );
-
-CREATE INDEX job_info_md5s_idx ON job_info (md5s);
-CREATE INDEX job_info_update_idx ON job_info (updated_on);
 
 CREATE TABLE IF NOT EXISTS job_md5s (
     version int,
