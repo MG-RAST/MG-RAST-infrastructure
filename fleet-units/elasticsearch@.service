@@ -21,6 +21,10 @@ EnvironmentFile=-/etc/environment
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
+# clear containers
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+
 
 # get image
 ExecStartPre=/bin/bash -c "docker pull ${IMAGE}"
@@ -30,6 +34,8 @@ ExecStartPre=/bin/bash -c "docker pull ${IMAGE}"
 # if cluster does not exist, wait until enough nodes show up
 ExecStartPre=/bin/bash -c "export NODE_NAME=$(echo ${HOSTNAME} | grep -o 'bio-worker[0-9]\\+') ; ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/init_cluster.sh"
 
+
+ExecStartPre=/usr/sbin/sysctl -w vm.max_map_count=262144
 
 ExecStart=/bin/bash -c "  \
   export SERVICE=${SERVICE} ; \
