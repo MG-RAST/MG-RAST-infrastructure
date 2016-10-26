@@ -13,7 +13,7 @@ Environment='IMAGE=elasticsearch:5.0.0'
 
 TimeoutStartSec=0
 Restart=always
-RestartSec=10
+RestartSec=30
 EnvironmentFile=-/etc/environment
 
 
