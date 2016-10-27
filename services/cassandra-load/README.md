@@ -31,7 +31,7 @@
   - use cassandra container
     - update: apt-get update && apt-get install -y curl vim openjdk-8-jdk
     - mount dir with job data into container
-  - set schema if first time:
+  - set schema if first time (skip this if keyspace exists):
     - curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/mgrast_analysis/job_table.cql
     - /usr/bin/cqlsh -f job_table.cql
   - run: https://github.com/MG-RAST/MG-RAST-infrastructure/blob/master/services/cassandra-load/mgrast_analysis/load-cassandra-analysis.sh
