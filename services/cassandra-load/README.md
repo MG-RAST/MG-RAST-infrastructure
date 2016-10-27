@@ -31,11 +31,12 @@
   - use cassandra container
     - update: apt-get update && apt-get install -y curl vim openjdk-8-jdk
     - mount dir with job data into container
-  - set schema if first time:
+  - set schema if first time (skip this if keyspace exists):
     - curl -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/mgrast_analysis/job_table.cql
     - /usr/bin/cqlsh -f job_table.cql
   - run: https://github.com/MG-RAST/MG-RAST-infrastructure/blob/master/services/cassandra-load/mgrast_analysis/load-cassandra-analysis.sh
-  - creates keyspace: mgrast_abundance
+  - on a bw host: IP_LIST=\`fleetctl list-units | grep cassandra | cut -f2 -d"/" | cut -f1 | sort -u | tr "\n" "," | sed s/.$//\`
+  - example: load-cassandra-analysis.sh -a $IP_LIST -d \<dir with job_id.table files\> -k mgrast_analysis
   
 ### Check data
 
