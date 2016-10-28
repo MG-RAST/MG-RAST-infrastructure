@@ -118,7 +118,7 @@ public class BulkLoader {
                                         "updated_on text, " +
                                         "md5s int, " +
                                         "lcas int, " +
-                                        "loaded boolean", +
+                                        "loaded boolean," +
                                         "PRIMARY KEY ((version, job)) " +
                                     ")", keyspace, table);
             insert = String.format("INSERT INTO %s.%s (" +
