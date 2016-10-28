@@ -41,9 +41,11 @@ mkdir -p $SST_DIR
 
 # download bulkloader
 cd $LOAD_DIR
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.sh
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.java
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/opencsv-3.4.jar
+if [ ! -f BulkLoader.sh ] ; then
+    curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.sh
+    curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.java
+    curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/opencsv-3.4.jar
+fi
 
 for TABLE in job_info job_md5s job_lcas; do
     echo "Creating $TABLE sstables ..."
