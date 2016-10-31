@@ -31,11 +31,12 @@ def read_metagenome(id):
 
 
 #load document into ES
-def load_document(_id, data):
+def load_document(_id, data_dict):
     url = es_url +'/metagenome_index/metagenome/' + _id
     print(url)
    
-    r = requests.put(url, data=data)
+    # comment: use json.dumps , see https://discuss.elastic.co/t/index-a-new-document/35281/8
+    r = requests.put(url, data=json.dumps(data_dict))
     response_obj = r.json()
     if not "result" in response_obj:
         print(r.text)
