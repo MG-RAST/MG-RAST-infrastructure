@@ -14,6 +14,7 @@ def main(args):
     parser.add_option("-u", "--mgrast_url", dest="mgrast_url", default=API_URL, help="MG-RAST API url")
     parser.add_option("-t", "--token", dest="token", default=None, help="MG-RAST token")
     parser.add_option("-m", "--mgid", dest="mgid", default=None, help="MG-RAST ID")
+    parser.add_option("-s", "--submit", dest="submit", action="store_true", default=False, help="if true submit duplicate, default to only create")
     
     # get inputs
     (opts, args) = parser.parse_args()
@@ -52,11 +53,13 @@ def main(args):
     create_job = obj_from_url(API_URL+"/job/create", data=json.dumps(create_data), token=opts.token)
     print "metagenome id:\t%s"%new_mgid
     print "internal job id:\t%d"%reserve_job['job_id']
+    print "input node id:\t%s"%input_node
     print "job option str:\t%s"%create_job['options']
 
     # submit it
-    submit_job = obj_from_url(API_URL+"/job/submit", data=json.dumps({'metagenome_id': new_mgid, 'input_id': input_node}), token=opts.token)
-    print "awe job id:\t%s"%submit_job['awe_id']
+    if opts.submit:
+        submit_job = obj_from_url(API_URL+"/job/submit", data=json.dumps({'metagenome_id': new_mgid, 'input_id': input_node}), token=opts.token)
+        print "awe job id:\t%s"%submit_job['awe_id']
     
     return 0
 
