@@ -56,17 +56,22 @@ def load_document(_id, data_dict):
 
 
 def fix_document(data):
-    collection_date = data["collection_date"]
-    collection_date_array = collection_date.split(" ")
-    collection_date_string = collection_date_array[0]
-    collection_date_timezone = collection_date_array[1]
     
-    if collection_date_timezone != None:
-        if collection_date_timezone != "UTC":
-            print("timezone: %s (%s)" % (collection_date_timezone, collection_date))
-            sys.exit(1)
+    if "collection_date" in data:
+        collection_date = data["collection_date"]
+        
+        print("collection_date: %s" % (collection_date))
     
-    data["collection_date"] = collection_date_string
+        # remove UTC suffix
+        if collection_date.endswith(' UTC'):
+            collection_date = collection_date[:-4]
+    
+        # replace space with T after date
+        if len(collection_date) >= 11:
+            if collection_date[10] == " ":
+                collection_date=collection_date[:10]+"T"+collection_date[11:]
+    
+        data["collection_date"] = collection_date
 
 def transfer_document(transfer_id):
     if es_find_document(transfer_id):
@@ -109,7 +114,7 @@ def transfer_document(transfer_id):
 
 
 # You could also pass OAuth in the constructor
-c = RestClient("http://api.metagenomics.anl.gov")
+c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
 for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
     print(elem)
