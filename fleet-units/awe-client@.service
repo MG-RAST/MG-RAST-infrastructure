@@ -29,6 +29,7 @@ ExecStart=/bin/bash -c ' \
   export GROUP=$(echo %i | cut -d . -f 2); \
   ${DIR}/awe-client \
     --conf ${DIR}/mgrast-config/services/awe-client/awe.cfg \
+    --debuglevel 2 \
     --workpath ${DIR}/work \
     --data ${DIR}/data \
     --logs ${DIR}/logs \
