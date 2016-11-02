@@ -47,3 +47,10 @@ ExecStart=/bin/bash -c "  \
 
 [X-Fleet] 	
 Conflicts=elasticsearch@*.service
+MachineMetadata=HOSTNAME=bio-worker10-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker11-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker12-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker13-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov
+
+
