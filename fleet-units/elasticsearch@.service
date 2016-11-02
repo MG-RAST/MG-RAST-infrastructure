@@ -39,6 +39,7 @@ ExecStartPre=/usr/sbin/sysctl -w vm.max_map_count=262144
 
 ExecStart=/bin/bash -c "  \
   export SERVICE=${SERVICE} ; \
+  export SERVICE_DIR=${SERVICE_DIR} ; \
   export CONTAINER=${CONTAINER} ; \
   export IMAGE=${IMAGE} ; \
   ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/start_ES.sh"
