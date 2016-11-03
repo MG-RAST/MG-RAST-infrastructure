@@ -50,7 +50,7 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d v
 #shock.metagenomics.anl.gov/node/e8fb23b9-47b2-4d31-87d7-6cd36c5d1cd8
 
 # test pipeline
-#shock.metagenomics.anl.gov/node/e1f6c5be-7400-4e5b-9107-e7f29df9a244
+#shock.metagenomics.anl.gov/node/0367ee2f-59b7-49e7-a648-76c1f0cb946d
 
 ####### not production #######
 
