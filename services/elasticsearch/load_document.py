@@ -76,7 +76,7 @@ def fix_document(data):
 def transfer_document(transfer_id):
     if es_find_document(transfer_id):
         print("%s already found, skipping..." % (transfer_id))
-        return
+        return True
     else:
         print("Getting %s from API..." % (transfer_id))
 
@@ -92,22 +92,29 @@ def transfer_document(transfer_id):
         f.write(r.text)
 
     #pprint(object)
+    if not "data" in r_obj:
+        print("data not in r_obj\n")
+        return False
 
     data = r_obj["data"]
 
     fix_document(data)
 
     #pprint(data)
+    if not "id" in data:
+        print("id not in data\n")
+        return False
+        
     id_returned = data["id"]
 
     if transfer_id != id_returned:
         print("id_requested: %s     id_returned %s\n" % (transfer_id, id_returned))
-        sys.exit(1)
+        return False
 
 
     print("load metagenome %s into ES..." % (transfer_id))
     load_document(transfer_id, data)
-
+    return True
 
 
 
@@ -116,11 +123,15 @@ def transfer_document(transfer_id):
 # You could also pass OAuth in the constructor
 c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
+success = 0
+count = 0
 for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
+    count +=1
     print(elem)
-    transfer_document(elem["id"])
-    
-   
+    r = transfer_document(elem["id"])
+    if r:
+        success +=1
+    print("%d of %d are have been loaded successfully" % (success, count))
     
 
     #PUT /{index}/{type}/{id}
