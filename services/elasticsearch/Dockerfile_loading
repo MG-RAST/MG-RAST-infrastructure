@@ -1,0 +1,15 @@
+
+
+FROM alpine
+
+
+COPY load_document.py .
+
+
+RUN apk update && apk add git python3 wget
+
+RUN pip3 install --upgrade pip && pip3 install requests iso8601
+
+
+
+RUN wget https://raw.githubusercontent.com/MG-RAST/python-restclient/master/restclient.py
