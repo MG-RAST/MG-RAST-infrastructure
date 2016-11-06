@@ -21,10 +21,7 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/solr-metagenome/shock -XPUT
 
 # mg-rast-v4-web
 #v4
-#curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/7eee698e-1bfb-490d-afcd-9fb5d56e65cb"
-curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/2d72f56e-2376-4ac3-adae-6675b0225da5"
-#v4-dev
-curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/171fd649-9486-4089-82df-7a60023e8943"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/dc5e8c04-be69-46df-a958-f5c9d4b22d68"
 
 # mg-rast-v3-web-[channel]
 #channel: v3-web
@@ -35,9 +32,9 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/s
 
 #api-server-[channel]
 #channel: api
-curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/ca5c00b4-fec5-4943-a0d4-d5f50d9356f2"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/743292ff-3c85-4d14-a9ad-dd40632c5b75"
 #channel: api-dev
-curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/45c943fd-7201-452f-831c-1ebf960c927a"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/961b8634-e6b3-49b1-98ed-3a609606aa86"
 
 #awe server
 #curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d1058716-af9b-4aba-9821-b631988e575c"
@@ -50,7 +47,7 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d v
 #shock.metagenomics.anl.gov/node/e8fb23b9-47b2-4d31-87d7-6cd36c5d1cd8
 
 # test pipeline
-#shock.metagenomics.anl.gov/node/0367ee2f-59b7-49e7-a648-76c1f0cb946d
+#shock.metagenomics.anl.gov/node/7c4c8bf0-c11a-439a-a433-06a4e1b4c8be
 
 ####### not production #######
 
