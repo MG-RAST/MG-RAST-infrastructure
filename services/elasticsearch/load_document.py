@@ -82,8 +82,11 @@ def transfer_document(transfer_id):
 
 
     r = read_metagenome(transfer_id)
-    r_obj = r.json()
-
+    try:
+        r_obj = r.json()
+    except Exception as e:
+        print("Exception parsing json: %s" % (str(e)))
+        return False
 
     
     #with open(sys.argv[1]) as data_file:
