@@ -27,7 +27,7 @@ def es_find_document(id):
 
 # get document from MG-RAST API
 def read_metagenome(id):
-    url = "http://api-dev.metagenomics.anl.gov/job/solr" 
+    url = "http://api.metagenomics.anl.gov/job/solr" 
     data  = { "metagenome_id": id,
             "debug": 1,
             "rebuild": 1,
@@ -129,8 +129,6 @@ def transfer_document(transfer_id):
     print("load metagenome %s into ES..." % (transfer_id))
     load_document(transfer_id, data)
     return True
-
-
 
 
 
