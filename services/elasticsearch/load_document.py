@@ -33,7 +33,12 @@ def read_metagenome(id):
             "rebuild": 1,
             "sync": 1 }
     headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] }
+    
+    
+    print("curl -H \"Authorization: mgrast %s\" -d '%s' %s" % (os.environ['MGRKEY'], json.dumps(data), url))
+    
     r = requests.post( url , headers=headers, json = data)
+        
     return r
 
 
@@ -82,6 +87,10 @@ def transfer_document(transfer_id):
 
 
     r = read_metagenome(transfer_id)
+    
+    with open('temp_file.txt', 'w') as f:
+        f.write(r.text)
+        
     try:
         r_obj = r.json()
     except Exception as e:
@@ -89,13 +98,15 @@ def transfer_document(transfer_id):
         return False
 
     
-    #with open(sys.argv[1]) as data_file:
-    #    r_obj = json.load(data_file)
-    with open('temp_file.txt', 'w') as f:
-        f.write(r.text)
+
+    if 'ERROR' in r_obj:
+        print(r_obj)
+        print("found ERROR\n")
+        return False
 
     #pprint(object)
     if not "data" in r_obj:
+        print(r_obj)
         print("data not in r_obj\n")
         return False
 
@@ -128,7 +139,7 @@ c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : 
 
 success = 0
 count = 0
-for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
+for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=500):
     count +=1
     print(elem)
     r = transfer_document(elem["id"])
