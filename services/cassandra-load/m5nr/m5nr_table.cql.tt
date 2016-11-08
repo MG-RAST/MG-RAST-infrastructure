@@ -14,7 +14,8 @@ CREATE TABLE IF NOT EXISTS index_annotation (
     function list<int>,
     organism list<int>,
     PRIMARY KEY (id, source)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS id_annotation (
     id int,
@@ -27,7 +28,8 @@ CREATE TABLE IF NOT EXISTS id_annotation (
     function list<text>,
     organism list<text>,
     PRIMARY KEY (id, source)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS midx_annotation (
     md5 text,
@@ -38,7 +40,8 @@ CREATE TABLE IF NOT EXISTS midx_annotation (
     function list<int>,
     organism list<int>,
     PRIMARY KEY (md5, source)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS md5_annotation (
     md5 text,
@@ -50,7 +53,8 @@ CREATE TABLE IF NOT EXISTS md5_annotation (
     function list<text>,
     organism list<text>,
     PRIMARY KEY (md5, source)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS ontologies (
     source text,
@@ -60,35 +64,40 @@ CREATE TABLE IF NOT EXISTS ontologies (
     level3 text,
     level4 text,
     PRIMARY KEY (source, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS ont_level1 (
     source text,
     level1 text,
     name text,
     PRIMARY KEY (source, level1, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS ont_level2 (
     source text,
     level2 text,
     name text,
     PRIMARY KEY (source, level2, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS ont_level3 (
     source text,
     level3 text,
     name text,
     PRIMARY KEY (source, level3, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS ont_level4 (
     source text,
     level4 text,
     name text,
     PRIMARY KEY (source, level4, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS organisms_ncbi (
     name text,
@@ -101,46 +110,54 @@ CREATE TABLE IF NOT EXISTS organisms_ncbi (
     tax_species text,
     ncbi_tax_id int,
     PRIMARY KEY (name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_domain (
     tax_domain text,
     name text,
     PRIMARY KEY (tax_domain, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_phylum (
     tax_phylum text,
     name text,
     PRIMARY KEY (tax_phylum, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_class (
     tax_class text,
     name text,
     PRIMARY KEY (tax_class, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_order (
     tax_order text,
     name text,
     PRIMARY KEY (tax_order, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_family (
     tax_family text,
     name text,
     PRIMARY KEY (tax_family, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_genus (
     tax_genus text,
     name text,
     PRIMARY KEY (tax_genus, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
 CREATE TABLE IF NOT EXISTS tax_species (
     tax_species text,
     name text,
     PRIMARY KEY (tax_species, name)
-);
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
