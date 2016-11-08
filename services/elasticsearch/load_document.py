@@ -52,13 +52,15 @@ def load_document(_id, data_dict):
     response_obj = r.json()
     if not "result" in response_obj:
         print(r.text)
-        sys.exit(1)
+        return False
     
     if response_obj["result"] == "created":
         print("success")
     else:
-       print(r.text)
-
+        print(r.text)
+        return False
+        
+    return True
 
 def fix_document(data):
     
@@ -127,23 +129,36 @@ def transfer_document(transfer_id):
 
 
     print("load metagenome %s into ES..." % (transfer_id))
-    load_document(transfer_id, data)
-    return True
+    loading_ok = load_document(transfer_id, data)
+    
+    return loading_ok
 
 
 
 # You could also pass OAuth in the constructor
 c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
+result = c.get("/metagenome", params={"verbosity": "minimal"})
+
+result_obj = result.json()
+
+total_count = result_obj["total_count"]
+
+
 success = 0
+failure = 0
 count = 0
-for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=500):
+for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=600):
     count +=1
     print(elem)
     r = transfer_document(elem["id"])
     if r:
         success +=1
-    print("%d of %d are have been loaded successfully" % (success, count))
+    else:
+        failure += 1
+        print("ERROR\n")
+        
+    print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
 
     #PUT /{index}/{type}/{id}
