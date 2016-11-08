@@ -27,13 +27,18 @@ def es_find_document(id):
 
 # get document from MG-RAST API
 def read_metagenome(id):
-    url = "http://api-dev.metagenomics.anl.gov/job/solr" 
+    url = "http://api.metagenomics.anl.gov/job/solr" 
     data  = { "metagenome_id": id,
             "debug": 1,
             "rebuild": 1,
             "sync": 1 }
     headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] }
+    
+    
+    print("curl -H \"Authorization: mgrast %s\" -d '%s' %s" % (os.environ['MGRKEY'], json.dumps(data), url))
+    
     r = requests.post( url , headers=headers, json = data)
+        
     return r
 
 
@@ -47,13 +52,15 @@ def load_document(_id, data_dict):
     response_obj = r.json()
     if not "result" in response_obj:
         print(r.text)
-        sys.exit(1)
+        return False
     
     if response_obj["result"] == "created":
         print("success")
     else:
-       print(r.text)
-
+        print(r.text)
+        return False
+        
+    return True
 
 def fix_document(data):
     
@@ -82,17 +89,26 @@ def transfer_document(transfer_id):
 
 
     r = read_metagenome(transfer_id)
-    r_obj = r.json()
-
-
     
-    #with open(sys.argv[1]) as data_file:
-    #    r_obj = json.load(data_file)
     with open('temp_file.txt', 'w') as f:
         f.write(r.text)
+        
+    try:
+        r_obj = r.json()
+    except Exception as e:
+        print("Exception parsing json: %s" % (str(e)))
+        return False
+
+    
+
+    if 'ERROR' in r_obj:
+        print(r_obj)
+        print("found ERROR\n")
+        return False
 
     #pprint(object)
     if not "data" in r_obj:
+        print(r_obj)
         print("data not in r_obj\n")
         return False
 
@@ -113,25 +129,36 @@ def transfer_document(transfer_id):
 
 
     print("load metagenome %s into ES..." % (transfer_id))
-    load_document(transfer_id, data)
-    return True
-
-
+    loading_ok = load_document(transfer_id, data)
+    
+    return loading_ok
 
 
 
 # You could also pass OAuth in the constructor
 c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
+result = c.get("/metagenome", params={"verbosity": "minimal"})
+
+result_obj = result.json()
+
+total_count = result_obj["total_count"]
+
+
 success = 0
+failure = 0
 count = 0
-for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
+for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=600):
     count +=1
     print(elem)
     r = transfer_document(elem["id"])
     if r:
         success +=1
-    print("%d of %d are have been loaded successfully" % (success, count))
+    else:
+        failure += 1
+        print("ERROR\n")
+        
+    print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
 
     #PUT /{index}/{type}/{id}
