@@ -76,6 +76,9 @@ docker exec cassandra-simple /usr/bin/nodetool removenode HostID
 # docker exec cassandra-simple rm /root/.cassandra/cqlshrc
 # docker exec cassandra-simple /usr/bin/cqlsh -e 'desc keyspaces;'
 
+## elasticsearch
+fleetctl start elasticsearch{,-discovery}@{1..9}.service
+
 ## log-courier
 # fleetctl start log-courier.service # global unit
 
