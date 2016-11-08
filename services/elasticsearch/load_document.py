@@ -27,7 +27,7 @@ def es_find_document(id):
 
 # get document from MG-RAST API
 def read_metagenome(id):
-    url = "http://api.metagenomics.anl.gov/job/solr" 
+    url = "http://api-pql.metagenomics.anl.gov/job/solr" 
     data  = { "metagenome_id": id,
             "debug": 1,
             "rebuild": 1,
