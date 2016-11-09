@@ -129,6 +129,7 @@ write_files:
           -A INPUT -p tcp -s 140.221.76.2 --dport 22 -j ACCEPT -m comment --comment "bio-infra1"
           -A INPUT -p tcp -s 0.0.0.0/0 --dport 22 -j DROP
           COMMIT
+          # last line needs to have this comment
     - path: /run/setup-environment.sh
       permissions: '0755'
       content: |
