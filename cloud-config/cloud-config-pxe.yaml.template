@@ -43,6 +43,8 @@ write_files:
                 agent-ttl: 300s
                 metadata: $METADATA
             units:
+                - name: iptables-restore.service
+                  enable: true
                 - name: settimezone.service
                   command: start
                   content: |
@@ -112,6 +114,20 @@ write_files:
                    ExecStart=/usr/bin/rm -f /home/core/skycore
                    ExecStart=/usr/bin/wget --tries=10 --wait=3 --random-wait --retry-connrefused https://github.com/MG-RAST/Skycore/releases/download/latest/skycore  --output-document=/home/core/skycore
                    ExecStartPost=/bin/sleep 2 ; /usr/bin/chmod +x /home/core/skycore
+    - path: /var/lib/iptables/rules-save
+        permissions: 0644
+        owner: root:root
+        content: |
+          *filter
+          :INPUT ACCEPT [0:0]
+          :FORWARD ACCEPT [0:0]
+          :OUTPUT ACCEPT [0:0]
+          -A INPUT -p tcp -s 192.5.200.126 --dport 22 -j ACCEPT -m comment --comment "warehouse13"
+          -A INPUT -p tcp -s 140.221.6.203 --dport 22 -j ACCEPT -m comment --comment "pamby"
+          -A INPUT -p tcp -s 140.221.9.203 --dport 22 -j ACCEPT -m comment --comment "namby"
+          -A INPUT -p tcp -s 140.221.76.2 --dport 22 -j ACCEPT -m comment --comment "bio-infra1"
+          -A INPUT -p tcp -s 0.0.0.0/0 --dport 22 -j DROP
+          COMMIT
     - path: /run/setup-environment.sh
       permissions: '0755'
       content: |
