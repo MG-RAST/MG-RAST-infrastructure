@@ -44,6 +44,7 @@ write_files:
                 metadata: $METADATA
             units:
                 - name: iptables-restore.service
+                  command: start
                   enable: true
                 - name: settimezone.service
                   command: start
@@ -116,7 +117,7 @@ write_files:
                    ExecStartPost=/bin/sleep 2 ; /usr/bin/chmod +x /home/core/skycore
     - path: /var/lib/iptables/rules-save
         permissions: 0644
-        owner: root:root
+        owner: 'root:root'
         content: |
           *filter
           :INPUT ACCEPT [0:0]
