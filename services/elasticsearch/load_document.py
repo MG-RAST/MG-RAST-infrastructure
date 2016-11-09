@@ -5,6 +5,7 @@ from pprint import pprint
 import requests
 import sys
 import os
+import re
 
 from restclient import RestClient
 
@@ -73,6 +74,17 @@ def fix_document(data):
         if collection_date.endswith(' UTC'):
             collection_date = collection_date[:-4]
     
+        regex = r"^(.*) UTC([+-]\d+)$"
+        match = re.search(regex, collection_date)
+
+        if match:
+            collection_date_without_tz = match.group(1)
+            timezone = match.group(2)
+            
+            collection_date = collection_date_without_tz+timezone
+           
+            
+    
         # replace space with T after date
         if len(collection_date) >= 11:
             if collection_date[10] == " ":
@@ -138,6 +150,10 @@ def transfer_document(transfer_id):
 # You could also pass OAuth in the constructor
 c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
+
+
+
+
 result = c.get("/metagenome", params={"verbosity": "minimal"})
 
 result_obj = result.json()
@@ -148,7 +164,7 @@ total_count = result_obj["total_count"]
 success = 0
 failure = 0
 count = 0
-for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=600):
+for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
     count +=1
     print(elem)
     r = transfer_document(elem["id"])
