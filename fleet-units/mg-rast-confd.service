@@ -40,4 +40,6 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Global=true
+Conflicts=awe-server@1.service
+
 
