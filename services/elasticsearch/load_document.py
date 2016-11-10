@@ -82,8 +82,20 @@ def fix_document(data):
             timezone = match.group(2)
             
             collection_date = collection_date_without_tz+timezone
-           
+        
+        # match single digit hour as timezone
+        # example : collection_date = "2005-05-24T10:30:00-6"
+        regex = r"^(.*)([+-])(\d)$"
+        match = re.search(regex, collection_date)
+
+        if match:
+            collection_date_without_tz = match.group(1)
+            tz_sign =  match.group(2)
+            tz_hour = match.group(3)
             
+            
+            collection_date = collection_date_without_tz+tz_sign+"0"+tz_hour
+        
     
         # replace space with T after date
         if len(collection_date) >= 11:
