@@ -13,4 +13,5 @@ bio-worker reserved ports
 - 4194: cadvisor
 - 3000: fleetui
 - 3306, 4567, 4568, 4444: mysql galera
+- 9200, 9300: elasticsearch
 
