@@ -65,6 +65,7 @@ def load_document(_id, data_dict):
 
 def fix_document(data):
     
+    # deprecated
     if "collection_date" in data:
         collection_date = data["collection_date"]
         
@@ -138,7 +139,7 @@ def transfer_document(transfer_id):
 
     data = r_obj["data"]
 
-    fix_document(data)
+    #fix_document(data)
 
     #pprint(data)
     if not "id" in data:
