@@ -1,8 +1,8 @@
 bio-worker reserved ports
 
-- 2379, 2380, 4001, 7001
+- 2379, 2380, 4001, 7001: etcd
 
-- 80, 443:  nginx
+- 80, 443: nginx
 
 - 11211: memcached
 - 8983: solr-m5nr
