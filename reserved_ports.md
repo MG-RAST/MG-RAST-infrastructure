@@ -9,7 +9,7 @@ bio-worker reserved ports
 - 8983: solr-metagenome
 - 3306: mysql_metadata
 - 7000, 70002, 7199, 9042, 9160: cassandra-simple
-- 80, 8001: awe server                            (80 !)
+- 8000, 8001: awe server
 - 4194: cadvisor
 - 3000: fleetui
 - 3306, 4567, 4568, 4444: mysql galera
