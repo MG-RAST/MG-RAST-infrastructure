@@ -49,7 +49,13 @@ def load_document(_id, data_dict):
     print(url)
    
     # comment: use json.dumps , see https://discuss.elastic.co/t/index-a-new-document/35281/8
-    r = requests.put(url, data=json.dumps(data_dict))
+    r = None
+    try:
+        r = requests.put(url, data=json.dumps(data_dict))
+    except Exception as e:
+        print("Exception loading into ES: %s" % (str(e)))
+        return False
+        
     response_obj = r.json()
     if not "result" in response_obj:
         print(r.text)
