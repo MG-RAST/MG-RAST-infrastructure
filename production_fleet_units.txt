@@ -93,7 +93,7 @@ fleetctl start elasticsearch{,-discovery}@{1..9}.service
 ### reboot of web and api fleet-units
 
 for i in 1 2 3; do fleetctl stop mg-rast-v4-web{,-discovery}@${i}.v4-web.service; sleep 10; fleetctl start mg-rast-v4-web{,-discovery}@${i}.v4-web.service; sleep 60; done
-for i in 1 2 3 4; do fleetctl stop mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 10; fleetctl start mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 120; done
+for i in 1 2; do fleetctl stop mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 10; fleetctl start mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 120; done
 for i in 1 2 3 4; do fleetctl stop api-server{,-discovery,-update}@${i}.api.service; sleep 10; fleetctl start api-server{,-discovery,-update}@${i}.api.service; sleep 180; done
 
 ### clean shutdown of fleet-units ###
