@@ -186,7 +186,13 @@ count = 0
 for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
     count +=1
     print(elem)
-    r = transfer_document(elem["id"])
+    r = None
+    try:
+        r = transfer_document(elem["id"])
+    except Exception as e:
+        print("Exception transferring document: %s" % (str(e)))
+        r = None
+    
     if r:
         success +=1
     else:
