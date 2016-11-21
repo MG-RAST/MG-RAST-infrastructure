@@ -21,7 +21,9 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/solr-metagenome/shock -XPUT
 
 # mg-rast-v4-web
 #v4
-curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/dc5e8c04-be69-46df-a958-f5c9d4b22d68"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/8cd88406-cd5d-42e2-8b0c-9f1d0c9b13a7"
+#curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/30a8aebf-61e0-4a5f-8a04-ac064b3c495c"
+
 #v4-dev
 curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/dc5e8c04-be69-46df-a958-f5c9d4b22d68"
 
@@ -34,9 +36,9 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v3-web-v3-web-dev/s
 
 #api-server-[channel]
 #channel: api
-curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/99fb64e2-62ba-4ab5-96b7-caff062a5124"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d4f12b73-9e54-4ca5-97f3-7db7c40e18f3"
 #channel: api-dev
-curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/99fb64e2-62ba-4ab5-96b7-caff062a5124"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d4f12b73-9e54-4ca5-97f3-7db7c40e18f3"
 #channel: api-pql
 curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-pql/shock -XPUT -d value="shock.metagenomics.anl.gov/node/743292ff-3c85-4d14-a9ad-dd40632c5b75"
 
@@ -48,7 +50,7 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d v
 curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/47f8eded-3c3f-42ad-8641-96bc12787f17"
 
 # latest pipeline
-#shock.metagenomics.anl.gov/node/e349b487-1a59-4965-b62d-61bca9bfee18
+#shock.metagenomics.anl.gov/node/2d0f16cb-b501-4516-83b4-89b6aa67dcf5
 
 # test pipeline
 #shock.metagenomics.anl.gov/node/7e563784-6286-48e2-9773-496e0899b569
