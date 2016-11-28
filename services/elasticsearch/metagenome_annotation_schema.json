@@ -1,0 +1,77 @@
+{
+    "settings" : {
+      "index" : {
+                  "number_of_shards" : 10, 
+                  "number_of_replicas" : 2 
+              },
+        "analysis" : {
+            "analyzer": {
+                "prefix_edge_ngram_analyzer": {
+                  "tokenizer": "prefix_edge_ngram_tokenizer",
+                  "filter": ["lowercase"]
+                },
+                "suffix_edge_ngram_analyzer": {
+                  "tokenizer": "keyword",
+                  "filter" : ["lowercase","reverse","suffix_edge_ngram_filter","reverse"]
+                }
+              },
+              "tokenizer": {
+                "prefix_edge_ngram_tokenizer": {
+                  "type": "edgeNGram",
+                  "min_gram": "2",
+                  "max_gram": "25"
+                }
+              },
+              "filter": {
+                "suffix_edge_ngram_filter": {
+                  "type": "edgeNGram",
+                  "min_gram": 2,
+                  "max_gram": 25
+                }
+              }
+        }
+    },
+    "mappings" : {
+        "metagenome_annotation" : { 
+            "properties" : {
+                "id" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "md5" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "function" : {
+                    "type": "string",
+                    "fields": {
+                        "prefix": {
+                          "type": "string",
+                          "analyzer": "prefix_edge_ngram_analyzer"
+                        },
+                        "suffix": {
+                          "type": "string",
+                          "analyzer": "suffix_edge_ngram_analyzer"
+                        }
+                    },
+                    "store" : false
+                },
+                "organism" : {
+                    "type": "string",
+                    "fields": {
+                        "prefix": {
+                          "type": "string",
+                          "analyzer": "prefix_edge_ngram_analyzer"
+                        },
+                        "suffix": {
+                          "type": "string",
+                          "analyzer": "suffix_edge_ngram_analyzer"
+                        }
+                    },
+                    "store" : false
+                }
+             }
+        }
+    }
+}
+
