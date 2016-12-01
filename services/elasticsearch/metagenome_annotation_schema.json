@@ -32,7 +32,11 @@
         }
     },
     "mappings" : {
-        "metagenome_annotation" : { 
+        "metagenome_metadata": {},
+        "metagenome_annotation" : {
+            "_parent": {
+                    "type": "metagenome_metadata" 
+                  }, 
             "properties" : {
                 "id" : {
                     "type": "string",
