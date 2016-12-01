@@ -140,7 +140,7 @@
                     "type" : "integer"
                 },
                 "assembled" : {
-                    "type" : ""
+                    "type" : "boolean"
                 },
                 "bowtie" : {
                     "type" : "boolean"
@@ -201,6 +201,18 @@
                 },
                 "pubmed_id" : {
                     "type" : "string"
+                },
+                "project_all" : {
+                    "type": "string"
+                },
+                "sample_all" : {
+                    "type": "string"
+                },
+                "library_all" : {
+                    "type": "string"
+                },
+                "env_package_all" : {
+                    "type": "string"
                 }
              }
         }
