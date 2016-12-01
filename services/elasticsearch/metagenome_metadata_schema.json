@@ -216,6 +216,49 @@
                 }
              }
         }
+        "metagenome_annotation" : {
+            "_parent": {
+                    "type": "metagenome_metadata" 
+                  }, 
+            "properties" : {
+                "id" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "md5" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "function" : {
+                    "type": "string",
+                    "fields": {
+                        "prefix": {
+                          "type": "string",
+                          "analyzer": "prefix_edge_ngram_analyzer"
+                        },
+                        "suffix": {
+                          "type": "string",
+                          "analyzer": "suffix_edge_ngram_analyzer"
+                        }
+                    },
+                    "store" : false
+                },
+                "organism" : {
+                    "type": "string",
+                    "fields": {
+                        "prefix": {
+                          "type": "string",
+                          "analyzer": "prefix_edge_ngram_analyzer"
+                        },
+                        "suffix": {
+                          "type": "string",
+                          "analyzer": "suffix_edge_ngram_analyzer"
+                        }
+                    },
+                    "store" : false
+                }
+             }
+        }
     }
 }
 
