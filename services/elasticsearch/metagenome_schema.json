@@ -215,7 +215,7 @@
                     "type": "string"
                 }
              }
-        }
+        },
         "metagenome_annotation" : {
             "_parent": {
                     "type": "metagenome_metadata" 
