@@ -17,6 +17,10 @@ import iso8601
 
 es_url = os.environ['ES_URL']
 
+# You could also pass OAuth in the constructor
+api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
+
+
 
 # query ES
 def es_find_document(id):
@@ -43,13 +47,25 @@ def read_metagenome(id):
     return r
 
 
+# example: #http://api.metagenomics.anl.gov/metagenome/mgm4441680.3?verbosity=full
+def read_metadata_from_api(id):
+    result = api.get("metagenome/"+id, params={"verbosity": "full"})
+    result_obj = result.json()
+    return result_obj
+
 #load document into ES
 def load_document(_id, data_dict):
     url = es_url +'/metagenome_index/metagenome/' + _id
     print(url)
    
     # comment: use json.dumps , see https://discuss.elastic.co/t/index-a-new-document/35281/8
-    r = requests.put(url, data=json.dumps(data_dict))
+    r = None
+    try:
+        r = requests.put(url, data=json.dumps(data_dict))
+    except Exception as e:
+        print("Exception loading into ES: %s" % (str(e)))
+        return False
+        
     response_obj = r.json()
     if not "result" in response_obj:
         print(r.text)
@@ -160,14 +176,53 @@ def transfer_document(transfer_id):
 
 
 
-# You could also pass OAuth in the constructor
-c = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
+schema=None
+with open('metagenome_schema.json') as json_data:
+    schema = json.load(json_data)
+    pprint(schema)
+    
+    
+        
+properties = schema["mappings"]["metagenome_metadata"]["properties"]
+
+pprint(properties)
+
+r = read_metadata_from_api("mgm4441680.3")
+r["statistics"]["gc_histogram"]=None
+r["statistics"]["length_histogram"]=None
+r["statistics"]["taxonomy"]=None
+r["statistics"]["source"]=None
+r["statistics"]["rarefaction"]=None
+r["statistics"]["qc"]=None
+r["statistics"]["ontology"]=None
+pprint(r)
+
+
+es_document = {}
+
+
+for key in ['job_id', 'name', 'pipeline_version', 'status', 'version']:
+    es_document[key] = r[key]
+
+for key, value in r['mixs'].items():
+    if not key in properties:
+        print("%s not in schema" % (key))
+        sys.exit(1)
+    es_document[key] = value
 
 
 
 
+# TODO check what in schema is missing in document
 
-result = c.get("/metagenome", params={"verbosity": "minimal"})
+pprint(es_document)
+
+exit(0)
+
+
+
+
+result = api.get("/metagenome", params={"verbosity": "minimal"})
 
 result_obj = result.json()
 
@@ -177,10 +232,16 @@ total_count = result_obj["total_count"]
 success = 0
 failure = 0
 count = 0
-for elem in c.get_stream("/metagenome", params={"verbosity": "minimal"}):
+for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}):
     count +=1
     print(elem)
-    r = transfer_document(elem["id"])
+    r = None
+    try:
+        r = transfer_document(elem["id"])
+    except Exception as e:
+        print("Exception transferring document: %s" % (str(e)))
+        r = None
+    
     if r:
         success +=1
     else:
