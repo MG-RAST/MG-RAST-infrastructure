@@ -51,6 +51,18 @@ def read_metagenome(id):
 def read_metadata_from_api(id):
     result = api.get("metagenome/"+id, params={"verbosity": "full"})
     result_obj = result.json()
+    
+    # remove data we do not need
+    statistics = result_obj["statistics"]
+    
+    del statistics["gc_histogram"]
+    del statistics["length_histogram"]
+    del statistics["taxonomy"]
+    del statistics["source"]
+    del statistics["rarefaction"]
+    del statistics["qc"]
+    del statistics["ontology"]
+    
     return result_obj
 
 #load document into ES
@@ -176,48 +188,217 @@ def transfer_document(transfer_id):
 
 
 
-schema=None
-with open('metagenome_schema.json') as json_data:
-    schema = json.load(json_data)
-    pprint(schema)
+def get_schema_properties():
+
+
+    schema=None
+    with open('metagenome_schema.json') as json_data:
+        schema = json.load(json_data)
+        pprint(schema)
     
     
         
-properties = schema["mappings"]["metagenome_metadata"]["properties"]
+    properties = schema["mappings"]["metagenome_metadata"]["properties"]
+    return properties
 
+
+
+def create_es_doc_from_api_doc(api_data):
+    es_document = {}
+
+
+    for key in ['name', 'pipeline_version', 'status', 'version']:
+        es_document[key] = api_data[key]
+        del api_data[key]
+
+    es_document['id'] = api_data['job_id']
+    es_document['job'] = api_data['job_id']
+    del api_data['job_id']
+
+    es_document['created']=api_data['created']
+    del api_data['created']
+
+    # project
+    delete_keys=[]
+    project_data = api_data['metadata']['project']['data']
+    project_all=""
+    for key, value in project_data.items():
+        project_all += str(value) + " "
+        if not key in properties:
+            print("WARNING: %s not in schema" % (key))
+            continue
+        es_document[key] = value
+        delete_keys.append(key)
+
+    for key in delete_keys:
+        del project_data[key]
+
+
+    try:
+        es_document['project_all'] = project_all
+    except KeyError:
+        pass
+
+
+    # sample
+    delete_keys=[]
+    sample_data = api_data['metadata']['sample']['data']
+    sample_all = ""
+    for key, value in sample_data.items():
+        sample_all += str(value) + " "
+        if not key in properties:
+            print("WARNING: %s not in schema" % (key))
+            continue
+        es_document[key] = value
+        delete_keys.append(key)
+
+    for key in delete_keys:
+        del sample_data[key]
+
+
+
+    try:
+        es_document['sample_all'] = sample_all
+    except KeyError:
+        pass
+
+    try:
+        es_document['sample_id']=api_data['metadata']['sample']['id']
+        del api_data['metadata']['sample']['id']
+    except KeyError:
+        pass
+
+    try:
+        es_document['sample_name']=api_data['metadata']['sample']['name']
+        del api_data['metadata']['sample']['name']
+    except KeyError:
+        pass
+
+
+    # library
+    delete_keys=[]
+    library_data = api_data['metadata']['library']['data']
+    library_all=''
+    for key, value in library_data.items() :
+        library_all += str(value) + " "
+        if not key in properties:
+            print("WARNING: %s not in schema" % (key))
+            continue
+        es_document[key] = value
+        delete_keys.append(key)
+
+    for key in delete_keys:
+        del library_data[key]
+
+    try:
+        es_document['library_all'] = library_all
+    except KeyError:
+        pass
+
+    try:
+        es_document['library_id']=api_data['metadata']['library']['id']
+        del api_data['metadata']['library']['id']
+    except KeyError:
+        pass
+
+    try:
+        es_document['library_name']=api_data['metadata']['library']['name']
+        del api_data['metadata']['library']['name']
+    except KeyError:
+        pass
+
+
+    # mixs
+    delete_keys=[]
+    mixs_data = api_data['mixs']
+    for key, value in mixs_data.items():
+        if not key in properties:
+            print("WARNING: %s not in schema" % (key))
+            continue
+        es_document[key] = value
+        delete_keys.append(key)
+    
+    for key in delete_keys:
+        del mixs_data[key]
+
+
+    #pipeline_parameters
+    delete_keys=[]
+    pipeline_parameters = api_data['pipeline_parameters']
+    for key, value in pipeline_parameters.items():
+        if not key in properties:
+            print("WARNING: %s not in schema" % (key))
+            continue
+        es_document[key] = value
+        delete_keys.append(key)
+    
+    for key in delete_keys:
+        del pipeline_parameters[key]
+
+    # env_package_data
+    delete_keys=[]
+    env_package_data = api_data['metadata']['env_package']['data']
+    env_package_all = ""
+    for key, value in env_package_data.items():
+        env_package_all += str(value) + " "
+        if not key in properties:
+            print("WARNING: %s not in schema" % (key))
+            continue
+        es_document[key] = value
+        delete_keys.append(key)
+    
+    for key in delete_keys:
+        del env_package_data[key]
+
+
+
+
+    try:
+        es_document['env_package_id']=api_data['metadata']['env_package']['id']
+        del api_data['metadata']['env_package']['id']
+    except KeyError:
+        pass
+
+    try:
+        es_document['env_package_name']=api_data['metadata']['env_package']['name']
+        del api_data['metadata']['env_package']['name']
+    except KeyError:
+        pass
+
+
+    es_document['env_package_all'] = env_package_all
+    del api_data['metadata']['env_package']
+
+
+    sequence_stats =  api_data['statistics']['sequence_stats']
+    for key, value in sequence_stats.items():
+        value_type = type(value)
+        if value_type is float:
+            es_document[key+'_d']=value
+        elif value_type is int:
+            es_document[key+'_l']=value
+        else:
+            print("type %s not supoorted" % (str(value_type)))
+            exit(1)
+        
+
+    return es_document
+    
+
+
+######################### main ##########################
+
+
+properties = get_schema_properties()
+
+
+print("***************** properties:\n")
 pprint(properties)
 
-r = read_metadata_from_api("mgm4441680.3")
-r["statistics"]["gc_histogram"]=None
-r["statistics"]["length_histogram"]=None
-r["statistics"]["taxonomy"]=None
-r["statistics"]["source"]=None
-r["statistics"]["rarefaction"]=None
-r["statistics"]["qc"]=None
-r["statistics"]["ontology"]=None
-pprint(r)
-
-
-es_document = {}
-
-
-for key in ['job_id', 'name', 'pipeline_version', 'status', 'version']:
-    es_document[key] = r[key]
-
-for key, value in r['mixs'].items():
-    if not key in properties:
-        print("%s not in schema" % (key))
-        sys.exit(1)
-    es_document[key] = value
 
 
 
 
-# TODO check what in schema is missing in document
-
-pprint(es_document)
-
-exit(0)
 
 
 
@@ -236,10 +417,60 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}):
     count +=1
     print(elem)
     r = None
+    api_data = None
     try:
-        r = transfer_document(elem["id"])
+        #r = transfer_document(elem["id"])
+        transfer_id = elem["id"]
+        if es_find_document(transfer_id):
+            print("%s already found, skipping..." % (transfer_id))
+            continue
+        else:
+            print("Getting %s from API..." % (transfer_id))
     except Exception as e:
-        print("Exception transferring document: %s" % (str(e)))
+         print("Exception es_find_document: %s" % (str(e)))
+         r = None
+         
+    try:
+        api_data = read_metadata_from_api(transfer_id)
+
+        print("***************** metadata from API:\n")
+        pprint(api_data)
+
+    except Exception as e:
+        print("Exception read_metadata_from_api: %s" % (str(e)))
+        r = None
+    es_document = None
+    try:
+            
+        es_document = create_es_doc_from_api_doc(api_data)
+    except Exception as e:
+        print("Exception create_es_doc_from_api_doc: %s" % (str(e)))
+        r = None
+
+    try:
+        print("***************** metadata from API that is still missing:\n")
+        pprint(api_data)
+
+        
+        print("***************** es_document:\n")
+        pprint(es_document)
+
+        # check what is missing
+        for key, value in properties.items() :
+            if not key in es_document:
+                print("missing: %s" % key )
+
+    except Exception as e:
+        print("Exception transferring document A: %s" % (str(e)))
+        r = None
+        
+    try:
+
+        print("***************** api_data after using data:\n")
+        pprint(api_data)
+        
+    except Exception as e:
+        print("Exception transferring document B: %s" % (str(e)))
         r = None
     
     if r:
