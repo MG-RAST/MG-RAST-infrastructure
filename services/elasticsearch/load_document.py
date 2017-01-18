@@ -154,58 +154,8 @@ def transfer_document(transfer_id):
         return False
     
     
-    for key in properties:
-        if key in es_document:
-            expected_type = properties[key]['type']
-            
-            
-            this_type = type(es_document[key])
-            
-            if this_type == int:
-                this_type_str="integer"
-            elif this_type == str:
-                this_type_str="string"
-            else:
-                print(str(this_type))
-                exit(1)
-            
-            
-                
-            if expected_type=="integer" and this_type_str=="string":
-                es_document[key]=int(es_document[key])
-                continue
-                
-            if expected_type=="boolean" and this_type_str=="string":
-                if es_document[key] == "yes":
-                    es_document[key]=True
-                elif es_document[key] == "no":
-                    es_document[key]=False
-                else:
-                    print(str(this_type))
-                    exit(1)
-                continue
-                    
-            if expected_type=="float" and this_type_str=="string":
-                es_document[key]=float(es_document[key])
-                continue
-            
-            if expected_type=="date" and this_type_str=="string":
-                continue
-                
-            if this_type_str != expected_type:
-                print("key: %s %s %s\n", key, expected_type, this_type_str )
-                print("%s %s\n", key, es_document[key])
-                exit(1)
     
-    for date in ['created']:
-        if date in es_document:
-            #del es_document[date]
-            #continue # TODO fix API !!!
-            value = es_document[date]
-            if value:
-                if len(value) >= 11:
-                    if value[10] == " ":
-                        es_document[date]=value[:10]+"T"+value[11:]
+    
     
     print("sending...")
     pprint(es_document)
@@ -219,7 +169,57 @@ def transfer_document(transfer_id):
     return loading_ok
 
 
+def fix_type(key, value, properties):
 
+
+    if not key in properties:
+        print("Warning: Adding unknown key \"%s\"" % (key) )
+        return value
+        
+    try:    
+        expected_type = properties[key]['type']
+    except Exception as e:
+        print(str(e))
+        exit(1)
+    
+    this_type = type(value)
+    
+    if this_type == int:
+        this_type_str="integer"
+    elif this_type == str:
+        this_type_str="string"
+    else:
+        print(str(this_type))
+        exit(1)
+        
+    if expected_type=="integer" and this_type_str=="string":
+        return int(value)
+        
+    if expected_type=="boolean" and this_type_str=="string":
+        if value == "yes":
+            return True
+        elif value == "no":
+            return False
+        
+        print(str(this_type))
+        exit(1)
+        
+            
+    if expected_type=="float" and this_type_str=="string":
+        return float(value)
+    
+    if expected_type=="date" and this_type_str=="string":
+        return value
+        
+    if this_type_str != expected_type:
+        print("key: %s %s %s\n", key, expected_type, this_type_str )
+        print("%s %s\n", key, value)
+        exit(1)
+
+    return value
+
+                
+                
 def get_schema_properties():
 
 
@@ -235,238 +235,105 @@ def get_schema_properties():
 
 
 
+def get_api_fields(es_document, section_name, section):
+    
+    
+    for key in section.keys():
+        if key in section and key != None:
+            value = section[key]
+            if type(value) == dict:
+                continue
+            new_value = fix_type(key, section[key], properties)
+            if new_value:
+                es_document[section_name+"_"+key]=new_value
+            
+        
+    
+    return
+
+
 def create_es_doc_from_api_doc(api_data):
     es_document = {}
-
-
-    if api_data == None:
-        sys.exit(1)
-
-    for key in ['name', 'pipeline_version', 'status', 'version']:
-        es_document[key] = api_data[key]
-        del api_data[key]
-
-    es_document['id'] = api_data['job_id']
-    es_document['job'] = api_data['job_id']
-    del api_data['job_id']
-
-    es_document['created']=api_data['created']
-    del api_data['created']
-
     
-    # project
-    print("project")
-    delete_keys=[]
-    project_data = None
     try:
-        project_data = api_data['metadata']['project']['data']
-    except Exception:
-        print("no project data found")
-        pass
-        
-    if project_data: 
-        project_all=""
-        for key, value in project_data.items():
-            if value:
-                print(key)
-                project_all += str(value) + " "
-                if not key in properties:
-                    print("WARNING: %s not in schema" % (key))
-                    continue
-                es_document[key] = value
-                delete_keys.append(key)
-    
-        print("delete")
-        for key in delete_keys:
-            del project_data[key]
-
-
-        try:
-            es_document['project_all'] = project_all
-        except KeyError:
-            pass
-
-
-    # sample
-    print("sample")
-    delete_keys=[]
-    sample_data = None
-    try:
-        sample_data = api_data['metadata']['sample']['data']
-    except Exception:
-        print("no sample data found")
-        pass
-    
-    if sample_data: 
-        sample_all = ""
-        for key, value in sample_data.items():
-            if value:
-                sample_all += str(value) + " "
-                if not key in properties:
-                    print("WARNING: %s not in schema" % (key))
-                    continue
-                es_document[key] = value
-                delete_keys.append(key)
-
-        for key in delete_keys:
-            del sample_data[key]
-
-
-
-        try:
-            es_document['sample_all'] = sample_all
-        except KeyError:
-            pass
-
-        try:
-            es_document['sample_id']=api_data['metadata']['sample']['id']
-            del api_data['metadata']['sample']['id']
-        except KeyError:
-            pass
-
-        try:
-            es_document['sample_name']=api_data['metadata']['sample']['name']
-            del api_data['metadata']['sample']['name']
-        except KeyError:
-            pass
-
-
-    # library
-    print("library")
-    delete_keys=[]
-    library_data = None
-    try:
-        library_data = api_data['metadata']['library']['data']
-    except Exception:
-        print("no library data found")
-        pass
-    
-    if library_data:
-        library_all=''
-        for key, value in library_data.items():
-            if value:
-                library_all += str(value) + " "
-                if not key in properties:
-                    print("WARNING: %s not in schema" % (key))
-                    continue
-                es_document[key] = value
-                delete_keys.append(key)
-
-        for key in delete_keys:
-            del library_data[key]
-
-        try:
-            es_document['library_all'] = library_all
-        except KeyError:
-            pass
-
-        try:
-            es_document['library_id']=api_data['metadata']['library']['id']
-            del api_data['metadata']['library']['id']
-        except KeyError:
-            pass
-
-        try:
-            es_document['library_name']=api_data['metadata']['library']['name']
-            del api_data['metadata']['library']['name']
-        except KeyError:
-            pass
-
-
-    # mixs
-    print("mixs")
-    delete_keys=[]
-    mixs_data = None
-    try:
-        mixs_data = api_data['mixs']
-    except Exception:
-        print("no mixs data found")
-        pass
-    
-    if mixs_data:
-        for key, value in mixs_data.items():
-            if key != 'collection_date':
-                if not key in properties:
-                    print("WARNING: %s not in schema" % (key))
-                    continue
-                if value:
-                    es_document[key] = value
-                    delete_keys.append(key)
-    
-        for key in delete_keys:
-            del mixs_data[key]
-
-
-    #pipeline_parameters
-    print("pipeline_parameters")
-    delete_keys=[]
-    pipeline_parameters = api_data['pipeline_parameters']
-    for key, value in pipeline_parameters.items():
-        if value:
-            if not key in properties:
-                print("WARNING: %s not in schema" % (key))
-                continue
-            es_document[key] = value
-            delete_keys.append(key)
-    
-    for key in delete_keys:
-        del pipeline_parameters[key]
-
-    # env_package_data
-    print("env_package_data")
-    delete_keys=[]
-    env_package_data = None
-    try:
-        env_package_data = api_data['metadata']['env_package']['data']
-    except Exception:
-        print("no env_package data found")
-        pass
-    
-    if env_package_data:
-        env_package_all = ""
-        for key, value in env_package_data.items():
-            if value:
-                env_package_all += str(value) + " "
-                if not key in properties:
-                    print("WARNING: %s not in schema" % (key))
-                    continue
-                es_document[key] = value
-                delete_keys.append(key)
-    
-        for key in delete_keys:
-            del env_package_data[key]
+        api_project = api_data['project']
+    except:
+        api_project={}
         
         
-        try:
-            es_document['env_package_id']=api_data['metadata']['env_package']['id']
-            del api_data['metadata']['env_package']['id']
-        except KeyError:
-            pass
+    try:
+        api_library = api_data['library']
+    except:
+        api_library = {}
+        
+        
+    try:
+        api_sample = api_data['sample']
+    except:
+        api_sample = {}
+    
+    try:
+        api_pipeline_parameters = api_data['pipeline_parameters']
+    except:
+        api_pipeline_parameters ={}
+        
+    try:
+        api_sequence_statistics = api_data['sequence_stats']
+    except:
+        api_sequence_statistics = {}
+   
+   
 
-        try:
-            es_document['env_package_name']=api_data['metadata']['env_package']['name']
-            del api_data['metadata']['env_package']['name']
-        except KeyError:
-            pass
-
-
-        es_document['env_package_all'] = env_package_all
-        del api_data['metadata']['env_package']
-
-    print("sequence_stats")
-    sequence_stats =  api_data['statistics']['sequence_stats']
-    for key, value in sequence_stats.items():
-        if value:
-            value_type = type(value)
-            if value_type is float:
-                es_document[key+'_d']=value
-            elif value_type is int:
-                es_document[key+'_l']=value
+    ### job_info
+    get_api_fields(es_document, 'job_info', api_data)
+    
+        
+    if not 'job_info_public' in es_document:
+        if 'job_info_status' in es_document:
+            if es_document['job_info_status']== "public":
+                es_document['job_info_public']=True
             else:
-                print("type %s not supoorted" % (str(value_type)))
-                exit(1)
+                es_document['job_info_public']=False
+            del es_document['job_info_status']
         
+            
+            
+    if api_project:
+        get_api_fields(es_document, 'project' , api_project)
+        
+    if api_library:
+        get_api_fields(es_document, 'library', api_library)
+        
+    if api_sample:
+        get_api_fields(es_document, 'sample', api_sample)
+        
+    if api_pipeline_parameters:
+        get_api_fields(es_document, 'pipeline_parameters', api_pipeline_parameters)
+ 
+    if api_sequence_statistics:
+        get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
+ 
 
+    if not 'job_info_id' in es_document:
+        print("job_info_id missing.")
+        exit(1)
+ 
+    es_document['id'] = es_document['job_info_id']
+ 
+ 
+    
+    if 'job_info_created' in es_document:
+        value = es_document['job_info_created']
+        if value:
+            if len(value) >= 11:
+                if value[10] == " ":
+                    es_document['job_info_created']=value[:10]+"T"+value[11:]
+    
+    pprint(es_document)
+    
+   
+        
+    #exit(1)
     return es_document
     
 
@@ -520,8 +387,8 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}):
         success +=1
     else:
         failure += 1
-        exit(1)
         print("ERROR\n")
+        exit(1)
         
     print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
