@@ -55,9 +55,6 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "job" : {
-                    "type": "integer"
-                },
                 "PI_firstname" : {
                     "type": "string",
                     "index": "not_analyzed"
@@ -66,13 +63,34 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "status" : {
+                "project_name" : {
                     "type": "string"
                 },
-                "sequence_type" : {
+                "project_id" : {
+                    "type": "string"
+                },
+                "gold_id" : {
+                    "type" : "string"
+                },
+                "ncbi_id" : {
+                    "type" : "string"
+                },
+                "pubmed_id" : {
+                    "type" : "string"
+                },
+                "project_all" : {
                     "type": "string"
                 },
                 "library_id" : {
+                    "type": "string"
+                },
+                "library_name" : {
+                    "type": "string"
+                },
+                "library_all" : {
+                    "type": "string"
+                },
+                "sample_id" : {
                     "type": "string"
                 },
                 "collection_date" : {
@@ -84,16 +102,13 @@
                 "latitude" : {
                     "type": "float"
                 },
+                "longitude" : {
+                    "type": "float"
+                },
                 "biome" : {
                     "type": "string"
                 },
                 "sample_name" : {
-                    "type": "string"
-                },
-                "project_name" : {
-                    "type": "string"
-                },
-                "project_id" : {
                     "type": "string"
                 },
                 "country" : {
@@ -102,25 +117,40 @@
                 "env_package_type" : {
                     "type": "string"
                 },
-                "longitude" : {
-                    "type": "float"
+                "env_package_name" : {
+                    "type": "string"
+                },
+                "env_package_id" : {
+                    "type": "string"
+                },
+                "env_package_all" : {
+                    "type": "string"
                 },
                 "location" : {
+                    "type": "string"
+                },
+                "material" : {
+                    "type": "string"
+                },
+                "sample_all" : {
+                    "type": "string"
+                },
+                "job_id" : {
+                    "type": "integer"
+                },
+                "public" : {
+                    "type": "string"
+                },
+                "pipeline_version" : {
+                    "type" : "string"
+                },
+                "sequence_type" : {
                     "type": "string"
                 },
                 "version" : {
                     "type": "integer"
                 },
-                "library_name" : {
-                    "type": "string"
-                },
                 "name" : {
-                    "type": "string"
-                },
-                "env_package_name" : {
-                    "type": "string"
-                },
-                "env_package_id" : {
                     "type": "string"
                 },
                 "seq_method" : {
@@ -129,12 +159,6 @@
                 "created": {
                     "type": "date",
                     "format": "strict_date_optional_time||epoch_millis"
-                },
-                "sample_id" : {
-                    "type": "string"
-                },
-                "material" : {
-                    "type": "string"
                 },
                 "aa_pid" : {
                     "type" : "integer"
@@ -189,32 +213,8 @@
                 },
                 "screen_indexes" : {
                     "type" : "string"
-                },
-                "pipeline_version" : {
-                    "type" : "string"
-                },
-                "gold_id" : {
-                    "type" : "string"
-                },
-                "ncbi_id" : {
-                    "type" : "string"
-                },
-                "pubmed_id" : {
-                    "type" : "string"
-                },
-                "project_all" : {
-                    "type": "string"
-                },
-                "sample_all" : {
-                    "type": "string"
-                },
-                "library_all" : {
-                    "type": "string"
-                },
-                "env_package_all" : {
-                    "type": "string"
                 }
-             }
+            }
         },
         "metagenome_annotation" : {
             "_parent": {

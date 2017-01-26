@@ -21,6 +21,7 @@ es_url = os.environ['ES_URL']
 api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
 
+properties=None
 
 # query ES
 def es_find_document(id):
@@ -49,12 +50,26 @@ def read_metagenome(id):
 
 # example: #http://api.metagenomics.anl.gov/metagenome/mgm4441680.3?verbosity=full
 def read_metadata_from_api(id):
-    result = api.get("metagenome/"+id, params={"verbosity": "full"})
+    result = api.get("metagenome/"+id, params={"verbosity": "full"}, debug=True)
     result_obj = result.json()
+    
+    # remove data we do not need
+    statistics = result_obj["statistics"]
+    
+    del statistics["gc_histogram"]
+    del statistics["length_histogram"]
+    del statistics["taxonomy"]
+    del statistics["source"]
+    del statistics["rarefaction"]
+    del statistics["qc"]
+    del statistics["ontology"]
+    del statistics["function"]
+    
     return result_obj
 
 #load document into ES
-def load_document(_id, data_dict):
+def load_document(data_dict):
+    _id = data_dict['id']
     url = es_url +'/metagenome_index/metagenome/' + _id
     print(url)
    
@@ -79,145 +94,263 @@ def load_document(_id, data_dict):
         
     return True
 
-def fix_document(data):
-    
-    # deprecated
-    if "collection_date" in data:
-        collection_date = data["collection_date"]
-        
-        print("collection_date: %s" % (collection_date))
-    
-        # remove UTC suffix
-        if collection_date.endswith(' UTC'):
-            collection_date = collection_date[:-4]
-    
-        regex = r"^(.*) UTC([+-]\d+)$"
-        match = re.search(regex, collection_date)
-
-        if match:
-            collection_date_without_tz = match.group(1)
-            timezone = match.group(2)
-            
-            collection_date = collection_date_without_tz+timezone
-        
-        # match single digit hour as timezone
-        # example : collection_date = "2005-05-24T10:30:00-6"
-        regex = r"^(.*)([+-])(\d)$"
-        match = re.search(regex, collection_date)
-
-        if match:
-            collection_date_without_tz = match.group(1)
-            tz_sign =  match.group(2)
-            tz_hour = match.group(3)
-            
-            
-            collection_date = collection_date_without_tz+tz_sign+"0"+tz_hour
-        
-    
-        # replace space with T after date
-        if len(collection_date) >= 11:
-            if collection_date[10] == " ":
-                collection_date=collection_date[:10]+"T"+collection_date[11:]
-    
-        data["collection_date"] = collection_date
 
 def transfer_document(transfer_id):
-    if es_find_document(transfer_id):
-        print("%s already found, skipping..." % (transfer_id))
-        return True
-    else:
-        print("Getting %s from API..." % (transfer_id))
+  
+    api_data = None
+    try:
+        #r = transfer_document(elem["id"])
+        
+        if es_find_document(transfer_id):
+            print("%s already found, skipping..." % (transfer_id))
+            return True
+        else:
+            print("Getting %s from API..." % (transfer_id))
+    except Exception as e:
+         print("Exception es_find_document: %s" % (str(e)))
+         return False
+         
+    try:
+        api_data = read_metadata_from_api(transfer_id)
 
+        print("***************** metadata from API:\n")
+        pprint(api_data)
+    except Exception as e:
+        print("Exception read_metadata_from_api: %s" % (str(e)))
+        return False
+        
+    es_document = None
+    try:
+            
+        es_document = create_es_doc_from_api_doc(api_data)
+    except Exception as e:
+        print("Exception create_es_doc_from_api_doc: %s" % (str(e)))
+        return False
 
-    r = read_metagenome(transfer_id)
-    
-    with open('temp_file.txt', 'w') as f:
-        f.write(r.text)
+    try:
+        print("***************** metadata from API that is still missing:\n")
+        pprint(api_data)
+
+        
+        print("***************** es_document:\n")
+        pprint(es_document)
+
+        # check what is missing
+        for key, value in properties.items() :
+            if not key in es_document:
+                print("missing: %s" % key )
+
+    except Exception as e:
+        print("Exception transferring document A: %s" % (str(e)))
+        return False
         
     try:
-        r_obj = r.json()
-    except Exception as e:
-        print("Exception parsing json: %s" % (str(e)))
-        return False
 
-    
-
-    if 'ERROR' in r_obj:
-        print(r_obj)
-        print("found ERROR\n")
-        return False
-
-    #pprint(object)
-    if not "data" in r_obj:
-        print(r_obj)
-        print("data not in r_obj\n")
-        return False
-
-    data = r_obj["data"]
-
-    #fix_document(data)
-
-    #pprint(data)
-    if not "id" in data:
-        print("id not in data\n")
-        return False
+        print("***************** api_data after using data:\n")
+        pprint(api_data)
         
-    id_returned = data["id"]
-
-    if transfer_id != id_returned:
-        print("id_requested: %s     id_returned %s\n" % (transfer_id, id_returned))
+    except Exception as e:
+        print("Exception transferring document B: %s" % (str(e)))
         return False
-
-
-    print("load metagenome %s into ES..." % (transfer_id))
-    loading_ok = load_document(transfer_id, data)
+    
+    
+    
+    
+    
+    print("sending...")
+    pprint(es_document)
+    loading_ok = False
+    try:
+        loading_ok = load_document(es_document)
+    except Exception as e:
+      print("Exception transferring document B: %s" % (str(e)))
+      return False
     
     return loading_ok
 
 
+def fix_type(key, value, properties):
 
-schema=None
-with open('metagenome_schema.json') as json_data:
-    schema = json.load(json_data)
-    pprint(schema)
+
+    if not key in properties:
+        print("Warning: Adding unknown key \"%s\"" % (key) )
+        return value
+        
+    try:    
+        expected_type = properties[key]['type']
+    except Exception as e:
+        print(str(e))
+        exit(1)
+    
+    this_type = type(value)
+    
+    if this_type == int:
+        this_type_str="integer"
+    elif this_type == str:
+        this_type_str="string"
+    else:
+        print(str(this_type))
+        exit(1)
+        
+    if expected_type=="integer" and this_type_str=="string":
+        return int(value)
+        
+    if expected_type=="boolean" and this_type_str=="string":
+        if value == "yes":
+            return True
+        elif value == "no":
+            return False
+        
+        print(str(this_type))
+        exit(1)
+        
+            
+    if expected_type=="float" and this_type_str=="string":
+        return float(value)
+    
+    if expected_type=="date" and this_type_str=="string":
+        return value
+        
+    if this_type_str != expected_type:
+        print("key: %s %s %s\n", key, expected_type, this_type_str )
+        print("%s %s\n", key, value)
+        exit(1)
+
+    return value
+
+                
+                
+def get_schema_properties():
+
+
+    schema=None
+    with open('metagenome_schema.json') as json_data:
+        schema = json.load(json_data)
+        pprint(schema)
     
     
         
-properties = schema["mappings"]["metagenome_metadata"]["properties"]
+    properties = schema["mappings"]["metagenome_metadata"]["properties"]
+    return properties
 
+
+
+def get_api_fields(es_document, section_name, section):
+    
+    
+    for key in section.keys():
+        if key in section and key != None:
+            value = section[key]
+            if type(value) == dict:
+                continue
+            new_value = fix_type(key, section[key], properties)
+            if new_value:
+                es_document[section_name+"_"+key]=new_value
+            
+        
+    
+    return
+
+
+def create_es_doc_from_api_doc(api_data):
+    es_document = {}
+    
+    try:
+        api_project = api_data['project']
+    except:
+        api_project={}
+        
+        
+    try:
+        api_library = api_data['library']
+    except:
+        api_library = {}
+        
+        
+    try:
+        api_sample = api_data['sample']
+    except:
+        api_sample = {}
+    
+    try:
+        api_pipeline_parameters = api_data['pipeline_parameters']
+    except:
+        api_pipeline_parameters ={}
+        
+    try:
+        api_sequence_statistics = api_data['sequence_stats']
+    except:
+        api_sequence_statistics = {}
+   
+   
+
+    ### job_info
+    get_api_fields(es_document, 'job_info', api_data)
+    
+        
+    if not 'job_info_public' in es_document:
+        if 'job_info_status' in es_document:
+            if es_document['job_info_status']== "public":
+                es_document['job_info_public']=True
+            else:
+                es_document['job_info_public']=False
+            del es_document['job_info_status']
+        
+            
+            
+    if api_project:
+        get_api_fields(es_document, 'project' , api_project)
+        
+    if api_library:
+        get_api_fields(es_document, 'library', api_library)
+        
+    if api_sample:
+        get_api_fields(es_document, 'sample', api_sample)
+        
+    if api_pipeline_parameters:
+        get_api_fields(es_document, 'pipeline_parameters', api_pipeline_parameters)
+ 
+    if api_sequence_statistics:
+        get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
+ 
+
+    if not 'job_info_id' in es_document:
+        print("job_info_id missing.")
+        exit(1)
+ 
+    es_document['id'] = es_document['job_info_id']
+ 
+ 
+    
+    if 'job_info_created' in es_document:
+        value = es_document['job_info_created']
+        if value:
+            if len(value) >= 11:
+                if value[10] == " ":
+                    es_document['job_info_created']=value[:10]+"T"+value[11:]
+    
+    pprint(es_document)
+    
+   
+        
+    #exit(1)
+    return es_document
+    
+
+
+######################### main ##########################
+
+
+properties = get_schema_properties()
+
+
+print("***************** properties:\n")
 pprint(properties)
 
-r = read_metadata_from_api("mgm4441680.3")
-r["statistics"]["gc_histogram"]=None
-r["statistics"]["length_histogram"]=None
-r["statistics"]["taxonomy"]=None
-r["statistics"]["source"]=None
-r["statistics"]["rarefaction"]=None
-r["statistics"]["qc"]=None
-r["statistics"]["ontology"]=None
-pprint(r)
-
-
-es_document = {}
-
-
-for key in ['job_id', 'name', 'pipeline_version', 'status', 'version']:
-    es_document[key] = r[key]
-
-for key, value in r['mixs'].items():
-    if not key in properties:
-        print("%s not in schema" % (key))
-        sys.exit(1)
-    es_document[key] = value
 
 
 
 
-# TODO check what in schema is missing in document
-
-pprint(es_document)
-
-exit(0)
 
 
 
@@ -234,19 +367,28 @@ failure = 0
 count = 0
 for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}):
     count +=1
-    print(elem)
+    pprint(elem)
+    print("------------------------------------------------------\n") 
+    transfer_id = elem["id"]
+    print(transfer_id+"\n")
     r = None
+    
+    
+   
+    
     try:
-        r = transfer_document(elem["id"])
+        r= transfer_document(transfer_id)
     except Exception as e:
-        print("Exception transferring document: %s" % (str(e)))
-        r = None
+        print("Exception transfer_document: %s" % (str(e)))
+        
+    
     
     if r:
         success +=1
     else:
         failure += 1
         print("ERROR\n")
+        exit(1)
         
     print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
