@@ -54,16 +54,17 @@ def read_metadata_from_api(id):
     result_obj = result.json()
     
     # remove data we do not need
-    statistics = result_obj["statistics"]
+    if "statistics" in result_obj:
+        statistics = result_obj["statistics"]
     
-    del statistics["gc_histogram"]
-    del statistics["length_histogram"]
-    del statistics["taxonomy"]
-    del statistics["source"]
-    del statistics["rarefaction"]
-    del statistics["qc"]
-    del statistics["ontology"]
-    del statistics["function"]
+        del statistics["gc_histogram"]
+        del statistics["length_histogram"]
+        del statistics["taxonomy"]
+        del statistics["source"]
+        del statistics["rarefaction"]
+        del statistics["qc"]
+        del statistics["ontology"]
+        del statistics["function"]
     
     return result_obj
 
@@ -125,6 +126,9 @@ def transfer_document(transfer_id):
         es_document = create_es_doc_from_api_doc(api_data)
     except Exception as e:
         print("Exception create_es_doc_from_api_doc: %s" % (str(e)))
+        return False
+    
+    if not es_document:
         return False
 
     try:
@@ -206,6 +210,11 @@ def fix_type(key, value, properties):
         
             
     if expected_type=="float" and this_type_str=="string":
+        try:
+            new_value = float(value)
+        except Exception as e:
+            print("error: could not convert string %s into float (%s)" % (value, str(e)))
+            return None
         return float(value)
     
     if expected_type=="date" and this_type_str=="string":
@@ -237,38 +246,48 @@ def get_schema_properties():
 
 def get_api_fields(es_document, section_name, section):
     
-    
+    print("section type: %s" % (type(section)))
     for key in section.keys():
         if key in section and key != None:
             value = section[key]
             if type(value) == dict:
                 continue
-            new_value = fix_type(key, section[key], properties)
+            new_value = fix_type(key, value, properties)
             if new_value:
                 es_document[section_name+"_"+key]=new_value
             
-        
     
+    if 'data' in section:
+        data_dict = section['data']
+        for key in data_dict.keys():
+            if key in data_dict and key != None:
+                value = data_dict[key]
+                if type(value) == dict:
+                    continue
+                new_value = fix_type(key, value, properties)
+                if new_value:
+                    es_document[section_name+"_"+key]=new_value
+                    
     return
 
 
 def create_es_doc_from_api_doc(api_data):
     es_document = {}
-    
+    print("start create_es_doc_from_api_doc")
     try:
-        api_project = api_data['project']
+        api_project = api_data['metadata']['project']
     except:
         api_project={}
         
         
     try:
-        api_library = api_data['library']
+        api_library = api_data['metadata']['library']
     except:
         api_library = {}
         
         
     try:
-        api_sample = api_data['sample']
+        api_sample = api_data['metadata']['sample']
     except:
         api_sample = {}
     
@@ -278,14 +297,21 @@ def create_es_doc_from_api_doc(api_data):
         api_pipeline_parameters ={}
         
     try:
-        api_sequence_statistics = api_data['sequence_stats']
+        api_sequence_statistics = api_data['statistics']['sequence_stats']
     except:
         api_sequence_statistics = {}
    
    
+    print("process job_info")
 
     ### job_info
     get_api_fields(es_document, 'job_info', api_data)
+    
+    
+    if 'job_info_status' in es_document:
+        if es_document['job_info_status'].startswith('deleted'):
+            print("Status: deleted")
+            return None
     
         
     if not 'job_info_public' in es_document:
@@ -297,20 +323,25 @@ def create_es_doc_from_api_doc(api_data):
             del es_document['job_info_status']
         
             
-            
+    
     if api_project:
+        print("process project")
         get_api_fields(es_document, 'project' , api_project)
         
     if api_library:
+        print("process library")
         get_api_fields(es_document, 'library', api_library)
         
     if api_sample:
+        print("process sample")
         get_api_fields(es_document, 'sample', api_sample)
         
     if api_pipeline_parameters:
+        print("process api_pipeline_parameters")
         get_api_fields(es_document, 'pipeline_parameters', api_pipeline_parameters)
  
     if api_sequence_statistics:
+        print("process sequence_statistics")
         get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
  
 
@@ -321,6 +352,10 @@ def create_es_doc_from_api_doc(api_data):
     es_document['id'] = es_document['job_info_id']
  
  
+    if 'sample_collection_date' in es_document:
+        value = es_document['sample_collection_date']
+        if value.endswith('-00'):
+            es_document['sample_collection_date'] = value[:-3]
     
     if 'job_info_created' in es_document:
         value = es_document['job_info_created']
@@ -365,7 +400,7 @@ total_count = result_obj["total_count"]
 success = 0
 failure = 0
 count = 0
-for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}):
+for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=13000):
     count +=1
     pprint(elem)
     print("------------------------------------------------------\n") 
@@ -388,7 +423,7 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}):
     else:
         failure += 1
         print("ERROR\n")
-        exit(1)
+        
         
     print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
