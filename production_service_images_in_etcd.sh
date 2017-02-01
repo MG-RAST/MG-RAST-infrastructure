@@ -21,8 +21,8 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/solr-metagenome/shock -XPUT
 
 # mg-rast-v4-web
 #v4
-#curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/621df8f8-c4bd-4594-825b-3c0d62da32d5"
-curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/42e169b2-ee71-4515-a8d4-e839919b7a46"
+#curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/b7119f1c-8ed0-47f4-a0ed-60cbd7362cb3"
+curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web/shock -XPUT -d value="shock.metagenomics.anl.gov/node/563c7b6e-dbe9-4f01-949f-f2ece92d951a"
 
 #v4-dev
 curl -L http://127.0.0.1:2379/v2/keys/service_images/mg-rast-v4-web-v4-web-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/dc5e8c04-be69-46df-a958-f5c9d4b22d68"
