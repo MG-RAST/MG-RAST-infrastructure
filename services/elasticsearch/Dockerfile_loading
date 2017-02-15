@@ -4,6 +4,7 @@ FROM alpine
 
 
 COPY load_document.py .
+COPY metagenome_schema.json .
 
 
 RUN apk update && apk add git python3 wget
