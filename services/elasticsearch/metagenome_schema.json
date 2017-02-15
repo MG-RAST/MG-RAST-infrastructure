@@ -55,163 +55,208 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "PI_firstname" : {
+                "project_PI_firstname" : {
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "PI_lastname" : {
+                "project_PI_lastname" : {
                     "type": "string",
                     "index": "not_analyzed"
                 },
-                "project_name" : {
+                "project_firstname" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "project_lastname" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "project_PI_organization" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "project_PI_organization_country" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "project_organization_country" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "project_project_name" : {
                     "type": "string"
                 },
-                "project_id" : {
+                "project_project_funding" : {
                     "type": "string"
                 },
-                "gold_id" : {
+                "project_project_id" : {
+                    "type": "string"
+                },
+                "library_gold_id" : {
                     "type" : "string"
                 },
-                "ncbi_id" : {
+                "project_ncbi_id" : {
                     "type" : "string"
                 },
-                "pubmed_id" : {
+                "library_pubmed_id" : {
                     "type" : "string"
                 },
                 "project_all" : {
                     "type": "string"
                 },
-                "library_id" : {
+                "library_library_id" : {
                     "type": "string"
                 },
-                "library_name" : {
+                "library_library_name" : {
                     "type": "string"
                 },
                 "library_all" : {
                     "type": "string"
                 },
-                "sample_id" : {
+                "sample_sample_id" : {
                     "type": "string"
                 },
-                "collection_date" : {
+                "sample_collection_date" : {
                     "type": "date"
                 },
-                "feature" : {
+                "sample_feature" : {
                     "type": "string"
                 },
-                "latitude" : {
+                "sample_latitude" : {
                     "type": "float"
                 },
-                "longitude" : {
+                "sample_longitude" : {
                     "type": "float"
                 },
-                "biome" : {
+                "sample_altitude" : {
+                    "type": "float"
+                },
+                "sample_depth" : {
+                    "type": "float"
+                },
+                "sample_elevation" : {
+                    "type": "float"
+                },
+                "sample_continent" : {
+                    "type": "float"
+                },
+                "sample_depth" : {
+                    "type": "float"
+                },
+                "sample_biome" : {
                     "type": "string"
                 },
-                "sample_name" : {
+                "sample_temperature" : {
+                    "type": "float"
+                },
+                "sample_sample_name" : {
                     "type": "string"
                 },
-                "country" : {
+                "sample_country" : {
                     "type": "string"
                 },
-                "env_package_type" : {
+                "sample_env_package_type" : {
                     "type": "string"
                 },
-                "env_package_name" : {
+                "sample_env_package_name" : {
                     "type": "string"
                 },
-                "env_package_id" : {
+                "sample_env_package_id" : {
                     "type": "string"
                 },
-                "env_package_all" : {
+                "sample_env_package_all" : {
                     "type": "string"
                 },
-                "location" : {
+                "sample_location" : {
                     "type": "string"
                 },
-                "material" : {
+                "sample_material" : {
                     "type": "string"
                 },
-                "sample_all" : {
+                "sample_sample_all" : {
                     "type": "string"
                 },
-                "job_id" : {
+                "job_info_job_id" : {
                     "type": "integer"
                 },
-                "public" : {
+                "job_info_public" : {
                     "type": "string"
                 },
-                "pipeline_version" : {
+                "job_info_pipeline_version" : {
                     "type" : "string"
                 },
-                "sequence_type" : {
+                "job_info_sequence_type" : {
                     "type": "string"
                 },
-                "version" : {
+                "job_info_version" : {
                     "type": "integer"
                 },
-                "name" : {
+                "job_info_name" : {
                     "type": "string"
                 },
-                "seq_method" : {
+                "job_info_seq_method" : {
                     "type": "string"
                 },
-                "created": {
+                "job_info_created": {
                     "type": "date",
                     "format": "strict_date_optional_time||epoch_millis"
                 },
-                "aa_pid" : {
+                "job_info_mixs_compliant" : {
+                    "type": "integer"
+                },
+            
+                "pipeline_parameters_aa_pid" : {
                     "type" : "integer"
                 },
-                "assembled" : {
+                "pipeline_parameters_assembled" : {
                     "type" : "boolean"
                 },
-                "bowtie" : {
+                "pipeline_parameters_bowtie" : {
                     "type" : "boolean"
                 },
-                "dereplicate" : {
+                "pipeline_parameters_dereplicate" : {
                     "type" : "boolean"
                 },
-                "fgs_type" : {
+                "pipeline_parameters_fgs_type" : {
                     "type" : "string"
                 },
-                "file_type" : {
+                "pipeline_parameters_file_type" : {
                     "type" : "string"
                 },
-                "filter_ambig" : {
+                "pipeline_parameters_filter_ambig" : {
                     "type" : "boolean"
                 },
-                "filter_ln" : {
+                "pipeline_parameters_filter_ln" : {
                     "type" : "boolean"
                 },
-                "filter_ln_mult" : {
+                "pipeline_parameters_filter_ln_mult" : {
                     "type" : "float"
                 },
-                "m5nr_annotation_version" : {
+                "pipeline_parameters_m5nr_annotation_version" : {
                     "type" : "integer"
                 },
-                "m5nr_sims_version" : {
+                "pipeline_parameters_m5nr_sims_version" : {
                     "type" : "integer"
                 },
-                "m5rna_annotation_version" : {
+                "pipeline_parameters_m5rna_annotation_version" : {
                     "type" : "integer"
                 },
-                "m5rna_sims_version" : {
+                "pipeline_parameters_m5rna_sims_version" : {
                     "type" : "integer"
                 },
-                "max_ambig" : {
+                "pipeline_parameters_max_ambig" : {
                     "type" : "integer"
                 },
-                "prefix_length" : {
+                "pipeline_parameters_prefix_length" : {
                     "type" : "integer"
                 },
-                "priority" : {
+                "pipeline_parameters_priority" : {
                     "type" : "string"
                 },
-                "rna_pid" : {
+                "pipeline_parameters_rna_pid" : {
                     "type" : "integer"
                 },
-                "screen_indexes" : {
+                "pipeline_parameters_screen_indexes" : {
                     "type" : "string"
                 }
             }
