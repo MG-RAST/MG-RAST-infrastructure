@@ -20,7 +20,7 @@ es_url = os.environ['ES_URL']
 # You could also pass OAuth in the constructor
 api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
-
+global_fields={}
 properties=None
 
 # query ES
@@ -54,17 +54,19 @@ def read_metadata_from_api(id):
     result_obj = result.json()
     
     # remove data we do not need
-    if "statistics" in result_obj:
-        statistics = result_obj["statistics"]
+    del result_obj["statistics"]
+    #if "statistics" in result_obj:
+    #    statistics = result_obj["statistics"]
     
-        del statistics["gc_histogram"]
-        del statistics["length_histogram"]
-        del statistics["taxonomy"]
-        del statistics["source"]
-        del statistics["rarefaction"]
-        del statistics["qc"]
-        del statistics["ontology"]
-        del statistics["function"]
+     #   del statistics["gc_histogram"]
+     #   del statistics["length_histogram"]
+     #   del statistics["taxonomy"]
+     #   del statistics["source"]
+     #   del statistics["rarefaction"]
+     #   del statistics["qc"]
+     #   del statistics["ontology"]
+     #   del statistics["function"]
+     #   del statistics["sequence_statistics"]
     
     return result_obj
 
@@ -254,7 +256,15 @@ def get_api_fields(es_document, section_name, section):
                 continue
             new_value = fix_type(key, value, properties)
             if new_value:
-                es_document[section_name+"_"+key]=new_value
+                field = section_name+"_"+key
+                if field in properties:
+                    es_document[field]=new_value
+                else:
+                    if not section_name in global_fields:
+                        global_fields[section_name]={}
+                    if not key in global_fields[section_name]:
+                        global_fields[section_name][key]=0
+                    global_fields[section_name][key]+=1
             
     
     if 'data' in section:
@@ -266,7 +276,15 @@ def get_api_fields(es_document, section_name, section):
                     continue
                 new_value = fix_type(key, value, properties)
                 if new_value:
-                    es_document[section_name+"_"+key]=new_value
+                    field = section_name+"_"+key
+                    if field in properties:
+                        es_document[field]=new_value
+                    else:
+                        if not section_name in global_fields:
+                            global_fields[section_name]={}
+                        if not key in global_fields[section_name]:
+                            global_fields[section_name][key]=0
+                        global_fields[section_name][key]+=1
                     
     return
 
@@ -296,10 +314,10 @@ def create_es_doc_from_api_doc(api_data):
     except:
         api_pipeline_parameters ={}
         
-    try:
-        api_sequence_statistics = api_data['statistics']['sequence_stats']
-    except:
-        api_sequence_statistics = {}
+    #try:
+    #    api_sequence_statistics = api_data['statistics']['sequence_stats']
+    #except:
+    #    api_sequence_statistics = {}
    
    
     print("process job_info")
@@ -340,16 +358,16 @@ def create_es_doc_from_api_doc(api_data):
         print("process api_pipeline_parameters")
         get_api_fields(es_document, 'pipeline_parameters', api_pipeline_parameters)
  
-    if api_sequence_statistics:
-        print("process sequence_statistics")
-        get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
+    #if api_sequence_statistics:
+    #    print("process sequence_statistics")
+    #    get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
  
 
-    if not 'job_info_id' in es_document:
-        print("job_info_id missing.")
+    if not 'job_info_job_id' in es_document:
+        print("job_info_job_id missing.")
         exit(1)
  
-    es_document['id'] = es_document['job_info_id']
+    es_document['id'] = es_document['job_info_job_id']
  
  
     if 'sample_collection_date' in es_document:
@@ -400,7 +418,7 @@ total_count = result_obj["total_count"]
 success = 0
 failure = 0
 count = 0
-for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=13000):
+for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=0):
     count +=1
     pprint(elem)
     print("------------------------------------------------------\n") 
@@ -408,8 +426,9 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offse
     print(transfer_id+"\n")
     r = None
     
+    print("global_fields:\n")
     
-   
+    pprint(global_fields)
     
     try:
         r= transfer_document(transfer_id)
