@@ -55,6 +55,34 @@
                     "type": "string",
                     "index": "not_analyzed"
                 },
+                "job_info_job_id" : {
+                    "type": "integer"
+                },
+                "job_info_public" : {
+                    "type": "boolean"
+                },
+                "job_info_pipeline_version" : {
+                    "type" : "string"
+                },
+                "job_info_sequence_type" : {
+                    "type": "string"
+                },
+                "job_info_version" : {
+                    "type": "integer"
+                },
+                "job_info_name" : {
+                    "type": "string"
+                },
+                "job_info_seq_method" : {
+                    "type": "string"
+                },
+                "job_info_created": {
+                    "type": "date",
+                    "format": "strict_date_optional_time||epoch_millis"
+                },
+                "job_info_mixs_compliant" : {
+                    "type": "integer"
+                },
                 "project_PI_firstname" : {
                     "type": "string",
                     "index": "not_analyzed"
@@ -138,7 +166,7 @@
                     "type": "float"
                 },
                 "sample_continent" : {
-                    "type": "float"
+                    "type": "string"
                 },
                 "sample_depth" : {
                     "type": "float"
@@ -176,35 +204,6 @@
                 "sample_sample_all" : {
                     "type": "string"
                 },
-                "job_info_job_id" : {
-                    "type": "integer"
-                },
-                "job_info_public" : {
-                    "type": "string"
-                },
-                "job_info_pipeline_version" : {
-                    "type" : "string"
-                },
-                "job_info_sequence_type" : {
-                    "type": "string"
-                },
-                "job_info_version" : {
-                    "type": "integer"
-                },
-                "job_info_name" : {
-                    "type": "string"
-                },
-                "job_info_seq_method" : {
-                    "type": "string"
-                },
-                "job_info_created": {
-                    "type": "date",
-                    "format": "strict_date_optional_time||epoch_millis"
-                },
-                "job_info_mixs_compliant" : {
-                    "type": "integer"
-                },
-            
                 "pipeline_parameters_aa_pid" : {
                     "type" : "integer"
                 },
