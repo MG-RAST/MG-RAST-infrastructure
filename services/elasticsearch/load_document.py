@@ -386,7 +386,7 @@ def create_es_doc_from_api_doc(api_data):
         print("job_id missing.")
         exit(1)
  
-    es_document['id']=api_data['job_id']
+    es_document['id']=api_data['id']
 
  
  
@@ -443,7 +443,7 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offse
     pprint(elem)
     print("------------------------------------------------------\n") 
     transfer_id = elem["id"]
-    print(transfer_id+"\n")
+    print("transfer_id: "+transfer_id+"\n")
     r = None
     
     print("global_fields:\n")
