@@ -186,6 +186,7 @@ def fix_type(key, value, properties):
     try:    
         expected_type = properties[key]['type']
     except Exception as e:
+        print("(A) problem with key %s" % (key))
         print(str(e))
         exit(1)
     
@@ -196,6 +197,7 @@ def fix_type(key, value, properties):
     elif this_type == str:
         this_type_str="string"
     else:
+        print("(B) problem with key %s" % (key))
         print(str(this_type))
         exit(1)
         
@@ -207,7 +209,10 @@ def fix_type(key, value, properties):
             return True
         elif value == "no":
             return False
+        elif value == None:
+            return False
         
+        print("(C) problem with key %s" % (key))
         print(str(this_type))
         exit(1)
         
