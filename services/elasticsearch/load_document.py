@@ -178,6 +178,9 @@ def transfer_document(transfer_id):
 def fix_type(key, value, properties):
 
 
+    if not value:
+        return None
+
     if not key in properties:
         print("Warning: Adding unknown key \"%s\"" % (key) )
         sys.exit(1)
