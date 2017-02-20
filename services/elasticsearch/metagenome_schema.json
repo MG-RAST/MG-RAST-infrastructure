@@ -168,9 +168,6 @@
                 "sample_continent" : {
                     "type": "string"
                 },
-                "sample_depth" : {
-                    "type": "float"
-                },
                 "sample_biome" : {
                     "type": "string"
                 },
