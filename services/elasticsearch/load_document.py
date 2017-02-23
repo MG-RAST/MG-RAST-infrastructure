@@ -20,7 +20,7 @@ es_url = os.environ['ES_URL']
 # You could also pass OAuth in the constructor
 api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
-
+global_fields={}
 properties=None
 
 # query ES
@@ -54,17 +54,19 @@ def read_metadata_from_api(id):
     result_obj = result.json()
     
     # remove data we do not need
-    if "statistics" in result_obj:
-        statistics = result_obj["statistics"]
+    del result_obj["statistics"]
+    #if "statistics" in result_obj:
+    #    statistics = result_obj["statistics"]
     
-        del statistics["gc_histogram"]
-        del statistics["length_histogram"]
-        del statistics["taxonomy"]
-        del statistics["source"]
-        del statistics["rarefaction"]
-        del statistics["qc"]
-        del statistics["ontology"]
-        del statistics["function"]
+     #   del statistics["gc_histogram"]
+     #   del statistics["length_histogram"]
+     #   del statistics["taxonomy"]
+     #   del statistics["source"]
+     #   del statistics["rarefaction"]
+     #   del statistics["qc"]
+     #   del statistics["ontology"]
+     #   del statistics["function"]
+     #   del statistics["sequence_statistics"]
     
     return result_obj
 
@@ -176,13 +178,18 @@ def transfer_document(transfer_id):
 def fix_type(key, value, properties):
 
 
+    if not value:
+        return None
+
     if not key in properties:
         print("Warning: Adding unknown key \"%s\"" % (key) )
+        sys.exit(1)
         return value
         
     try:    
         expected_type = properties[key]['type']
     except Exception as e:
+        print("(A) problem with key %s" % (key))
         print(str(e))
         exit(1)
     
@@ -193,6 +200,7 @@ def fix_type(key, value, properties):
     elif this_type == str:
         this_type_str="string"
     else:
+        print("(B) problem with key %s" % (key))
         print(str(this_type))
         exit(1)
         
@@ -204,7 +212,10 @@ def fix_type(key, value, properties):
             return True
         elif value == "no":
             return False
+        elif value == None:
+            return False
         
+        print("(C) problem with key %s" % (key))
         print(str(this_type))
         exit(1)
         
@@ -249,24 +260,48 @@ def get_api_fields(es_document, section_name, section):
     print("section type: %s" % (type(section)))
     for key in section.keys():
         if key in section and key != None:
+            field = section_name+"_"+key
             value = section[key]
             if type(value) == dict:
                 continue
-            new_value = fix_type(key, value, properties)
+            if not field in properties:
+                print("field %s not in properties" % (field))
+                continue
+            new_value = fix_type(field, value, properties)
             if new_value:
-                es_document[section_name+"_"+key]=new_value
+                
+                if field in properties:
+                    es_document[field]=new_value
+                else:
+                    if not section_name in global_fields:
+                        global_fields[section_name]={}
+                    if not key in global_fields[section_name]:
+                        global_fields[section_name][key]=0
+                    global_fields[section_name][key]+=1
             
     
     if 'data' in section:
         data_dict = section['data']
         for key in data_dict.keys():
             if key in data_dict and key != None:
+                field = section_name+"_"+key
                 value = data_dict[key]
                 if type(value) == dict:
                     continue
-                new_value = fix_type(key, value, properties)
+                if not field in properties:
+                    print("field %s not in properties" % (field))
+                    continue
+                new_value = fix_type(field, value, properties)
                 if new_value:
-                    es_document[section_name+"_"+key]=new_value
+                    field = section_name+"_"+key
+                    if field in properties:
+                        es_document[field]=new_value
+                    else:
+                        if not section_name in global_fields:
+                            global_fields[section_name]={}
+                        if not key in global_fields[section_name]:
+                            global_fields[section_name][key]=0
+                        global_fields[section_name][key]+=1
                     
     return
 
@@ -296,16 +331,26 @@ def create_es_doc_from_api_doc(api_data):
     except:
         api_pipeline_parameters ={}
         
-    try:
-        api_sequence_statistics = api_data['statistics']['sequence_stats']
-    except:
-        api_sequence_statistics = {}
+    #try:
+    #    api_sequence_statistics = api_data['statistics']['sequence_stats']
+    #except:
+    #    api_sequence_statistics = {}
+   
+   
+   
+   
    
    
     print("process job_info")
-
     ### job_info
+    
     get_api_fields(es_document, 'job_info', api_data)
+    
+    
+    
+    
+    if not 'job_info_public' in es_document:
+        es_document['job_info_public']=False
     
     
     if 'job_info_status' in es_document:
@@ -315,11 +360,11 @@ def create_es_doc_from_api_doc(api_data):
     
         
     if not 'job_info_public' in es_document:
+        es_document['job_info_public']=False
         if 'job_info_status' in es_document:
             if es_document['job_info_status']== "public":
                 es_document['job_info_public']=True
-            else:
-                es_document['job_info_public']=False
+            
             del es_document['job_info_status']
         
             
@@ -340,16 +385,17 @@ def create_es_doc_from_api_doc(api_data):
         print("process api_pipeline_parameters")
         get_api_fields(es_document, 'pipeline_parameters', api_pipeline_parameters)
  
-    if api_sequence_statistics:
-        print("process sequence_statistics")
-        get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
+    #if api_sequence_statistics:
+    #    print("process sequence_statistics")
+    #    get_api_fields(es_document, 'sequence_statistics', api_sequence_statistics)
  
-
-    if not 'job_info_id' in es_document:
-        print("job_info_id missing.")
+ 
+    if not 'job_id' in api_data:
+        print("job_id missing.")
         exit(1)
  
-    es_document['id'] = es_document['job_info_id']
+    es_document['id']=api_data['id']
+
  
  
     if 'sample_collection_date' in es_document:
@@ -400,16 +446,17 @@ total_count = result_obj["total_count"]
 success = 0
 failure = 0
 count = 0
-for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=13000):
+for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=0):
     count +=1
     pprint(elem)
     print("------------------------------------------------------\n") 
     transfer_id = elem["id"]
-    print(transfer_id+"\n")
+    print("transfer_id: "+transfer_id+"\n")
     r = None
     
+    print("global_fields:\n")
     
-   
+    pprint(global_fields)
     
     try:
         r= transfer_document(transfer_id)
@@ -423,7 +470,7 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offse
     else:
         failure += 1
         print("ERROR\n")
-        
+        #exit(1)
         
     print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
