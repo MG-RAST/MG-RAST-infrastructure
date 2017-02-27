@@ -86,6 +86,7 @@ fleetctl start elasticsearch{,-discovery}@{1..9}.service
 #### start develop services ####
 
 # fleetctl start mg-rast-v3-web{,-discovery}@1.v3-web-dev.service
+# fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web-dev.service
 # fleetctl start api-server{,-discovery,-update}@1.api-dev.service
 # fleetctl start cadvisor.service  # global unit
 # fleetctl start opscenter@1.service
