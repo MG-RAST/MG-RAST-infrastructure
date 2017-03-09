@@ -24,12 +24,23 @@ global_fields={}
 properties=None
 
 # query ES
-def es_find_document(id):
+def es_document_exists(id):
     params = { "pretty" : True, "_source" : False}
     r = requests.get(es_url +'/metagenome_index/metagenome/'+id, params=params)
     #print(r.text)
     obj = r.json()
     return obj["found"]
+
+
+def es_get_document(id):
+    params = { "pretty" : True}
+    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, params=params)
+    print(r.text)
+    obj = r.json()
+    if not "_source" in obj:
+        return None
+    
+    return obj["_source"]
 
 # get document from MG-RAST API
 def read_metagenome(id):
@@ -71,7 +82,7 @@ def read_metadata_from_api(id):
     return result_obj
 
 #load document into ES
-def load_document(data_dict):
+def insert_document(data_dict):
     _id = data_dict['id']
     url = es_url +'/metagenome_index/metagenome/' + _id
     print(url)
@@ -86,12 +97,15 @@ def load_document(data_dict):
         
     response_obj = r.json()
     if not "result" in response_obj:
+        print("result keyword missing")
         print(r.text)
         return False
     
-    if response_obj["result"] == "created":
+    result_value = response_obj["result"]
+    if result_value == "created" or result_value =='updated':
         print("success")
     else:
+        print("result is not created")
         print(r.text)
         return False
         
@@ -101,17 +115,41 @@ def load_document(data_dict):
 def transfer_document(transfer_id):
   
     api_data = None
-    try:
-        #r = transfer_document(elem["id"])
+    
+    if False:
+        try:
+            
         
-        if es_find_document(transfer_id):
-            print("%s already found, skipping..." % (transfer_id))
-            return True
+            if es_document_exists(transfer_id):
+                print("%s already found, skipping..." % (transfer_id))
+                return True
+            else:
+                print("Getting %s from API..." % (transfer_id))
+        except Exception as e:
+             print("Exception es_document_exists: %s" % (str(e)))
+             return False
+   
+    try:
+        doc = es_get_document(transfer_id)
+        
+        if 'job_info_public' in doc:
+            if doc['job_info_public'] == True:
+                print("document already public")
+                return True
+            else:
+                print("job_info_public not true")
         else:
-            print("Getting %s from API..." % (transfer_id))
+             print("job_info_public not in doc")
+        print("xxxxxxxxxxxxxxxxx\n")
+        pprint(doc)
+        
+        
+        
     except Exception as e:
-         print("Exception es_find_document: %s" % (str(e)))
+         print("Exception es_get_document: %s" % (str(e)))
          return False
+    #sys.exit(0)
+    
          
     try:
         api_data = read_metadata_from_api(transfer_id)
@@ -167,7 +205,7 @@ def transfer_document(transfer_id):
     pprint(es_document)
     loading_ok = False
     try:
-        loading_ok = load_document(es_document)
+        loading_ok = insert_document(es_document)
     except Exception as e:
       print("Exception transferring document B: %s" % (str(e)))
       return False
@@ -353,10 +391,14 @@ def create_es_doc_from_api_doc(api_data):
         es_document['job_info_public']=False
     
     
-    if 'job_info_status' in es_document:
-        if es_document['job_info_status'].startswith('deleted'):
+    #if 'job_info_status' in es_document:
+    if 'status' in api_data:
+        #if es_document['job_info_status'].startswith('deleted'):
+        if api_data['status'].startswith('deleted'):
             print("Status: deleted")
             return None
+        if api_data['status'] == 'public':
+            es_document['job_info_public']=True
     
         
     if not 'job_info_public' in es_document:
@@ -446,7 +488,7 @@ total_count = result_obj["total_count"]
 success = 0
 failure = 0
 count = 0
-for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offset=0):
+for elem in api.get_stream("/metagenome", params={"verbosity": "minimal", "status":"public"}, offset=0):
     count +=1
     pprint(elem)
     print("------------------------------------------------------\n") 
@@ -474,5 +516,5 @@ for elem in api.get_stream("/metagenome", params={"verbosity": "minimal"}, offse
         
     print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
     
-
+    #sys.exit(0)
     #PUT /{index}/{type}/{id}
