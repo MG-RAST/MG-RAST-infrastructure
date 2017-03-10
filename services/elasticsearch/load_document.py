@@ -527,7 +527,7 @@ for line in fileinput.input():
         print("ERROR\n")
         #exit(1)
         
-    print("%d  (success: %d  , failure: %d)" % (count, success, failure))
+    print("\n%d  (success: %d  , failure: %d)\n" % (count, success, failure))
     
 
 
