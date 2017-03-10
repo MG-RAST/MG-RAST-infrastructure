@@ -19,7 +19,7 @@ import iso8601
 es_url = os.environ['ES_URL']
 
 # You could also pass OAuth in the constructor
-api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
+#api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
 global_fields={}
 properties=None
@@ -489,7 +489,7 @@ for line in fileinput.input():
 
 
     
-
+    print("dump: "+line)
     mydata = json.loads(line)
     #del mydata['version']
     
