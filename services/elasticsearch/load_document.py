@@ -483,11 +483,11 @@ failure = 0
 count = 0
 
 for line in fileinput.input():
-    if len(line) < 2:
+    if len(line) < 5:
         continue
     count +=1
 
-
+    line = line[:-2] # remove command and line break
     
     print("dump: "+line)
     mydata = json.loads(line)
@@ -505,15 +505,19 @@ for line in fileinput.input():
     #if 'job_info_created' in mydata:
     #    mydata['job_info_created']=mydata['job_info_created'][0:10]+'T'+mydata['job_info_created'][11:]
 
+    upsert_success=False
 
-    for key, value in mydata.items():
-        if not key in properties:
-            print("Key %s not found" % (key))
-            sys.exit(1)
+    try:
+        for key, value in mydata.items():
+            if not key in properties:
+                print("Key %s not found" % (key))
+                sys.exit(1)
 
 
 
-    upsert_success = upsert_document(mydata)
+        upsert_success = upsert_document(mydata)
+    except Exception as e:
+        print("error: %s" % (str(e)))
 
 
     if upsert_success:
@@ -523,7 +527,7 @@ for line in fileinput.input():
         print("ERROR\n")
         #exit(1)
         
-    print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
+    print("%d  (success: %d  , failure: %d)" % (count, success, failure))
     
 
 
