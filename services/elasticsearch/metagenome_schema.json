@@ -81,7 +81,7 @@
                     "format": "strict_date_optional_time||epoch_millis"
                 },
                 "job_info_mixs_compliant" : {
-                    "type": "integer"
+                    "type": "boolean"
                 },
                 "project_PI_firstname" : {
                     "type": "string",
@@ -108,6 +108,10 @@
                     "index": "not_analyzed"
                 },
                 "project_organization_country" : {
+                    "type": "string",
+                    "index": "not_analyzed"
+                },
+                "project_organization" : {
                     "type": "string",
                     "index": "not_analyzed"
                 },
