@@ -486,16 +486,23 @@ for line in fileinput.input():
     if len(line) < 5:
         continue
     count +=1
+    
+    upsert_success=False
 
     line = line[:-2] # remove command and line break
     
     print("dump: "+line)
-    mydata = json.loads(line)
+    try:
+        mydata = json.loads(line)
+    except Exception as e:
+        print("error: %s" % (str(e)))
+        failure += 1
+        continue
+    
     #del mydata['version']
     
     mg_id =  mydata["id"]
-    if not es_document_exists(mg_id):
-        
+    if es_document_exists(mg_id): 
         continue
     
     print("print: "+ json.dumps(mydata))
@@ -505,7 +512,7 @@ for line in fileinput.input():
     #if 'job_info_created' in mydata:
     #    mydata['job_info_created']=mydata['job_info_created'][0:10]+'T'+mydata['job_info_created'][11:]
 
-    upsert_success=False
+    
 
     try:
         for key, value in mydata.items():
