@@ -178,14 +178,17 @@ write_files:
             echo $MAC  
         }
 
+        # try to detect network interface
+        NET_IF=$(ifconfig -a | grep -B 1 "inet 140.221" | head -n 1 | cut -d : -f 1)
+
         # Echo results of IP queries to environment file as soon as network interfaces 
         # get assigned IPs
-        COREOS_PUBLIC_IPV4=$(get_ip %network_interface%)
-        COREOS_PRIVATE_IPV4=$(get_ip %network_interface%)
+        COREOS_PUBLIC_IPV4=$(get_ip ${NET_IF})
+        COREOS_PRIVATE_IPV4=$(get_ip ${NET_IF})
         echo "COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4}" >> $ENV # Also assigned to same IP
         echo "COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4}" >> $ENV #eno1 should be changed to your device name
 
-        ETCD_NAME=node_$(get_mac %network_interface%)
+        ETCD_NAME=node_$(get_mac ${NET_IF})
         echo "ETCD_NAME=${ETCD_NAME}" >> $ENV
         #sed 's/\$ETCD_NAME/'${ETCD_NAME}'/g' /run/cloud-config.yaml > /tmp/cconfigtmp
         #mv /tmp/cconfigtmp /run/cloud-config.yaml
