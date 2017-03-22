@@ -489,7 +489,11 @@ for line in fileinput.input():
     
     upsert_success=False
 
-    line = line[:-2] # remove command and line break
+    if line[-2] == ",\n":
+        line = line[:-2] # remove command and line break
+    
+    if line[-1] == "\n":
+        line = line[:-1] # remove line break
     
     print("dump: "+line)
     try:
