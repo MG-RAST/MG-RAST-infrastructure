@@ -8,7 +8,8 @@ Wants=elasticsearch-discovery@%i.service
 Environment='SERVICE=elasticsearch'
 Environment='CONTAINER=elasticsearch'
 Environment='SERVICE_DIR=/media/ephemeral/elasticsearch'
-Environment='IMAGE=elasticsearch:5.0.0'
+#Environment='IMAGE=elasticsearch:5.0.0'
+Environment='IMAGE=docker.elastic.co/elasticsearch/elasticsearch:5.2.2'
 
 
 TimeoutStartSec=0
