@@ -70,7 +70,8 @@
                     "type": "integer"
                 },
                 "job_info_name" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "job_info_seq_method" : {
                     "type": "keyword"
@@ -83,19 +84,24 @@
                     "type": "boolean"
                 },
                 "project_PI_firstname" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_PI_lastname" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_firstname" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_lastname" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_PI_organization" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_PI_organization_country" : {
                     "type": "keyword"
@@ -104,13 +110,16 @@
                     "type": "keyword"
                 },
                 "project_organization" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_project_name" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "project_project_funding" : {
-                   "type": "text"
+                   "type": "text",
+                    "fielddata": true
                 },
                 "project_project_id" : {
                     "type": "keyword"
@@ -131,10 +140,12 @@
                     "type": "keyword"
                 },
                 "library_library_name" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "library_all" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "sample_sample_id" : {
                     "type": "keyword"
@@ -143,7 +154,8 @@
                     "type": "date"
                 },
                 "sample_feature" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "sample_latitude" : {
                     "type": "float"
@@ -170,7 +182,8 @@
                     "type": "float"
                 },
                 "sample_sample_name" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "sample_country" : {
                     "type": "keyword"
@@ -188,10 +201,12 @@
                     "type": "text"
                 },
                 "sample_location" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "sample_material" : {
-                    "type": "text"
+                    "type": "text",
+                    "fielddata": true
                 },
                 "sample_sample_all" : {
                     "type": "text"
@@ -265,10 +280,12 @@
                 },
                 "function" : {
                     "type": "text",
+                    "fielddata": true,
                     "store" : false
                 },
                 "organism" : {
                     "type": "text",
+                    "fielddata": true,
                     "store" : false
                 }
              }
