@@ -52,13 +52,7 @@
                 ],
             "properties" : {
                 "id" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "job_info_job_id" : {
                     "type": "integer"
@@ -67,43 +61,19 @@
                     "type": "boolean"
                 },
                 "job_info_pipeline_version" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "job_info_sequence_type" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "job_info_version" : {
                     "type": "integer"
                 },
                 "job_info_name" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "job_info_seq_method" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "job_info_created": {
                     "type": "date",
@@ -113,187 +83,67 @@
                     "type": "boolean"
                 },
                 "project_PI_firstname" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_PI_lastname" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_firstname" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_lastname" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_PI_organization" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_PI_organization_country" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "project_organization_country" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "project_organization" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_project_name" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "project_project_funding" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                   "type": "text"
                 },
                 "project_project_id" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "library_gold_id" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "project_ncbi_id" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "library_pubmed_id" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "project_all" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "library_library_id" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "library_library_name" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "library_all" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "sample_sample_id" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_collection_date" : {
                     "type": "date"
                 },
                 "sample_feature" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "sample_latitude" : {
                     "type": "float"
@@ -311,106 +161,40 @@
                     "type": "float"
                 },
                 "sample_continent" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_biome" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_temperature" : {
                     "type": "float"
                 },
                 "sample_sample_name" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "sample_country" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_env_package_type" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_env_package_name" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_env_package_id" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "sample_env_package_all" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "sample_location" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "sample_material" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "sample_sample_all" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "text"
                 },
                 "pipeline_parameters_aa_pid" : {
                     "type" : "integer"
@@ -425,22 +209,10 @@
                     "type" : "boolean"
                 },
                 "pipeline_parameters_fgs_type" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "pipeline_parameters_file_type" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "pipeline_parameters_filter_ambig" : {
                     "type" : "boolean"
@@ -470,25 +242,13 @@
                     "type" : "integer"
                 },
                 "pipeline_parameters_priority" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "pipeline_parameters_rna_pid" : {
                     "type" : "integer"
                 },
                 "pipeline_parameters_screen_indexes" : {
-                    "type" : "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 }
             }
         },
@@ -498,49 +258,17 @@
                   }, 
             "properties" : {
                 "id" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "md5" : {
-                    "type": "string",
-                    "fields": {
-                        "raw": { 
-                            "type":  "string",
-                                "index": "not_analyzed"
-                            }
-                        }
+                    "type": "keyword"
                 },
                 "function" : {
-                    "type": "string",
-                    "fields": {
-                        "prefix": {
-                          "type": "string",
-                          "analyzer": "prefix_edge_ngram_analyzer"
-                        },
-                        "suffix": {
-                          "type": "string",
-                          "analyzer": "suffix_edge_ngram_analyzer"
-                        }
-                    },
+                    "type": "text",
                     "store" : false
                 },
                 "organism" : {
-                    "type": "string",
-                    "fields": {
-                        "prefix": {
-                          "type": "string",
-                          "analyzer": "prefix_edge_ngram_analyzer"
-                        },
-                        "suffix": {
-                          "type": "string",
-                          "analyzer": "suffix_edge_ngram_analyzer"
-                        }
-                    },
+                    "type": "text",
                     "store" : false
                 }
              }
