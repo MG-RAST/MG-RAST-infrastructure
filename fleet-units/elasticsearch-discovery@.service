@@ -14,7 +14,7 @@ ExecStart=/bin/bash -c '\
     if [ "$?" = "0" ]; then \
       etcdctl set /services/${SERVICE}/instances/${SERVICE}@%i \'${COREOS_PRIVATE_IPV4}\' --ttl 60; \
     else \
-      etcdctl rm /services/elasticsearch/${COREOS_PRIVATE_IPV4}; \
+      etcdctl rm /services/${SERVICE}/instances/${SERVICE}@%i; \
     fi; \
     sleep 45; \
   done'
