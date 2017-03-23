@@ -5,6 +5,12 @@
                   "number_of_replicas" : 2 
               },
         "analysis" : {
+            "normalizer": {
+                "lowerasciinormalizer": {
+                    "type": "custom",
+                    "filter":  [ "lowercase", "asciifolding" ]
+                }
+            },
             "analyzer": {
                 "prefix_edge_ngram_analyzer": {
                   "tokenizer": "prefix_edge_ngram_tokenizer",
@@ -52,7 +58,8 @@
                 ],
             "properties" : {
                 "id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "job_info_job_id" : {
                     "type": "integer"
@@ -61,10 +68,12 @@
                     "type": "boolean"
                 },
                 "job_info_pipeline_version" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "job_info_sequence_type" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "job_info_version" : {
                     "type": "integer"
@@ -73,12 +82,14 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
                 "job_info_seq_method" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "job_info_created": {
                     "type": "date",
@@ -91,7 +102,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -99,7 +111,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -107,7 +120,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -115,7 +129,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -123,21 +138,25 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
                 "project_PI_organization_country" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "project_organization_country" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "project_organization" : {
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -145,7 +164,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -153,33 +173,40 @@
                    "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
                 "project_project_id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "library_gold_id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "project_ncbi_id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "library_pubmed_id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "project_all" : {
                     "type": "text"
                 },
                 "library_library_id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "library_library_name" : {
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -187,7 +214,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -201,7 +229,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -221,10 +250,12 @@
                     "type": "float"
                 },
                 "sample_continent" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "sample_biome" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "sample_temperature" : {
                     "type": "float"
@@ -233,21 +264,26 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
                 "sample_country" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "sample_env_package_type" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "sample_env_package_name" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "sample_env_package_id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "sample_env_package_all" : {
                     "type": "text"
@@ -256,7 +292,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -264,7 +301,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     }
                 },
@@ -284,10 +322,12 @@
                     "type" : "boolean"
                 },
                 "pipeline_parameters_fgs_type" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "pipeline_parameters_file_type" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "pipeline_parameters_filter_ambig" : {
                     "type" : "boolean"
@@ -333,16 +373,19 @@
                   }, 
             "properties" : {
                 "id" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "md5" : {
-                    "type": "keyword"
+                    "type": "keyword",
+                    "normalizer": "lowerasciinormalizer"
                 },
                 "function" : {
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     },
                     "store" : false
@@ -351,7 +394,8 @@
                     "type": "text",
                     "fields": {
                         "keyword": { 
-                            "type": "keyword"
+                            "type": "keyword",
+                            "normalizer": "lowerasciinormalizer"
                         }
                     },
                     "store" : false
