@@ -30,7 +30,7 @@ properties=None
 # query ES
 def es_document_exists(id):
     params = { "pretty" : True, "_source" : False}
-    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, params=params)
+    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, auth=(es_user, es_pass), params=params)
     #print(r.text)
     obj = r.json()
     return obj["found"]
@@ -38,7 +38,7 @@ def es_document_exists(id):
 
 def es_get_document(id):
     params = { "pretty" : True}
-    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, params=params)
+    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, auth=(es_user, es_pass), params=params)
     print(r.text)
     obj = r.json()
     if not "_source" in obj:
