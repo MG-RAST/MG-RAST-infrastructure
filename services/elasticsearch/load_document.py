@@ -16,6 +16,9 @@ import iso8601
 
 # note: had to set /sites/1/MG-RAST/site/lib/MGRAST/Abundance.pm chunks from 2000 to 100 in the API
 
+es_user=''
+es_pass=''
+
 es_url = os.environ['ES_URL']
 
 # You could also pass OAuth in the constructor
@@ -91,7 +94,7 @@ def upsert_document(data_dict):
     # comment: use json.dumps , see https://discuss.elastic.co/t/index-a-new-document/35281/8
     r = None
     try:
-        r = requests.put(url, data=json.dumps(data_dict))
+        r = requests.put(url, data=json.dumps(data_dict), auth=(es_user, es_pass))
     except Exception as e:
         print("Exception loading into ES: %s" % (str(e)))
         return False
@@ -494,6 +497,9 @@ for line in fileinput.input():
     
     if line[-1] == "\n":
         line = line[:-1] # remove line break
+    
+    if line[-1] == ",":
+        line = line[:-1] # remove comma
     
     print("dump: "+line)
     try:
