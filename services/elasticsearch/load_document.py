@@ -6,6 +6,7 @@ import requests
 import sys
 import os
 import re
+import fileinput
 
 from restclient import RestClient
 
@@ -15,10 +16,13 @@ import iso8601
 
 # note: had to set /sites/1/MG-RAST/site/lib/MGRAST/Abundance.pm chunks from 2000 to 100 in the API
 
+es_user=''
+es_pass=''
+
 es_url = os.environ['ES_URL']
 
 # You could also pass OAuth in the constructor
-api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
+#api = RestClient("http://api.metagenomics.anl.gov", headers = { "Authorization" : "mgrast "+os.environ['MGRKEY'] })
 
 global_fields={}
 properties=None
@@ -26,7 +30,7 @@ properties=None
 # query ES
 def es_document_exists(id):
     params = { "pretty" : True, "_source" : False}
-    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, params=params)
+    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, auth=(es_user, es_pass), params=params)
     #print(r.text)
     obj = r.json()
     return obj["found"]
@@ -34,7 +38,7 @@ def es_document_exists(id):
 
 def es_get_document(id):
     params = { "pretty" : True}
-    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, params=params)
+    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, auth=(es_user, es_pass), params=params)
     print(r.text)
     obj = r.json()
     if not "_source" in obj:
@@ -82,7 +86,7 @@ def read_metadata_from_api(id):
     return result_obj
 
 #load document into ES
-def insert_document(data_dict):
+def upsert_document(data_dict):
     _id = data_dict['id']
     url = es_url +'/metagenome_index/metagenome/' + _id
     print(url)
@@ -90,12 +94,18 @@ def insert_document(data_dict):
     # comment: use json.dumps , see https://discuss.elastic.co/t/index-a-new-document/35281/8
     r = None
     try:
-        r = requests.put(url, data=json.dumps(data_dict))
+        r = requests.put(url, data=json.dumps(data_dict), auth=(es_user, es_pass))
     except Exception as e:
         print("Exception loading into ES: %s" % (str(e)))
         return False
         
     response_obj = r.json()
+    
+    if "error" in response_obj:
+        print("got error")
+        print(r.text)
+        return False
+        
     if not "result" in response_obj:
         print("result keyword missing")
         print(r.text)
@@ -205,7 +215,7 @@ def transfer_document(transfer_id):
     pprint(es_document)
     loading_ok = False
     try:
-        loading_ok = insert_document(es_document)
+        loading_ok = upsert_document(es_document)
     except Exception as e:
       print("Exception transferring document B: %s" % (str(e)))
       return False
@@ -471,50 +481,70 @@ print("***************** properties:\n")
 pprint(properties)
 
 
-
-
-
-
-
-
-
-result = api.get("/metagenome", params={"verbosity": "minimal"})
-
-result_obj = result.json()
-
-total_count = result_obj["total_count"]
-
-
 success = 0
 failure = 0
 count = 0
-for elem in api.get_stream("/metagenome", params={"verbosity": "minimal", "status":"public"}, offset=0):
+
+for line in fileinput.input():
+    if len(line) < 5:
+        continue
     count +=1
-    pprint(elem)
-    print("------------------------------------------------------\n") 
-    transfer_id = elem["id"]
-    print("transfer_id: "+transfer_id+"\n")
-    r = None
     
-    print("global_fields:\n")
+    upsert_success=False
+
+    if line[-2] == ",\n":
+        line = line[:-2] # remove command and line break
     
-    pprint(global_fields)
+    if line[-1] == "\n":
+        line = line[:-1] # remove line break
     
+    if line[-1] == ",":
+        line = line[:-1] # remove comma
+    
+    print("dump: "+line)
     try:
-        r= transfer_document(transfer_id)
+        mydata = json.loads(line)
     except Exception as e:
-        print("Exception transfer_document: %s" % (str(e)))
-        
+        print("error: %s" % (str(e)))
+        failure += 1
+        continue
     
+    #del mydata['version']
     
-    if r:
+    mg_id =  mydata["id"]
+    if es_document_exists(mg_id): 
+        continue
+    
+    print("print: "+ json.dumps(mydata))
+
+
+
+    #if 'job_info_created' in mydata:
+    #    mydata['job_info_created']=mydata['job_info_created'][0:10]+'T'+mydata['job_info_created'][11:]
+
+    
+
+    try:
+        for key, value in mydata.items():
+            if not key in properties:
+                print("Key %s not found" % (key))
+                sys.exit(1)
+
+
+
+        upsert_success = upsert_document(mydata)
+    except Exception as e:
+        print("error: %s" % (str(e)))
+
+
+    if upsert_success:
         success +=1
     else:
         failure += 1
         print("ERROR\n")
         #exit(1)
         
-    print("%d / %d  (success: %d  , failure: %d)" % (count, total_count, success, failure))
+    print("\n%d  (success: %d  , failure: %d)\n" % (count, success, failure))
     
-    #sys.exit(0)
-    #PUT /{index}/{type}/{id}
+
+
