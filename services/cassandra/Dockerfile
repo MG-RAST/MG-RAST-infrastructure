@@ -1,8 +1,8 @@
 
-# docker build -t mgrast/cassandra:3.7 .
+# docker build -t mgrast/cassandra:3.10 .
 
 
-FROM cassandra:3.7
+FROM cassandra:3.10
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 
