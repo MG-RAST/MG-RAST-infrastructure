@@ -48,6 +48,16 @@ if [ "$1" = 'cassandra' ]; then
 		ssl_storage_port \
 		native_transport_port \
 		rpc_port \
+		read_request_timeout_in_ms \
+        range_request_timeout_in_ms \
+        write_request_timeout_in_ms \
+        counter_write_request_timeout_in_ms \
+        cas_contention_timeout_in_ms \
+        truncate_request_timeout_in_ms \
+        request_timeout_in_ms \
+        slow_query_log_timeout_in_ms \
+        cross_node_timeout \
+        streaming_keep_alive_period_in_secs \
 	; do
 		var="CASSANDRA_${yaml^^}"
 		val="${!var}"
