@@ -46,7 +46,7 @@ ExecStart=/bin/bash -c ' \
   -v ${SERVICE_DIR}/mgrast-config/services/ssl/:/ssl:ro \
   -p 80 \
   -p 443 \
-  ${IMAGE} bash -c "/bin/chmod 600 /api-server-conf/postgresql/*; /bin/chown daemon:daemon /api-server-conf/postgresql/*; /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf"'
+  ${IMAGE} /usr/local/apache2/bin/httpd -DFOREGROUND -f /api-server-conf/httpd.conf'
 
 ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker stop ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 
