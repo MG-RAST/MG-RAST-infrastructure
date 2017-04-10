@@ -530,8 +530,15 @@ for line in fileinput.input():
                 print("Key %s not found" % (key))
                 sys.exit(1)
 
+    except Exception as e:
+        print("error: %s" % (str(e)))
 
+    for key, value in mydata.items():
+        if isinstance(value, str):
+            mydata[key]=value.lower()
+            
 
+    try:
         upsert_success = upsert_document(mydata)
     except Exception as e:
         print("error: %s" % (str(e)))
