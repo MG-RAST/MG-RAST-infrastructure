@@ -58,6 +58,10 @@ if [ "$1" = 'cassandra' ]; then
         slow_query_log_timeout_in_ms \
         cross_node_timeout \
         streaming_keep_alive_period_in_secs \
+        compaction_large_partition_warning_threshold_mb \
+        batch_size_warn_threshold_in_kb \
+        batch_size_fail_threshold_in_kb \
+        gc_warn_threshold_in_ms \
 	; do
 		var="CASSANDRA_${yaml^^}"
 		val="${!var}"
