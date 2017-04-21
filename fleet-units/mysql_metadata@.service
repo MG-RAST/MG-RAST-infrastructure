@@ -9,7 +9,7 @@ Environment='CONTAINER=mysql-metadata-%i'
 Environment='IMAGE=mysql/mysql-server:5.7'
 Environment='SERVICE=mysql_metadata'
 Environment='DIR=/media/ephemeral/mysql_metadata-%i'
-Environment='DEVICE=enp2s0f0'
+Environment='DEFAULT_DEVICE=enp2s0f0'
 
 Restart=always
 TimeoutStartSec=0
@@ -19,8 +19,10 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 EnvironmentFile=-/media/ephemeral/mysql_metadata-%i/mgrast-config/services/mysql_metadata/mysql.env
+EnvironmentFile=-/etc/environment
 
-ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${DEVICE} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
+
+ExecStartPre=-/bin/bash -c 'if [ %i == 1 ] ; then if [ -z ${NET_IF+x} ]; then NET_IF=${DEFAULT_DEVICE}; fi ; /usr/bin/ip addr add ${VIRTUAL_IP}/24 brd + dev ${NET_IF} ; echo "add IP ${VIRTUAL_IP} (%i)"; else echo "do not add IP (%i)" ; fi'
 
 # prepare directories
 ExecStartPre=/bin/mkdir -p ${DIR}/log/ ${DIR}/data/
@@ -38,9 +40,9 @@ ExecStartPre=/bin/chattr -R +C ${DIR}/data/JobDB ${DIR}/data/WebAppBackend
 
 ExecStart=/usr/bin/docker run --name ${CONTAINER} --rm -p 3306:3306 -v ${DIR}/data/:/var/lib/mysql/ -v ${DIR}/log/:/var/log/mysqld/ -v ${DIR}/mgrast-config/services/mysql_metadata/mysql.cnf:/etc/my.cnf -e MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD} ${IMAGE} --console
 
-# ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
+# ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/arping -A -c 2 -I ${NET_IF} ${VIRTUAL_IP} ; fi'
 
-ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${DEVICE} ; fi'
+ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then if [ -z ${NET_IF+x} ]; then NET_IF=${DEFAULT_DEVICE}; fi ; /usr/bin/ip addr del ${VIRTUAL_IP}/24 dev ${NET_IF} ; fi'
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
