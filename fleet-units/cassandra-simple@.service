@@ -7,14 +7,12 @@ Wants=%p-discovery@%i.service
 [Service]
 Environment='CONTAINER=cassandra-simple'
 Environment='SERVICE_DIR=/media/ephemeral/cassandra-simple'
-Environment='IMAGE=mgrast/cassandra:3.7'
-
+Environment='IMAGE=mgrast/cassandra:3.10'
 
 TimeoutStartSec=0
 Restart=always
 RestartSec=10
 EnvironmentFile=-/etc/environment
-
 
 ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVICE_DIR}/saved_caches
 ExecStartPre=/bin/chattr -R +C ${SERVICE_DIR}/data
@@ -27,9 +25,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
-
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
-
 
 # create SSL keys/certificates
 ExecStartPre=/usr/bin/docker run -i --rm -e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} -v ${SERVICE_DIR}/mgrast-config/services/cassandra/:/config -v ${SERVICE_DIR}/ssl:/ssl ${IMAGE} /config/ssl.sh
@@ -48,6 +44,9 @@ ExecStart=/bin/bash -c '\
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
+# bio-worker1
+Conflicts=awe-server@*.service
+# bio-worker2
 Conflicts=solr-metagenome@*.service
 Conflicts=cassandra-simple@*.service
 
