@@ -208,6 +208,7 @@ write_files:
         echo "RAM_GB=${RAM_GB}" >> $ENV
         echo "CORES=${CORES}" >> $ENV
         echo "CoreOS=${VERSION_ID}" >> $ENV
+        echo "NET_IF=${NET_IF}" >> $ENV
         
         #fleet config
         #echo "etcd_request_timeout=15" >> /etc/fleet/fleet.conf
