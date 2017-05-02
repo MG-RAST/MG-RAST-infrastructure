@@ -57,7 +57,7 @@ fleetctl start mg-rast-nginx@1.service
 
 ## cassandra
 # first start the nodes, wait for each to finish before starting next
-for i in `seq 1 20`; do fleetctl start cassandra-simple{,-discovery}@$i.service; done
+for i in `seq 1 19`; do fleetctl start cassandra-simple{,-discovery}@$i.service; done
 
 # need to manually load data on one seed if starting from scratch
 # on one seed host: download load script and run it in seed container
@@ -72,6 +72,10 @@ docker exec cassandra-simple /usr/bin/nodetool status m5nr_v<version #> eg. m5nr
 
 # this command removes missing host from cluster list - run on any host
 docker exec cassandra-simple /usr/bin/nodetool removenode HostID
+
+# reboot of cassandra
+fleetctl stop cassandra-simple{,-discovery}@{1..19}.service
+fleetctl start cassandra-simple{,-discovery}@{1..19}.service
 
 # docker exec cassandra-simple rm /root/.cassandra/cqlshrc
 # docker exec cassandra-simple /usr/bin/cqlsh -e 'desc keyspaces;'
@@ -95,7 +99,6 @@ fleetctl start elasticsearch{,-discovery}@{1..9}.service
 ### reboot of web and api fleet-units
 
 for i in 1 2 3; do fleetctl stop mg-rast-v4-web{,-discovery}@${i}.v4-web.service; sleep 10; fleetctl start mg-rast-v4-web{,-discovery}@${i}.v4-web.service; sleep 60; done
-for i in 1 2; do fleetctl stop mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 10; fleetctl start mg-rast-v3-web{,-discovery}@${i}.v3-web.service; sleep 120; done
 for i in 1 2 3 4; do fleetctl stop api-server{,-discovery,-update}@${i}.api.service; sleep 10; fleetctl start api-server{,-discovery,-update}@${i}.api.service; sleep 120; done
 
 ### clean shutdown of fleet-units ###
