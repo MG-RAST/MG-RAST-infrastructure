@@ -19,6 +19,9 @@ import iso8601
 es_user=''
 es_pass=''
 
+index='metagenome_index'
+
+
 es_url = os.environ['ES_URL']
 
 # You could also pass OAuth in the constructor
@@ -30,7 +33,7 @@ properties=None
 # query ES
 def es_document_exists(id):
     params = { "pretty" : True, "_source" : False}
-    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, auth=(es_user, es_pass), params=params)
+    r = requests.get(es_url +'/'+index+'/metagenome/'+id, auth=(es_user, es_pass), params=params)
     #print(r.text)
     obj = r.json()
     return obj["found"]
@@ -38,7 +41,7 @@ def es_document_exists(id):
 
 def es_get_document(id):
     params = { "pretty" : True}
-    r = requests.get(es_url +'/metagenome_index/metagenome/'+id, auth=(es_user, es_pass), params=params)
+    r = requests.get(es_url +'/'+index+'/metagenome/'+id, auth=(es_user, es_pass), params=params)
     print(r.text)
     obj = r.json()
     if not "_source" in obj:
@@ -88,7 +91,7 @@ def read_metadata_from_api(id):
 #load document into ES
 def upsert_document(data_dict):
     _id = data_dict['id']
-    url = es_url +'/metagenome_index/metagenome/' + _id
+    url = es_url +'/'+index+'/metagenome/' + _id
     print(url)
    
     # comment: use json.dumps , see https://discuss.elastic.co/t/index-a-new-document/35281/8
