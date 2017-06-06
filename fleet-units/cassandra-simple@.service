@@ -45,7 +45,7 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 # bio-worker1
-Conflicts=awe-server@*.service
+#Conflicts=awe-server@*.service
 # bio-worker2
 Conflicts=solr-metagenome@*.service
 Conflicts=cassandra-simple@*.service
