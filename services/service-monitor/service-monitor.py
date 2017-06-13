@@ -142,8 +142,8 @@ while True:
     if 'success' in body_dict:
         
         # test errors
-        if count % 5 == 0 :
-            body_dict['success'] = 0
+        #if count % 5 == 0 :
+        #    body_dict['success'] = 0
         
         success = body_dict['success']
         
@@ -210,18 +210,19 @@ while True:
                 state = "ok   "
                 if "error" in s:
                     state = s['error']
+                line = ""
+                line += s_name
+                "{:<12}".format(line)
                 
-                email_message += "%s: %s" % (s_name)
+                line += ": %s" % (state)
                 
                 if 'message' in s:
-                    email_message += " (%s)" % (s['message'])
+                    line += "\n     details: %s" % (s['message'])
                     
-                email_message += "\n"
+                email_message += line+"\n"
             
-            if 'message' in body_dict:
-                email_message += " with message: %s" % (body_dict["message"])
             
-            print("email_message: " % (email_message))
+            print("email_message: %s" % (email_message))
             send_message("service error", email_message)
         
         continue
