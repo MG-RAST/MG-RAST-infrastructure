@@ -41,6 +41,7 @@ def send_email(subject, msg_text):
     
     
     # Send message via SMTP server.
+    print("sending email to %s...\n" % (email_to))
     s = smtplib.SMTP(email_server)
     s.send_message(msg)
     s.quit()
@@ -84,10 +85,10 @@ while True:
             time.Sleep(1)
             continue
             
-        body_dict = json.loads(body)
+        event = json.loads(body)
     
-        if 'event_type' in body_dict:
-            event_type = body_dict['event_type']
+        if 'event_type' in event:
+            event_type = event['event_type']
             if event_type != "email":
                 print("error: event_type unknown, email expexted, got %s" % event_type, file=sys.stderr)
                 time.Sleep(1)
