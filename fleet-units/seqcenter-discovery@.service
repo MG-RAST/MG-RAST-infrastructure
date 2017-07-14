@@ -8,7 +8,7 @@ Environment='SERVICE=seqcenter'
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/sh -c " \
-  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' | tr -d '\n' )x\" == \"x\" ]; \
+  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${SERVICE} | tr -d '\n' )x\" == \"x\" ]; \
   do echo \"port unknown\"; \
   sleep 0.1; done"
 
