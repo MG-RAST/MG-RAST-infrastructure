@@ -25,6 +25,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 
 # get image
 #ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
 ExecStart=/usr/bin/docker run --rm --name ${SERVICE} -p ${COREOS_PRIVATE_IPV4}::80  -v ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/OAuthConfig.pm:/usr/local/apache2/htdocs/authServer/cgi-bin/OAuthConfig.pm ${IMAGE}:latest
 
