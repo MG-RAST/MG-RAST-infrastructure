@@ -23,4 +23,4 @@ ExecStart=/bin/bash -c " \
 ExecStop=/usr/bin/etcdctl rm /services/${SERVICE}/${SERVICE}@%i
 
 [X-Fleet]
-MachineOf=mg-rast-v4-web@%i.service
+MachineOf=seqcenter@%i.service
