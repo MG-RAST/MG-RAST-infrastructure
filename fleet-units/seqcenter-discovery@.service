@@ -1,0 +1,26 @@
+[Unit]
+Description=seqcenter discovery
+BindsTo=seqcenter@%i.service
+After=seqcenter@%i.service
+
+[Service]
+Environment='SERVICE=seqcenter'
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=/bin/sh -c " \
+  while [ \"$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' | tr -d '\n' )x\" == \"x\" ]; \
+  do echo \"port unknown\"; \
+  sleep 0.1; done"
+
+ExecStart=/bin/bash -c " \
+  export PORT=$(docker inspect --format='{{(index (index .NetworkSettings.Ports \"80/tcp\") 0).HostPort}}' ${SERVICE} | tr -d '\n' ); \
+  echo \"port detected: $PORT\"; \
+  while true; do \
+    etcdctl set /services/${SERVICE}/${SERVICE}@%i \'{\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
+    sleep 45; \
+  done"
+
+ExecStop=/usr/bin/etcdctl rm /services/${SERVICE}/${SERVICE}@%i
+
+[X-Fleet]
+MachineOf=mg-rast-v4-web@%i.service
