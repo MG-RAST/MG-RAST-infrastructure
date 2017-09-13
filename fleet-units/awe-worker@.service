@@ -1,12 +1,12 @@
 [Unit]
-Description=AWE client %i
+Description=AWE worker %i
 After=docker.service
 Requires=docker.service
 
 [Service]
-Environment='SERVICE=awe-client'
-Environment='VERSION=0.9.30'
-Environment='DIR=/media/ephemeral/awe-client/%i'
+Environment='SERVICE=awe-worker'
+Environment='VERSION=0.9.53dev'
+Environment='DIR=/media/ephemeral/awe-worker/%i'
 
 Restart=always
 TimeoutStartSec=0
@@ -21,20 +21,21 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl
 ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 # get binary
-ExecStartPre=/bin/curl -L -o ${DIR}/awe-client https://github.com/MG-RAST/AWE/releases/download/v${VERSION}/awe-client
-ExecStartPre=/bin/chmod +x ${DIR}/awe-client
+ExecStartPre=/bin/curl -L -o ${DIR}/awe-worker https://github.com/MG-RAST/AWE/releases/download/v${VERSION}/awe-worker
+ExecStartPre=/bin/chmod +x ${DIR}/awe-worker
 
 ExecStart=/bin/bash -c ' \
   export NUMBER=$(echo %i | cut -d . -f 1); \
   export GROUP=$(echo %i | cut -d . -f 2); \
-  ${DIR}/awe-client \
-    --conf ${DIR}/mgrast-config/services/awe-client/awe.cfg \
+  ${DIR}/awe-worker \
+    --conf ${DIR}/mgrast-config/services/awe-worker/awe.cfg \
     --debuglevel 3 \
     --workpath ${DIR}/work \
     --data ${DIR}/data \
     --logs ${DIR}/logs \
     --group $GROUP \
-    --name %H.$GROUP.$NUMBER'
+    --name %H.$GROUP.$NUMBER' \
+    --domain bio-worker
 
 [X-Fleet]
 Conflicts=solr-metagenome@*.service

@@ -47,3 +47,17 @@ CREATE TABLE IF NOT EXISTS job_lcas (
 CREATE INDEX job_lcas_exp_idx ON job_lcas (exp_avg);
 CREATE INDEX job_lcas_ident_idx ON job_lcas (ident_avg);
 CREATE INDEX job_lcas_len_idx ON job_lcas (len_avg);
+
+CREATE TABLE IF NOT EXISTS job_otu_lcas (
+    source text,
+    job int,
+    lca text,
+    abundance int,
+    score float,
+    otus int,
+    level int,
+    PRIMARY KEY ((source, job), lca)
+);
+
+CREATE INDEX job_otu_lcas_score_idx ON job_tap (score);
+CREATE INDEX job_otu_lcas_otus_idx ON job_tap (otus);
