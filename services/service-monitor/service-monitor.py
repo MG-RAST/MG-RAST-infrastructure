@@ -36,6 +36,7 @@ def send_message(subject, msg):
     event["event_type"] = "email"
     event["subject"] = subject
     event["message"] = msg
+    event["time"] = DateTime->now()->iso8601().'Z'
     
     event_json = json.dumps(event)
     
@@ -234,6 +235,7 @@ while True:
             last_error_message_sent = None
             email_message = "no errors have been reported\n"
             send_message("all services operational", email_message)
+            last_error_message_sent = None
             continue
             
     
