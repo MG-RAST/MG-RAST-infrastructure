@@ -42,14 +42,10 @@ curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api/shock -XPUT 
 curl -L http://127.0.0.1:2379/v2/keys/service_images/api-server-api-dev/shock -XPUT -d value="shock.metagenomics.anl.gov/node/a5b32dba-4fa6-489f-b10a-8ef08afb6602"
 
 #awe server
-# v0.9.46
-#curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/0628aa3b-2c2f-48fc-88f5-15ec41794c70"
-# v0.9.48
-#curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/56f05f1b-00a9-414d-816b-3857945941f4"
-# v0.9.49
-#curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/50285c92-76b9-43fe-8668-9fb053d066e6"
-# v0.9.50
-curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/e76e0c55-4a6e-4f5b-8f66-1dd5585b793a"
+# v0.9.56
+#curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d3c5f1ec-8072-405d-aaae-950dec557f76"
+# v0.9.57
+curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-server/shock -XPUT -d value="shock.metagenomics.anl.gov/node/713db937-9169-46be-b1cf-072875a69b59"
 
 #awe client
 curl -L http://127.0.0.1:2379/v2/keys/service_images/awe-client/shock -XPUT -d value="shock.metagenomics.anl.gov/node/d3c5f1ec-8072-405d-aaae-950dec557f76"
