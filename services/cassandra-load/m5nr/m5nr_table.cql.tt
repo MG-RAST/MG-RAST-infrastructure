@@ -56,6 +56,13 @@ CREATE TABLE IF NOT EXISTS md5_annotation (
 )
 WITH compaction = { 'class': 'LeveledCompactionStrategy' };
 
+CREATE TABLE IF NOT EXISTS functions (
+    id int,
+    name text,
+    PRIMARY KEY (id)
+)
+WITH compaction = { 'class': 'LeveledCompactionStrategy' };
+
 CREATE TABLE IF NOT EXISTS ontologies (
     source text,
     name text,
