@@ -22,7 +22,7 @@ my $mq = Net::RabbitMQ->new();
 my $c = YAML::Tiny->read( 'config.yml' )->[0];
 print Dumper($c);
   
-my $do_send_mail = 1;
+my $do_send_mail = 0;
 
 
 my $rmq=$c->{rabbitmq} or die;
@@ -546,11 +546,17 @@ sub test_service {
      
      my $result_json = to_json($result, {utf8 => 1});
      
-     
+     my $connection_result = eval { 
      $mq->connect("rabbitmq", { user => $rmq_user, password => $rmq_password });
-     $mq->channel_open(1);
-     $mq->publish(1, "event_service_test", $result_json);
-     $mq->disconnect();
+     };
+     if ($connection_result) {
+         $mq->channel_open(1);
+         $mq->publish(1, "event_service_test", $result_json);
+         $mq->disconnect();
+     } else {
+         print("Could not connect to rabbitmq.\n");
+     }
+    
      
 }
 
