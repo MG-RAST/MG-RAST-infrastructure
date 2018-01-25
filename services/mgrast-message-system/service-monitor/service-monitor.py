@@ -24,33 +24,48 @@ sent_after_1h=0
 sent_after_3h=0
 
 def send_message(subject, msg):
+  
     credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
- 
-    connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq', credentials=credentials))
- 
-    channel = connection.channel()
-    queue_name ='email_outgoing'
-    channel.queue_declare(queue=queue_name)
+    success = 0
+    connection = None
     
-    event={}
-    event["event_type"] = "email"
-    event["subject"] = subject
-    event["message"] = msg
-    event["time"] = DateTime->now()->iso8601().'Z'
+    while success == 0:
+        try:
+            connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq', credentials=credentials))
+        except Exception as e:
+            print("error: %s" % str(e), file=sys.stderr)
+            time.sleep(1)
+            continue
+        
+        channel = connection.channel()
+        queue_name ='email_outgoing'
+        channel.queue_declare(queue=queue_name)
     
-    event_json = json.dumps(event)
+        event={}
+        event["event_type"] = "email"
+        event["subject"] = subject
+        event["message"] = msg
+        event["time"] = DateTime.now().iso8601()+'Z'
     
-    print("sending to %s queue: %s" % (queue_name, event_json))
+        event_json = json.dumps(event)
     
-    channel.basic_publish(exchange='',
-                          routing_key=queue_name,
-                          body=event_json)
-    connection.close()
+        print("sending to %s queue: %s" % (queue_name, event_json))
     
-    global last_error_message_sent
+        try:
+            channel.basic_publish(exchange='',
+                                  routing_key=queue_name,
+                                  body=event_json)
+            connection.close()
+        except Exception as e:
+            print("error: %s" % str(e), file=sys.stderr)
+            time.sleep(1)
+            continue
+            
+        global last_error_message_sent
     
-    last_error_message_sent = datetime.datetime.now(timezone.utc)
-
+        last_error_message_sent = datetime.datetime.now(timezone.utc)
+        success = 1
+        
 
 # get config
 stream = open('/config/config.yml', 'r') 
@@ -74,9 +89,17 @@ rabbitmq_password = rabbitmq['password']
 # setup RabbitMQ connection
 
 credentials = pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
- 
-connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq', credentials=credentials))
- 
+
+connection = None
+
+while not connection:
+    time.sleep(3)
+    try:
+        connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq', credentials=credentials))
+    except Exception as e:
+        print("warning: "+str(e))
+        
+        
 channel = connection.channel()
 queue_name ='event_service_test'
 channel.queue_declare(queue=queue_name)
@@ -86,10 +109,20 @@ error_counts={}
  
 count = 0 
 while True:
-    method_frame, header_frame, body = channel.basic_get(queue = queue_name, no_ack=False)
-    if not method_frame:
+    
+    method_frame = None
+    header_frame = None
+    body = None
+    
+    try:
+        method_frame, header_frame, body = channel.basic_get(queue = queue_name, no_ack=False)
+    except Exception as e:
+        print("error: %s" % str(e), file=sys.stderr)
         continue
     
+    if not method_frame:
+        continue
+        
     count+=1
     print(method_frame, header_frame, body)
     print(body)
