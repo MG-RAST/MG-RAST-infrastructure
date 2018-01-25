@@ -45,7 +45,7 @@ def send_message(subject, msg):
         event["event_type"] = "email"
         event["subject"] = subject
         event["message"] = msg
-        event["time"] = DateTime.now().iso8601()+'Z'
+        event["time"] = datetime.datetime.utcnow().isoformat()+'Z'
     
         event_json = json.dumps(event)
     
