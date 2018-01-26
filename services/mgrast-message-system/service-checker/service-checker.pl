@@ -335,8 +335,9 @@ sub check_aweserver {
     my $e = undef;
     my $result = undef;
     eval {
-     $result = decode_json($response->decoded_content);
-      $logger->info($response->decoded_content);
+        my $decoded_content = $response->decoded_content;
+        $result = decode_json($decoded_content);
+        $logger->info(sprintf("response: %s...", substr($decoded_content, 0, 50)));
         1;
     } or do {
         $e = $@;
