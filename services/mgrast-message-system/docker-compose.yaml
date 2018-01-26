@@ -55,12 +55,13 @@ services:
     
     
     
-  #mms-email:
-  #  image: mgrast/mms-email 
-  #  entrypoint:
-  #    - /mms-email.py  
-  #  volumes:
-  #    - ${MMS_CONFIG_FILE}:/config/config.yml:ro
+  mms-email:
+    image: mgrast/mms-email 
+    entrypoint:
+      - /mms-email.py  
+    volumes:
+      - ${MMS_CONFIG_FILE}:/config/config.yml:ro
+      - ${MMS_DIR}/mms-email.py:/mms-email.py
         
       
       
