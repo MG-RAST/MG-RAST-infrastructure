@@ -17,10 +17,10 @@ services:
       timeout: 10s
       retries: 10
           
-  dbload:
-    image: mgrast/event-loader
-    volumes:
-      - ${MMS_CONFIG_FILE}:/config/config.yml:ro
+  #dbload:
+  #  image: mgrast/event-loader
+  #  volumes:
+  #    - ${MMS_CONFIG_FILE}:/config/config.yml:ro
   
   
   
@@ -41,7 +41,7 @@ services:
       - test_all_continues
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
-      - ${MMS_DIR}/service-checker/service-checker.pl:/service-checker.pl:rw
+      #- ${MMS_DIR}/service-checker/service-checker.pl:/service-checker.pl:rw
       
   service-monitor:
     image: mgrast/service-monitor
@@ -49,7 +49,7 @@ services:
       - service-checker
     volumes:
       - ${MMS_CONFIG_FILE}:/config/config.yml:ro
-      - ${MMS_DIR}/service-monitor/service-monitor.py:/service-monitor.py:rw
+      #- ${MMS_DIR}/service-monitor/service-monitor.py:/service-monitor.py:rw
     entrypoint: 
       - ./service-monitor.py
     
@@ -61,7 +61,7 @@ services:
       - /mms-email.py  
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
-      - ${MMS_DIR}/mms-email/mms-email.py:/mms-email.py
+      #- ${MMS_DIR}/mms-email/mms-email.py:/mms-email.py
         
       
       
