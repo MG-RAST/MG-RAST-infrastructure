@@ -19,9 +19,11 @@ echo "----------------------------"
 
 
 for service in event-loader mms-email service-checker service-monitor ; do
-  echo "docker push ${service}"
+  echo "docker push mgrast/${service}"
 done
 
+echo "---------"
+
 for service in event-loader mms-email service-checker service-monitor ; do
-  echo "docker pull ${service}"
+  echo "docker pull mgrast/${service}"
 done
