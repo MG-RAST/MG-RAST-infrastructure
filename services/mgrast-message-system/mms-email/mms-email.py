@@ -11,7 +11,9 @@ import time
 
 
 
-debug = 1
+debug = 0
+
+do_send_email = 1
 
 connection = None
 credentials = None
@@ -82,7 +84,7 @@ rabbitmq_password = rabbitmq['password']
 
 credentials=pika.PlainCredentials(rabbitmq_user, rabbitmq_password)
 
-connection=makeConnection(credentials)
+makeConnection()
 
  
 channel = connection.channel()
@@ -145,12 +147,18 @@ while True:
     subject = event["subject"]
     message = event["message"]
     
-    try:
+    if do_send_email:
+        if debug: 
+            print("sending email: %s" % (subject))
+            print(message)
+        try:
+            send_email(subject, message)
+        except Exception as e:
+            print("error: send_email: %s" % (str(e)), file=sys.stderr)
+    else:
         print("would send email now: %s" % (subject))
         print(message)
-        #send_email(subject, message)
-    except Exception as e:
-        print("error: send_email: %s" % (str(e)), file=sys.stderr)
+
 
 
 
