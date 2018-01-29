@@ -11,11 +11,11 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER} 
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS} 
     # -v ${RABBITMQ}data/:/var/lib/rabbitmq/:rw
-    healthcheck:
-      test: ["CMD", "rabbitmqctl", "status"]
-      interval: 100s
-      timeout: 10s
-      retries: 10
+   # healthcheck:
+  #    test: ["CMD", "rabbitmqctl", "status"]
+   #   interval: 100s
+    #  timeout: 10s
+     # retries: 10
           
   #dbload:
   #  image: mgrast/event-loader
