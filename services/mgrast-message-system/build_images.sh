@@ -12,3 +12,16 @@ for service in event-loader mms-email service-checker service-monitor ; do
   set +x
 done
 
+
+echo "done"
+echo "----------------------------"
+
+
+
+for service in event-loader mms-email service-checker service-monitor ; do
+  echo "docker push ${service}"
+done
+
+for service in event-loader mms-email service-checker service-monitor ; do
+  echo "docker pull ${service}"
+done
