@@ -45,7 +45,7 @@ my $status={};
 
 my $failures = 0;
 my $all_ok = 5;
-my $sleep_minutes = 2;
+my $sleep_minutes = 0.1;
 
 ########################################################################################
 
@@ -167,7 +167,7 @@ sub check_mongo {
     if ($success) {
         return {success => 1}
     }
-    return {error => 1, message => $message}
+    return {success => 0, message => $message}
     
    
 }
@@ -213,14 +213,14 @@ sub check_mysql {
     my $jobcache_password = $jc->{'password'};
     my $dbh = DBI->connect("DBI:mysql:database=".$jobcache_db.";host=".$jobcache_host.";",
            $jobcache_user,
-           $jobcache_password)or return {error => 1, message => $jobcache_host." ".$DBI::errstr} ;
+           $jobcache_password)or return {success => 0, message => $jobcache_host." ".$DBI::errstr} ;
     my $service = "MySQL/".$jobcache_db;
     
     if ($dbh) {
         #$status->{$service}->{'success'}=1;
         return {success => 1}
     } 
-    return {error => 1, message => $jobcache_host};
+    return {success => 0, message => $jobcache_host};
     
     
 }
@@ -260,19 +260,19 @@ sub check_etcdcluster {
         #$status->{$resource}->{'success'}=0;
        
         #$status->{$resource}->{'report'} = "Could not check cluster health (2)";
-        return {error => 1 , message => "Could not check cluster health (json error) "};
+        return {success => 0 , message => "Could not check cluster health (json error) "};
         #return;
     };
     
     unless (defined $result->{"health"}) {
         $logger->info("health field null");
-        return {error => 1 , message => "Key health not found"};
+        return {success => 0 , message => "Key health not found"};
     }
     
     unless ($result->{"health"} eq "true") {
         $logger->info("Cluster is not healthy !");
 
-        return {error => 1 , message => "Cluster is not healthy !"};
+        return {success => 0 , message => "Cluster is not healthy !"};
         
     }
     
@@ -282,7 +282,7 @@ sub check_etcdcluster {
     $url = "http://metagenomics.anl.gov:2379/v2/members";
     $response = $ua->get($url);
     unless ($response->is_success) {
-        return {error => 1 , message => "Could not get list of members"};
+        return {success => 0 , message => "Could not get list of members"};
     }
     
     
@@ -295,13 +295,13 @@ sub check_etcdcluster {
     } or do {
         $e = $@;
         $logger->info("json error ".$e);
-        return {error => 1 , message => "Could not get list of members (json error)"};
+        return {success => 0 , message => "Could not get list of members (json error)"};
     };
     
     if (defined $result->{"members"}) {
         return {success => 1 , message => "Etcd cluster size: ".@{$result->{"members"}}};
     }
-    return {error => 1 , message => "List of member empty"};
+    return {success => 0 , message => "List of member empty"};
 }
 
 
@@ -328,7 +328,7 @@ sub check_aweserver {
 
     unless ($response->is_success) {
         
-        return {error => 1 , message => $url. " ". ($response->message || "")};
+        return {success => 0 , message => $url. " ". ($response->message || "")};
         
     }
 
@@ -343,21 +343,21 @@ sub check_aweserver {
         $e = $@;
         $logger->info("awe json error ".$e);
         
-        return {error => 1 , message => "json error: ".$url};
+        return {success => 0 , message => "json error: ".$url};
        
     };
 
     if (defined $result->{"error"}) {
         $logger->info("awe error field non-null");
         
-        return {error => 1 , message => "error in response: ".$url};
+        return {success => 0 , message => "error in response: ".$url};
      
     }
 
     unless (defined $result->{"data"}) {
         $logger->info("awe data field null");
         
-        return {error => 1 , message => "data field not defined: ".$url};
+        return {success => 0 , message => "data field not defined: ".$url};
       
     }
     
@@ -366,7 +366,7 @@ sub check_aweserver {
     unless ($num_clients ) {
         $logger->info("awe data field null");
      
-        return {error => 1 , message => "data field empty: ".$url};
+        return {success => 0 , message => "data field empty: ".$url};
      
     }
     
@@ -394,7 +394,7 @@ sub check_apiserver {
         my $e = $@;
         $logger->info($e);
         
-        return {error => 1 , message => "Could not parse json: ".$e};
+        return {success => 0 , message => "Could not parse json: ".$e};
       
         };
     
@@ -407,7 +407,7 @@ sub check_apiserver {
     my $time_diff_minutes = $time_diff/60;
     if ($time_diff_minutes > 60) { # 60 minutes
        
-         return {error => 1 , message => "last test too long ago ($time_diff_minutes minutes)"};
+         return {success => 0 , message => "last test too long ago ($time_diff_minutes minutes)"};
          
     }
     
@@ -425,7 +425,7 @@ sub check_apiserver {
     if ( $tests_failed > 0 ) {
         # $failed{"api-server"} = 
       
-      return {error => 1 , message => $tests_failed ." of ".$tests_total." tests failed"};
+      return {success => 0 , message => $tests_failed ." of ".$tests_total." tests failed"};
     }
      
     
