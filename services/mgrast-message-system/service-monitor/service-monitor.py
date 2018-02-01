@@ -319,8 +319,13 @@ while True:
     email_message = ""
     for s_name, s in current_status.items():
         state = "ok   "
-        if "error" in s:
-            state = s['error']
+        if "success" in s:
+            if s["success"]==False:
+                state = "error"
+        else:
+            print("warning: success field missing in {}".format(s_name))
+            state = "error"
+            
         line = ""
         line += s_name
         "{:<12}".format(line)
@@ -336,7 +341,7 @@ while True:
     
     print("message to send:\n{}".format(email_message))
     if do_send_message:
-        send_message("service error", email_message)
+        send_message("service error ({})".format(service_name), email_message)
     last_error_message_sent = datetime.datetime.now(timezone.utc)
         
     

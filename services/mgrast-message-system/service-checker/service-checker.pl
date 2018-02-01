@@ -119,7 +119,7 @@ sub check_url {
      if ($response->is_success) {
          return {"success" => 1}
      }
-     return {"error" => 1}
+     return {"success" => 0}
 }
 
 
