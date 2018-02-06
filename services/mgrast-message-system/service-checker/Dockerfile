@@ -1,6 +1,6 @@
 
 # docker build -t mgrast/service-checker .
-# docker run -ti --name service-checker mgrast/service-checker /bin/bash
+# development:  docker run -ti --name service-checker --net=${MMS_NETWORK} --rm  -v `pwd`/service-checker.pl:/service-checker.pl -v ${MMS_CONFIG_FILE}:/config.yml:ro mgrast/service-checker /bin/bash
 
 
 FROM debian:jessie
