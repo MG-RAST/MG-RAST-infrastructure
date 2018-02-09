@@ -230,7 +230,7 @@ sub check_etcdcluster {
     
     my $resource = "etcdcluster";
     my $ua = LWP::UserAgent->new;
-    $ua->timeout(10);
+    $ua->timeout(60); # etcd has timeout issues...
     
     # http://metagenomics.anl.gov:2379/health
     
