@@ -52,6 +52,7 @@ fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 
 ## confd / nginx
 
+fleetctl start certificates.service
 fleetctl start mg-rast-confd.service # global unit
 fleetctl start mg-rast-nginx@1.service
 
