@@ -28,6 +28,7 @@ ExecStart=/usr/bin/bash -c 'cd ${SERVICE_DIR}/certs ; \
     if [ $(git status --porcelain | wc -l) -eq 0 ] ; then \
       echo "no changes in certs directory"; \
     else  \
+      chmod 600 /media/ephemeral/confd/mgrast-config/ssh_key/mgrast-2017.pem ; \
       git add * ; \
       git commit -m "automatically add changes" ; \
       git push ; \
