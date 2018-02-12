@@ -14,7 +14,7 @@ TimeoutStartSec=300s
 Restart=always
 
 
-Environment='GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem"'
+Environment='GIT_SSH_COMMAND=ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem'
 
 
 
