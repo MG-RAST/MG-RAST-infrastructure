@@ -36,8 +36,8 @@ ExecStart=/usr/bin/bash -c 'cd ${SERVICE_DIR}/certs ; \
   done'
 
 
-#[X-Fleet]
-
+[X-Fleet]
+MachineOf=mg-rast-nginx@%i.service
 
 
 
