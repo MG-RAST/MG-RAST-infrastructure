@@ -24,7 +24,7 @@ ExecStart=/usr/bin/bash -c 'cd ${SERVICE_DIR}/certs ; \
   git config user.email "bio-worker@localhost" ; \
   while [ 1 ] ; do \
     docker rm -f letsencrypt ; \
-    docker run --rm --name letsencrypt -p 5000:80 -p 5001:443 -v ${SERVICE_DIR}/certs:/etc/letsencrypt -v /var/lib/letsencrypt --entrypoint /bin/ash certbot/certbot certbot renew ; \
+    docker run --rm --name letsencrypt -p 5000:80 -p 5001:443 -v ${SERVICE_DIR}/certs:/etc/letsencrypt -v /var/lib/letsencrypt certbot/certbot /usr/local/bin/certbot renew ; \
     if [ $(git status --porcelain | wc -l) -eq 0 ] ; then \
       echo "no changes in certs directory"; \
     else  \
