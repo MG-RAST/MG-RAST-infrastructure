@@ -4,33 +4,6 @@ CREATE KEYSPACE IF NOT EXISTS m5nr_v[% version %]
 
 use m5nr_v[% version %];
 
-CREATE TABLE IF NOT EXISTS index_annotation (
-    id int,
-    source text,
-    md5 text,
-    is_protein boolean,
-    single int,
-    accession list<int>,
-    function list<int>,
-    organism list<int>,
-    PRIMARY KEY (id, source)
-)
-WITH compaction = { 'class': 'LeveledCompactionStrategy' };
-
-CREATE TABLE IF NOT EXISTS id_annotation (
-    id int,
-    source text,
-    md5 text,
-    is_protein boolean,
-    single text,
-    lca list<text>,
-    accession list<text>,
-    function list<text>,
-    organism list<text>,
-    PRIMARY KEY (id, source)
-)
-WITH compaction = { 'class': 'LeveledCompactionStrategy' };
-
 CREATE TABLE IF NOT EXISTS midx_annotation (
     md5 text,
     source text,
