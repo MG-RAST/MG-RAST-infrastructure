@@ -1,0 +1,43 @@
+[Unit]
+Description=mg-rast.org certificate renewal
+#Requires=docker.service
+#After=docker.service
+BindsTo=mg-rast-nginx@%i.service
+After=mg-rast-nginx@%i.service
+
+
+[Service]
+Environment='SERVICE_DIR=/media/ephemeral/letsencrypt/'
+
+TimeoutStartSec=300s
+
+Restart=always
+
+
+Environment='GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem"'
+
+
+
+ExecStart=/usr/bin/bash -c 'cd ${SERVICE_DIR}/certs ; \
+  git config --global push.default simple ; \
+  git config user.name "bio-worker" ; \
+  git config user.email "bio-worker@localhost" ; \
+  while [ 1 ] ; do \
+    docker rm -f letsencrypt ; \
+    docker run --rm --name letsencrypt -p 5000:80 -p 5001:443 -v ${SERVICE_DIR}/certs:/etc/letsencrypt -v /var/lib/letsencrypt --entrypoint /bin/ash certbot/certbot certbot renew ; \
+    if [ $(git status --porcelain | wc -l) -eq 0 ] ; then \
+      echo "no changes in certs directory"; \
+    else  \
+      git add * ; \
+      git commit -m "automatically add changes" ; \
+      git push ; \
+    fi ; \
+    sleep $[ ( $RANDOM % 60 ) + 24*60 ]m ; \
+  done'
+
+
+#[X-Fleet]
+
+
+
+
