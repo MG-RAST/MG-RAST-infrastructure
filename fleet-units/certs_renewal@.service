@@ -31,6 +31,7 @@ ExecStart=/usr/bin/bash -c 'cd ${SERVICE_DIR}/certs ; \
       git add * ; \
       git commit -m "automatically add changes" ; \
       git push ; \
+      /usr/bin/docker exec -ti mgrast_nginx nginx -s reload ; \
     fi ; \
     sleep $[ ( $RANDOM % 60 ) + 24*60 ]m ; \
   done'
