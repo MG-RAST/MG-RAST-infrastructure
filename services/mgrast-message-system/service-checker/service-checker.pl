@@ -230,7 +230,7 @@ sub check_etcdcluster {
     
     my $resource = "etcdcluster";
     my $ua = LWP::UserAgent->new;
-    $ua->timeout(60*5); # etcd has timeout issues...
+    $ua->timeout(20); # etcd has timeout issues...
     
     # http://metagenomics.anl.gov:2379/health
     
@@ -242,10 +242,7 @@ sub check_etcdcluster {
     my $response = $ua->get($url);
     
     unless ($response->is_success) {
-        # TODO fix etcd. This error will be ignored for now.
-        #$status->{$resource}->{'success'}=0;
-        #$failed{$resource} = "Could not check cluster health (1)";
-        return;
+        return {ignore => 1 , message => "Could not check cluster health (json error) "};
     }
     
     my $e = undef;
@@ -535,6 +532,12 @@ sub test_service {
      my $function =  $test->{'function'};
      
      my $result = &$function($test->{'arg'});
+     
+     
+     if (defined $result->{'ignore'} && $result->{'ignore'} == 1) {
+         print("Do not report test result, ignore flag was set");
+         return;
+     }
      
      $result->{'event_type'} = 'service_test';
      $result->{'service'} = $service_name;
