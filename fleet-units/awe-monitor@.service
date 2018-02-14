@@ -4,6 +4,8 @@ BindsTo=awe-server@%i.service
 After=awe-server@%i.service
 
 [Service]
+Environment='CONTAINER=awe-monitor-%i'
+Environment='IMAGE=mgrast/awe-monitor'
 Environment='SERVICE_DIR=/media/ephemeral/awe-monitor/'
 
 TimeoutStartSec=300s
@@ -15,9 +17,17 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | g
 ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
 
 
+
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+
+
 ExecStartPre=docker pull mgrast/awe-monitor
 
-ExecStart=docker run --rm --name awe-monitor -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/share/nginx/html/js/config.js -p 8085:80 mgrast/awe-monitor
+ExecStart=docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/share/nginx/html/js/config.js -p 8085:80 ${IMAGE}
+
+
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 MachineOf=awe-server@%i.service
