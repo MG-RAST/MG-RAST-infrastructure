@@ -24,7 +24,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStartPre=docker pull mgrast/awe-monitor
 
-ExecStart=docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/share/nginx/html/js/config.js -p 8085:80 ${IMAGE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/share/nginx/html/js/config.js -p 8085:80 ${IMAGE}
 
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
