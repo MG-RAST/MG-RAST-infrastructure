@@ -29,6 +29,7 @@ ExecStart=/usr/bin/bash -c 'cd ${SERVICE_DIR}/certs ; \
       git config user.name "bio-worker" ; \
       git config user.email "bio-worker@localhost" ; \
       chmod 600 /media/ephemeral/confd/mgrast-config/ssh_key/mgrast-2017.pem ; \
+      git pull ; \
       git add * ; \
       git commit -m "automatically add changes" ; \
       git push ; \
