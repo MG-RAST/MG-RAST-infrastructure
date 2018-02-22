@@ -43,6 +43,8 @@ fleetctl start solr-metagenome{,-backup}@1.service
 fleetctl start memcached.service # global unit
 fleetctl start memcached-discovery.service # global unit / start after above completes
 fleetctl start awe-server{,-discovery}@1.service
+fleetctl start awe-monitor@1.service
+
 
 ## api / web
 
@@ -52,8 +54,10 @@ fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 
 ## confd / nginx
 
+fleetctl start certificates.service
 fleetctl start mg-rast-confd.service # global unit
 fleetctl start mg-rast-nginx@1.service
+fleetctl start certs_renewal@1.service
 
 ## cassandra
 # first start the nodes, wait for each to finish before starting next
