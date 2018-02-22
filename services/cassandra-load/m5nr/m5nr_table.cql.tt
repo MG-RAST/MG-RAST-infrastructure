@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS midx_annotation (
     source text,
     is_protein boolean,
     single int,
-    accession list<int>,
+    accession list<text>,
     function list<int>,
     organism list<int>,
     PRIMARY KEY (md5, source)
