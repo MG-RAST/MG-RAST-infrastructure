@@ -32,7 +32,7 @@ ExecStartPre=-/usr/bin/find ${SERVICE_DIR}/sites-enabled -iname ".meta*" -exec r
 
 
 # I do not get output from docker....
-ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9]' -o) -v ${SERVICE_DIR}/sites-enabled/:/etc/nginx/sites-enabled:rw -v ${SERVICE_DIR}/docker/:/docker:rw -v ${SERVICE_DIR}/mgrast-config/services/confd:/config:ro -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest bash -c ' cd /MG-RAST-infrastructure/ ; git pull ; /config/run_confd.sh'"
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9][a-z-]*' -o) -v ${SERVICE_DIR}/sites-enabled/:/etc/nginx/sites-enabled:rw -v ${SERVICE_DIR}/docker/:/docker:rw -v ${SERVICE_DIR}/mgrast-config/services/confd:/config:ro -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE}:latest bash -c ' cd /MG-RAST-infrastructure/ ; git pull ; /config/run_confd.sh'"
 
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
