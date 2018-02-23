@@ -178,6 +178,11 @@ write_files:
             echo $MAC  
         }
 
+        touch /home/core/.hushlogin
+        touch /root/.hushlogin
+        
+        HOSTNAME=$(/usr/bin/hostname)
+
         # try to detect network interface
         NET_IF=$(ifconfig -a | grep -B 1 "inet 140.221" | head -n 1 | cut -d : -f 1)
 
