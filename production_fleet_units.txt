@@ -26,6 +26,7 @@ fleetctl start mongodb-replica-update@1.shock.service
 # on host: run this to check replica status, 'STARTUP2' mode means still replicating
 fleetctl start mongodb-replica{,-discovery,-update}@2.shock.service
 fleetctl start mongodb-replica{,-discovery,-update}@3.shock.service
+fleetctl start mongodb-replica{,-discovery,-update}@4.shock.service
 
 # this command lets you see cluster hosts and their status
 docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.status())' admin
@@ -114,8 +115,7 @@ fleetctl list-units > fleetunits.txt
 
 fleetctl stop mg-rast-nginx@1.service
 fleetctl stop mg-rast-confd.service
-fleetctl stop mg-rast-v4-web{,-discovery}@1.v4-web.service
-fleetctl stop mg-rast-v3-web{,-discovery}@{1,2,3,4}.v3-web.service
+fleetctl stop mg-rast-v4-web{,-discovery}@{1,2,3}.v4-web.service
 fleetctl stop api-server{,-discovery,-update}@{1,2,3,4}.api.service
 fleetctl stop awe-server{,-discovery}@1.service
 fleetctl stop cassandra-simple{,-discovery}@{1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20}.service
@@ -123,8 +123,8 @@ fleetctl stop memcached{,-discovery}.service
 fleetctl stop solr-m5nr@1.service
 fleetctl stop solr-metagenome{,-backup}@1.service
 fleetctl stop mysql_metadata{,-backup}@1.service
-fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3}.awe.service
-fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3}.shock.service
+fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3,4}.awe.service
+fleetctl stop mongodb-replica{,-discovery,-update}@{1,2,3,4}.shock.service
 
 # now shutdown any others that were missed
 for UNIT in `fleetctl list-units -no-legend -fields=unit`; do fleetctl stop ${UNIT}; done
