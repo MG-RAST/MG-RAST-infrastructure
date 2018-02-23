@@ -2,11 +2,12 @@
 Description=MongoDB Replica %i watch
 BindsTo=mongodb-replica-discovery@%i.service
 After=mongodb-replica-discovery@%i.service
+Wants=mongodb-replica-backup@%i.service
 
 [Service]
 Environment='SERVICE=mongodb-replica'
-Environment='BASE_DIR=/media/ephemeral/mongodb'
-Environment='CONFIG_DIR=mgrast-config/services/mongod'
+Environment='SERVICE_DIR=/media/ephemeral/mongodb'
+Environment='CONFIG_PATH=mgrast-config/services/mongod'
 EnvironmentFile=-/etc/environment
 
 # if this is running on primary host, will update it every time change in etcd
@@ -16,14 +17,14 @@ EnvironmentFile=-/etc/environment
 
 ExecStart=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  export FULL_DIR=${BASE_DIR}/$CHANNEL/${CONFIG_DIR}; \
-  bash $FULL_DIR/update_hosts.sh ${SERVICE} %i $FULL_DIR/mongod.env"
+  export CONFIG_DIR=${SERVICE_DIR}/$CHANNEL/${CONFIG_PATH}; \
+  bash $CONFIG_DIR/update_hosts.sh ${SERVICE} %i $CONFIG_DIR/mongod.env"
 
 # remove virtual IP on stop, its ok to run 'ip addr del' if doesn't exist
 ExecStop=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  export FULL_DIR=${BASE_DIR}/$CHANNEL/${CONFIG_DIR}; \
-  bash $FULL_DIR/stop_host.sh ${SERVICE} %i $FULL_DIR/mongod.env"
+  export CONFIG_DIR=${SERVICE_DIR}/$CHANNEL/${CONFIG_PATH}; \
+  bash $CONFIG_DIR/stop_host.sh ${SERVICE} %i $CONFIG_DIR/mongod.env"
 
 [X-Fleet]
 MachineOf=mongodb-replica-discovery@%i.service
