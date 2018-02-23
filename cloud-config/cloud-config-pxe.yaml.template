@@ -178,7 +178,9 @@ write_files:
             echo $MAC  
         }
 
-
+        touch /home/core/.hushlogin
+        touch /root/.hushlogin
+        
         HOSTNAME=$(/usr/bin/hostname)
 
         # try to detect network interface
