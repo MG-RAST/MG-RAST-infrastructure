@@ -20,11 +20,14 @@ CONFIG=~/git/mgrast-config/
 
 TEMPLATE=${TEMPLATE_DIR}cloud-config-pxe.yaml.template
 
+DIR=`pwd`
+
 for i in ${TEMPLATE_DIR} ${CONFIG} ; do 
   cd ${i}
   git pull
 done
 
+cd $DIR
 
 # this strangely looking sed commands "sed ':a;N;$!ba;s/\n/\\n/g'" convert linebreaks into "\n" strings
 
@@ -38,6 +41,9 @@ PRIVATE_KEY=$(sed 's/^/        /' ${CONFIG}ssh_key/mgrast_coreos.pem | sed ':a;N
 
 ${SED_CMD} -e "s;%ssh_authorized_keys%;${PUBLIC_KEYS};g" -e "s;%network_interface%;${NETWORK_INTERFACE};g" -e "s;%discovery_token%;${DISCOVERY_TOKEN};g" -e "s;%config_private_ssh_key%;${PRIVATE_KEY};g" ${TEMPLATE} > cloud-config-pxe.yaml
 
-echo "execute on matchbox:"
-echo cp cloud-config-pxe.yaml ${TARGET}cloud-config-pxe.yaml
-echo chmod 664 ${TARGET}cloud-config-pxe.yaml
+set +x
+
+echo "scp and execute on matchbox:"
+echo "> scp cloud-config-pxe.yaml matchbos:~"
+echo "> cp cloud-config-pxe.yaml ${TARGET}cloud-config-pxe.yaml"
+echo "> chmod 664 ${TARGET}cloud-config-pxe.yaml"
