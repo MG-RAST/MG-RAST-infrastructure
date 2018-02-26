@@ -40,3 +40,4 @@ ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
 Conflicts=mg-rast-nginx*
+Conflicts=awe-monitor*
