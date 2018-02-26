@@ -28,11 +28,11 @@ ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); eval $(ssh
 # if exists remove old local config, but not real data
 ExecStartPre=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  mkdir -p /media/ephemeral/mongodb-$CHANNEL; \
-  chattr -R +C /media/ephemeral/mongodb-$CHANNEL; \
-  rm -fv /media/ephemeral/mongodb-$CHANNEL/local.*; \
-  rm -fv /media/ephemeral/mongodb-$CHANNEL/mongod.lock; \
-  rm -rfv /media/ephemeral/mongodb-$CHANNEL/journal'
+  mkdir -p ${SERVICE_DIR}-$CHANNEL; \
+  chattr -R +C ${SERVICE_DIR}-$CHANNEL; \
+  rm -fv ${SERVICE_DIR}-$CHANNEL/local.*; \
+  rm -fv ${SERVICE_DIR}-$CHANNEL/mongod.lock; \
+  rm -rfv ${SERVICE_DIR}-$CHANNEL/journal'
 
 # preprocessing: users
 ExecStartPre=/bin/bash -c ' \

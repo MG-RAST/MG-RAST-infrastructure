@@ -1,0 +1,28 @@
+[Unit]
+Description=MongoDB Replica %i watch
+BindsTo=mongodb-replica-update@%i.service
+After=mongodb-replica-update@%i.service
+
+[Service]
+Environment='CONTAINER=mongodb-replica'
+Environment='SERVICE_DIR=/media/ephemeral/mongodb'
+Environment='CONFIG_PATH=mgrast-config/services/mongod'
+EnvironmentFile=-/etc/environment
+
+ExecStartPre=/bin/bash -c " \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  mkdir -p ${SERVICE_DIR}-$CHANNEL/backup; \
+  chmod 777 ${SERVICE_DIR}-$CHANNEL/backup"
+
+# loop that runs 1x day
+# if host is primary - dump mongodb than store in shock. 7 day ttl
+# etcd watch breaks every 45 secs when updated, need to verify that a real change occurred
+
+ExecStart=/bin/bash -c " \
+  export CHANNEL=$(echo %i | cut -d . -f 2); \
+  export CONFIG_DIR=${SERVICE_DIR}/$CHANNEL/${CONFIG_PATH}; \
+  export BACKUP_DIR=${SERVICE_DIR}-$CHANNEL/backup; \
+  bash $CONFIG_DIR/backup.sh $BACKUP_DIR $CONFIG_DIR/mongod.env ${CONTAINER} $CHANNEL 86100"
+
+[X-Fleet]
+MachineOf=mongodb-replica-discovery@%i.service

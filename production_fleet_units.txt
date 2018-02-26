@@ -17,6 +17,14 @@ sudo rm -f /media/ephemeral/mongodb-shock/mongod.lock
 sudo rm -rf /media/ephemeral/mongodb-shock/journal
 docker exec mongodb-replica mongod --recover
 
+## force a member to be primary when only one in cluster
+## where i = position of host in member list
+# > use admin
+# > rs.status()
+# > cfg = rs.conf()
+# > cfg.members = [cfg.members[i]]
+# > rs.reconfig(cfg, {force : true})
+
 ## on host: start first instance and initiate replica set on it
 fleetctl start mongodb-replica{,-discovery}@1.shock.service
 docker exec mongodb-replica mongo --quiet -u $MONGOD_ADMIN_NAME -p $MONGOD_ADMIN_PASS --eval 'printjson(rs.initiate({_id:"shock",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
