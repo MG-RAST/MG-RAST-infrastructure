@@ -7,6 +7,32 @@ if [[ $_ == $0 ]]; then
   exit 1
 fi
 
+
+mkdir -p /media/ephermeral/opt/
+ln -s /media/ephermeral/opt/ /opt
+
+mkdir -p /opt/bin/
+
+DOCKERVERSION=$(docker -v | grep -o "[0-9\.]*\.[0-9\.a-z-]*")
+echo "detected DOCKERVERSION=${DOCKERVERSION}"
+
+export DOCKER_BINARY=/opt/bin/docker
+
+if [ ! -e ${DOCKER_BINARY}-${DOCKERVERSION} ] ; then
+   cd /tmp/
+   #curl -fsSL https://get.docker.com/builds/Linux/x86_64/docker-${DOCKERVERSION}.tgz | tar --strip-components=1 -xvz docker/docker
+   curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKERVERSION}.tgz | tar --strip-components=1 -xvz docker/docker
+   if [ ! -e docker ] ; then
+     #old url
+     curl -fsSL https://get.docker.com/builds/Linux/x86_64/docker-${DOCKERVERSION}.tgz | tar --strip-components=1 -xvz docker/docker
+   fi
+   mv ./docker ${DOCKER_BINARY}-${DOCKERVERSION}
+   chmod +x ${DOCKER_BINARY}-${DOCKERVERSION}
+   rm -f ${DOCKER_BINARY}
+   ln -s ${DOCKER_BINARY}-${DOCKERVERSION} ${DOCKER_BINARY}
+fi
+
+
 set -x
 
 export SERVICE_DIR="/media/ephemeral/mms/"

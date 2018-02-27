@@ -41,6 +41,8 @@ services:
       - test_all_continues
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
+      - ${DOCKER_BINARY}:/usr/bin/docker
+      - /var/run/docker.sock:/var/run/docker.sock
       #- ${MMS_DIR}/service-checker/service-checker.pl:/service-checker.pl:rw
       
   service-monitor:

@@ -44,6 +44,6 @@ ${SED_CMD} -e "s;%ssh_authorized_keys%;${PUBLIC_KEYS};g" -e "s;%network_interfac
 set +x
 
 echo "scp and execute on matchbox:"
-echo "> scp cloud-config-pxe.yaml matchbos:~"
+echo "> scp cloud-config-pxe.yaml matchbox:~"
 echo "> cp cloud-config-pxe.yaml ${TARGET}cloud-config-pxe.yaml"
 echo "> chmod 664 ${TARGET}cloud-config-pxe.yaml"

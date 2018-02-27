@@ -181,6 +181,8 @@ write_files:
         touch /home/core/.hushlogin
         touch /root/.hushlogin
         
+        # wait for hostname
+        while [ $(/usr/bin/hostname)_ == "localhost_"  ] ; do sleep 1 ; done
         HOSTNAME=$(/usr/bin/hostname)
 
         # try to detect network interface
