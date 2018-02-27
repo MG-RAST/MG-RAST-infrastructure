@@ -92,7 +92,7 @@ fleetctl start cassandra-simple{,-discovery}@{1..19}.service
 
 # docker exec cassandra-simple rm /root/.cassandra/cqlshrc
 # docker exec cassandra-simple /usr/bin/cqlsh -e 'desc keyspaces;'
-# docker exec cassandra-simple /usr/bin/cqlsh -e 'USE mgrast_abundance; CONSISTENCY QUORUM; SELECT COUNT(*) FROM job_info;'
+# docker exec cassandra-simple /usr/bin/cqlsh --request-timeout 600 --connect-timeout 600 -e 'USE mgrast_abundance; CONSISTENCY QUORUM; SELECT COUNT(*) FROM job_info;'
 
 ## elasticsearch
 fleetctl start elasticsearch{,-discovery}@{1..9}.service
