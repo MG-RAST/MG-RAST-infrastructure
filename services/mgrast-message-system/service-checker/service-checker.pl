@@ -330,7 +330,7 @@ sub check_apiserver {
         push @cmds, $testcmd;
     }
     
-    my $docker_cmd = "docker run $image bash -c '".join("; ", @cmds)."'";
+    my $docker_cmd = "docker run --rm --name api-test $image bash -c '".join("; ", @cmds)."'";
     &logger('info', "API test: $docker_cmd");
     
     my $e = undef
