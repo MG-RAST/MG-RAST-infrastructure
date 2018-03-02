@@ -5,7 +5,7 @@
 FROM debian:jessie
 
 RUN apt-get update && apt-get install -y \
-  build-essential
+  build-essential \
   libdbi-perl \
   libwww-perl \
   libdbd-mysql-perl \
