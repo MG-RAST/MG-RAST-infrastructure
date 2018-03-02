@@ -402,9 +402,9 @@ my $tests = [
                 function => \&check_mongo,
                 arg => $c->{'mongo-shock'}
             },
-            {   name => "mysql",
+            {   name => "mysql-metadata",
                 function => \&check_mysql,
-                arg => $c->{'mysql'}
+                arg => $c->{'mysql-metadata'}
             },
             {   name => "etcd-cluster",
                 function => \&check_etcdcluster,
