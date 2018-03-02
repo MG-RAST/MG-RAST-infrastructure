@@ -5,14 +5,14 @@
 FROM debian:jessie
 
 RUN apt-get update && apt-get install -y \
+  build-essential
   libdbi-perl \
   libwww-perl \
   libdbd-mysql-perl \
   liblog-log4perl-perl \
   libyaml-tiny-perl \
   libjson-perl \
-  cpanminus \
-  build-essential
+  cpanminus
 
 RUN cpanm --force Net::RabbitMQ
 RUN cpanm --force MongoDB
