@@ -67,43 +67,42 @@ sub check_url {
     
     my $response = $ua->get($url);
     if ($response->is_success) {
-        return {"success" => 1}
+        return {"success" => 1};
     }
-    return {"success" => 0}
+    return {"success" => 0};
 }
 
 sub check_mongo {
     my $info = shift(@_);
     
-    foreach my $database (keys %$info) {
-        my $obj = $services->{$database};
-        my $uri = $obj->{'host'}.':'.$obj->{'port'}.'/'.$database;
-        
-        &logger('info', "checking mongo $uri");
-        
-        my $mongo_client = MongoDB::MongoClient->new(
-            host => $obj->{'host'},
-            port => $obj->{'port'},
-            username => $obj->{'user'},
-            password => $obj->{'pass'},
-            db_name => $database
-        );
-        unless ($mongo_client) {
-            &logger('error', "connection failed: $uri");
-            return {success => 0, message => "connection failed: $uri";
-        }
-        
-        my $id = undef;
-        eval {
-            my $mongo_coll = $mongo_client->get_namespace($database.".".$obj->{'name'});
-            my $test_doc = $mongo_coll->find_one();
-            my $id = $test_doc->{'id'};
-        }
-        unless ($id) {
-            &logger('error', "document retrieval failed: $uri");
-            return {success => 0, message => "document retrieval failed: $uri"};
-        }
+    my $db  = $info->{'db'};
+    my $uri = $info->{'host'}.':'.$info->{'port'}.'/'.$db;
+    
+    &logger('info', "checking mongo $uri");
+    
+    my $mongo_client = MongoDB::MongoClient->new(
+        host => $info->{'host'},
+        port => $info->{'port'},
+        username => $info->{'user'},
+        password => $info->{'pass'},
+        db_name => $db
+    );
+    unless ($mongo_client) {
+        &logger('error', "connection failed: $uri");
+        return {success => 0, message => "connection failed: $uri"};
     }
+    
+    my $id = undef;
+    eval {
+        my $mongo_coll = $mongo_client->get_namespace($db.".".$info->{'name'});
+        my $test_doc = $mongo_coll->find_one();
+        $id = $test_doc->{'id'};
+    };
+    unless ($id) {
+        &logger('error', "document retrieval failed: $uri");
+        return {success => 0, message => "document retrieval failed: $uri"};
+    }
+    
     return {success => 1};
 }
 
@@ -154,7 +153,7 @@ sub check_mysql {
     ) or return {success => 0, message => "$host/$db - ".$DBI::errstr};
     
     if ($dbh) {
-        return {success => 1}
+        return {success => 1};
     }
     &logger('error', "$host/$db - unable to connect");
     return {success => 0, message => "$host/$db - unable to connect"};
@@ -203,7 +202,7 @@ sub check_etcdcluster {
         } or do {
             $e = $@;
             &logger('error', "connection error ".$e);
-            return {success => 0, message => "Could not check health of member $host";
+            return {success => 0, message => "Could not check health of member $host"};
         };
         
         unless ($result->{"health"} && ($result->{"health"} eq "true")) {
@@ -256,14 +255,12 @@ sub check_aweserver {
 sub check_shockserver {
     my $info = shift(@_);
     
-    my $url = $info->{'url'};
-    my $node = $info->{'node'};
-    my $url = "$url/node/$node";
+    my $url = $info->{'url'}."/node/".$info->{'node'};
     
     my $ua = LWP::UserAgent->new;
     $ua->timeout($useragent_timeout);
     
-    &logger('info', "checking Shock at $test_url");
+    &logger('info', "checking Shock at $url");
     
     # get node
     my $e = undef;
@@ -293,7 +290,7 @@ sub check_shockserver {
     $e = undef;
     $result = undef;
     eval {
-        my $response = $ua->get($url);
+        my $response = $ua->get($url.'?download');
         $result = $response->content;
         1;
     } or do {
@@ -340,19 +337,19 @@ sub check_apiserver {
     } or do {
         $e = $@;
         &logger('error', "error running API test: ".$e);
-        return {success => 0, message => "error running API test: ".$e);
-    }
+        return {success => 0, message => "error running API test: ".$e};
+    };
     
     unless ($result->{"tests"} && (scalar(@{$result->{"tests"}}) > 0)) {
         &logger('error', "unknown error, tests did not run");
-        return {success => 0, message => "unknown error, tests did not run");
+        return {success => 0, message => "unknown error, tests did not run"};
     }
     
     foreach my $test (@{$result->{"tests"}}) {
         if ($test->{"call"}{"outcome"} ne "passed") {
             my $msg = $test->{"call"}{"longrepr"} || $test->{"call"}{"stderr"} || $test->{"call"}{"stdout"};
             &logger('error', "test ".$test->{"name"}." failed: $msg");
-            return {success => 0, message => "test ".$test->{"name"}." failed: $msg");
+            return {success => 0, message => "test ".$test->{"name"}." failed: $msg"};
         }
     }
 
@@ -461,7 +458,7 @@ if (@ARGV > 0) {
     elsif ($command eq "test_all") {
         foreach my $test (@{$tests}) {
             # only run those with default true
-            if ($test->{'default-run'}) {
+            if ($test->{'arg'}->{'default-run'}) {
                 test_service($test);
             }
         }
@@ -470,7 +467,7 @@ if (@ARGV > 0) {
         while (1) {
             foreach my $test (@{$tests}) {
                 # only run those with default true
-                if ($test->{'default-run'}) {
+                if ($test->{'arg'}->{'default-run'}) {
                     test_service($test);
                 }
             }
@@ -497,8 +494,8 @@ if (@ARGV > 0) {
                     test_service($test);
                     my $seconds = $sleep_minutes * 60;
                     # override default sleep
-                    if ($test->{'sleep-mins'} && ($test->{'sleep-mins'} > 0)) {
-                        $seconds = $test->{'sleep-mins'} * 60;
+                    if ($test->{'arg'}->{'sleep-mins'} && ($test->{'arg'}->{'sleep-mins'} > 0)) {
+                        $seconds = $test->{'arg'}->{'sleep-mins'} * 60;
                     }
                     logger('info', "sleeping ".$seconds." seconds");
                     sleep($seconds);
