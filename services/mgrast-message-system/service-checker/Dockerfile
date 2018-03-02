@@ -10,9 +10,7 @@ RUN apt-get update && apt-get install -y \
   libdbd-mysql-perl \
   liblog-log4perl-perl \
   libyaml-tiny-perl \
-  libnet-smtp-ssl-perl \
   libjson-perl \
-  libfile-slurp-perl \
   cpanminus \
   build-essential
 

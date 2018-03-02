@@ -5,31 +5,28 @@ use warnings;
 use DBI;
 
 use LWP::UserAgent;
-use POSIX qw(tzset); 
 use Log::Log4perl qw(:easy);
-use Net::SMTP;
+use POSIX qw(strftime);
 use YAML::Tiny;
 use Data::Dumper;
 use Digest::MD5 qw (md5_hex);
-use POSIX qw(strftime);
-use File::Slurp;
 use JSON;
 use MongoDB;
-
 use Net::RabbitMQ;
-my $mq = Net::RabbitMQ->new();
 
 # config
 my $c = YAML::Tiny->read('config.yml')->[0];
 print Dumper($c);
 
-my $rmq=$c->{rabbitmq} or die;
-my $rmq_user=$rmq->{user} or die;
-my $rmq_password=$rmq->{password} or die;
+# rabbit mq
+my $mq = Net::RabbitMQ->new();
+my $rmq_user = $c->{rabbitmq}->{user} or die "missing rabbitmq config";
+my $rmq_password = $c->{rabbitmq}->{password} or die "missing rabbitmq config";
 
 $ENV{TZ} = "America/Chicago";
 
 my $sleep_minutes = 5;
+my $useragent_timeout = 30;
 
 my $debug = 0;
 our $layout = '[%d] [%-5p] %m%n';
@@ -60,12 +57,13 @@ sub logger {
 }
 
 sub check_url {
-    my ($url) = @_;
+    my $info = shift(@_);
+    
+    my $url = $info->{'url'};
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout($useragent_timeout);
     
     &logger('info', "checking url $url");
-    
-    my $ua = LWP::UserAgent->new;
-    $ua->timeout(30);
     
     my $response = $ua->get($url);
     if ($response->is_success) {
@@ -119,7 +117,7 @@ sub check_cassandra_depreacted {
     
     # need to test a query as handle can still be made but cluster in bad state
     # test md5 is 74428bf03d3c75c944ea0b2eb632701f / E. coli alcohol dehydrogenase / m5nr version 1
-    my $test_md5_id = 10795366;
+    my $test_md5_id = '74428bf03d3c75c944ea0b2eb632701f';
     my $test_data = [];
     my $host = "";
 
@@ -225,7 +223,7 @@ sub check_aweserver {
     my $auth_token = $info->{'authorization'}->{'token'};
     
     my $ua = LWP::UserAgent->new;
-    $ua->timeout(30);
+    $ua->timeout($useragent_timeout);
     $ua->default_header('Authorization' => $auth_bearer . ' ' . $auth_token);
     
     &logger('info', "checking AWE at $url");
@@ -263,7 +261,7 @@ sub check_shockserver {
     my $url = "$url/node/$node";
     
     my $ua = LWP::UserAgent->new;
-    $ua->timeout(30);
+    $ua->timeout($useragent_timeout);
     
     &logger('info', "checking Shock at $test_url");
     
@@ -363,18 +361,8 @@ sub check_apiserver {
 
 sub test_service {
      my ($test) = @_;
-     
-     # skip option
-     if (exists($test->{'skip_num'}) && exists($test->{'skip_max'})) {
-         if (($test->{'skip_num'} < $test->{'skip_max'})) {
-             $test->{'skip_num'} += 1;
-             return;
-         } else {
-             $test->{'skip_num'} = 0;
-         }
-     }
 
-     my $service_name = $test->{'name'};     
+     my $service_name = $test->{'name'};
      my $function = $test->{'function'};
      my $result = &$function($test->{'arg'});
      
@@ -385,10 +373,9 @@ sub test_service {
      
      $result->{'event_type'} = 'service_test';
      $result->{'service'} = $service_name;
-     $result->{'time'} = DateTime->now()->iso8601().'Z';
+     $result->{'time'} = strftime("%Y-%m-%dT%H:%M:%S", gmtime);
      
      my $result_json = to_json($result, {utf8 => 1});
-     
      my $connection_result = eval { 
          $mq->connect("rabbitmq", { user => $rmq_user, password => $rmq_password });
      };
@@ -407,8 +394,13 @@ sub test_service {
 
 ## tests that use functions
 my $tests = [
-            {   name => 'mongo-replica',
-                function => \&check_mongo
+            {   name => 'mongo-awe',
+                function => \&check_mongo,
+                arg => $c->{'mongo-awe'}
+            },
+            {   name => 'mongo-shock',
+                function => \&check_mongo,
+                arg => $c->{'mongo-shock'}
             },
             {   name => "mysql",
                 function => \&check_mysql,
@@ -420,9 +412,7 @@ my $tests = [
             },
             {   name => "api-server",
                 function => \&check_apiserver,
-                arg => $c->{'api-server'},
-                skip_max => 10,
-                skip_num => 0
+                arg => $c->{'api-server'}
             },
             {   name => "awe-server",
                 function => \&check_aweserver,
@@ -436,27 +426,32 @@ my $tests = [
 
 ## add tests that have urls
 my $urls = $c->{'urls'};
-foreach my $resource (keys %{$urls}) {
-    my $url = $urls->{$resource};
-    
+foreach my $resource (@$urls) {
     my $new_test = {};
-    $new_test->{'name'} = $resource;
+    $new_test->{'name'} = $resource->{'name'};
     $new_test->{'function'} = \&check_url;
-    $new_test->{'url'} = 1;
-    $new_test->{'arg'} = $url;
-    
+    $new_test->{'isUrl'} = 1;
+    $new_test->{'arg'} = {
+        'url' => $resource->{'url'},
+        'default-run' => $resource->{'default-run'}
+    };
     push(@{$tests}, $new_test)
 }
 
 # do argument command than exit
-my $usage = "usage: service-checker.pl <argument>\narguments: list | test_all | test_all_continues | test <service>\n";
+my $usage = qq(
+usage: service-checker.pl <argument>
+arguments: list | test_all | test_all_continues | test <service> | test_continues <service>
+note: test_all and test_all_continues only runs tests with config field 'default-run' as true
+      to run a test with 'default-run' as false, use 'test <service>' or 'test_continues <service>'
+);
 
 if (@ARGV > 0) {
     my $command = $ARGV[0];
         
     if ($command eq "list") {
         foreach my $test (@{$tests}) {
-            if (defined $test->{'url'}) {
+            if (defined $test->{'isUrl'}) {
                 print("[URL]      ".$test->{'name'}."\n");
             } else {
                 print("[FUNCTION] ".$test->{'name'}."\n");
@@ -465,13 +460,19 @@ if (@ARGV > 0) {
     }
     elsif ($command eq "test_all") {
         foreach my $test (@{$tests}) {
-            test_service($test);
+            # only run those with default true
+            if ($test->{'default-run'}) {
+                test_service($test);
+            }
         }
     }
     elsif ($command eq "test_all_continues") {
         while (1) {
             foreach my $test (@{$tests}) {
-                test_service($test);
+                # only run those with default true
+                if ($test->{'default-run'}) {
+                    test_service($test);
+                }
             }
             my $seconds = $sleep_minutes * 60;
             logger('info', "sleeping ".$seconds." seconds");
@@ -479,11 +480,29 @@ if (@ARGV > 0) {
         }
     }
     elsif ($command eq "test") {
-        my $service = $ARGV[1] || die "service missing";
+        my $service = $ARGV[1] || die "service name missing";
         foreach my $test (@{$tests}) {
             if ($test->{'name'} eq $service) {
                 test_service($test);
-                last;
+                exit(0);
+            }
+        }
+        die "service $service not found";
+    }
+    elsif ($command eq "test_continues") {
+        my $service = $ARGV[1] || die "service name missing";
+        foreach my $test (@{$tests}) {
+            if ($test->{'name'} eq $service) {
+                while (1) {
+                    test_service($test);
+                    my $seconds = $sleep_minutes * 60;
+                    # override default sleep
+                    if ($test->{'sleep-mins'} && ($test->{'sleep-mins'} > 0)) {
+                        $seconds = $test->{'sleep-mins'} * 60;
+                    }
+                    logger('info', "sleeping ".$seconds." seconds");
+                    sleep($seconds);
+                }
             }
         }
         die "service $service not found";
