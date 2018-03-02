@@ -6,7 +6,6 @@ use DBI;
 
 use LWP::UserAgent;
 use Log::Log4perl qw(:easy);
-use POSIX qw(strftime);
 use YAML::Tiny;
 use Data::Dumper;
 use Digest::MD5 qw (md5_hex);
@@ -370,7 +369,7 @@ sub test_service {
      
      $result->{'event_type'} = 'service_test';
      $result->{'service'} = $service_name;
-     $result->{'time'} = strftime("%Y-%m-%dT%H:%M:%S", gmtime);
+     $result->{'time'} = DateTime->now()->iso8601().'Z';
      
      my $result_json = to_json($result, {utf8 => 1});
      my $connection_result = eval { 

@@ -48,7 +48,7 @@ services:
   service-monitor:
     image: mgrast/service-monitor
     depends_on: 
-      - service-checker
+      - rabbitmq
     volumes:
       - ${MMS_CONFIG_FILE}:/config/config.yml:ro
     entrypoint: 
