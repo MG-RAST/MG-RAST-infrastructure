@@ -28,7 +28,7 @@ services:
       - rabbitmq
     entrypoint:
       - /service-checker.pl
-      - test
+      - test_continues
       - api-server
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
