@@ -1,9 +1,7 @@
 # MG-RAST message system
 version: '2.0'
 
-      
 services:
-  
   rabbitmq:
     image: rabbitmq:3.6.9-alpine
     # -p 4369:4369 -p 5671:5671 -p 5672:5672 
@@ -16,13 +14,6 @@ services:
    #   interval: 100s
     #  timeout: 10s
      # retries: 10
-          
-  #dbload:
-  #  image: mgrast/event-loader
-  #  volumes:
-  #    - ${MMS_CONFIG_FILE}:/config/config.yml:ro
-  
-  
   
   mysql:
     image: mysql:5.7
@@ -31,8 +22,7 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       
-      
-  service-checker:
+  service-checker-api:
     image: mgrast/service-checker
     depends_on:
       - rabbitmq
@@ -43,27 +33,30 @@ services:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
       - ${DOCKER_BINARY}:/usr/bin/docker
       - /var/run/docker.sock:/var/run/docker.sock
-      #- ${MMS_DIR}/service-checker/service-checker.pl:/service-checker.pl:rw
-      
+  
+  service-checker:
+    image: mgrast/service-checker
+    depends_on:
+      - rabbitmq
+    entrypoint:
+      - /service-checker.pl
+      - test_all_continues
+    volumes:
+      - ${MMS_CONFIG_FILE}:/config.yml:ro
+  
   service-monitor:
     image: mgrast/service-monitor
     depends_on: 
       - service-checker
     volumes:
       - ${MMS_CONFIG_FILE}:/config/config.yml:ro
-      #- ${MMS_DIR}/service-monitor/service-monitor.py:/service-monitor.py:rw
     entrypoint: 
       - ./service-monitor.py
-    
-    
-    
+  
   mms-email:
     image: mgrast/mms-email 
     entrypoint:
       - /mms-email.py  
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
-      #- ${MMS_DIR}/mms-email/mms-email.py:/mms-email.py
         
-      
-      
