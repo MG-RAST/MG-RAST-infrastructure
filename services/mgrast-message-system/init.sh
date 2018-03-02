@@ -9,7 +9,10 @@ fi
 
 
 mkdir -p /media/ephermeral/opt/
-ln -s /media/ephermeral/opt/ /opt
+
+if [ ! -h  /opt ]; then
+    ln -s /media/ephermeral/opt/ /opt
+fi
 
 mkdir -p /opt/bin/
 
@@ -32,9 +35,6 @@ if [ ! -e ${DOCKER_BINARY}-${DOCKERVERSION} ] ; then
    ln -s ${DOCKER_BINARY}-${DOCKERVERSION} ${DOCKER_BINARY}
 fi
 
-
-set -x
-
 export SERVICE_DIR="/media/ephemeral/mms/"
 
 export MMS_CONFIG_FILE=${SERVICE_DIR}/mgrast-config/services/mms/config.yml
@@ -43,5 +43,4 @@ export RABBITMQ_DEFAULT_PASS=$(grep -A 2 "^rabbitmq:" ${MMS_CONFIG_FILE} | grep 
 export MYSQL_ROOT_PASSWORD=$(grep -A 6 "^mysql:" ${MMS_CONFIG_FILE} | grep " root_password:" | awk '{print$2}')
 export MYSQL_USER=$(grep -A 6 "^mysql:" ${MMS_CONFIG_FILE} | grep " user:" | awk '{print$2}')
 export MYSQL_PASSWORD=$(grep -A 6 "^mysql:" ${MMS_CONFIG_FILE} | grep " root_password:" | awk '{print$2}')
-
 
