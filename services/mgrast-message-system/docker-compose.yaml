@@ -28,7 +28,8 @@ services:
       - rabbitmq
     entrypoint:
       - /service-checker.pl
-      - test_all_continues
+      - test
+      - api-server
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
       - ${DOCKER_BINARY}:/usr/bin/docker
