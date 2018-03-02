@@ -1,0 +1,5 @@
+# git ignore file
+
+.DS_Store
+tests/lib/mglib.pyc
+
