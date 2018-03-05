@@ -14,7 +14,6 @@ RUN apt-get update && apt-get install -y \
   libjson-perl \
   cpanminus
 
-RUN cpanm --force Net::RabbitMQ
-RUN cpanm --force MongoDB
+RUN cpanm --force Net::RabbitMQ MongoDB DBD::Cassandra
 
 COPY ./service-checker.pl /service-checker.pl

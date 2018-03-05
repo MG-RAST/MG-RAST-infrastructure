@@ -106,34 +106,39 @@ sub check_mongo {
     return {success => 1};
 }
 
-sub check_cassandra_depreacted {
+sub check_cassandra {
+    my $info = shift(@_);
     
-    # TODO: use curl localhost:2379/v2/keys/services/cassandra-seed/
-    # proxy.metagenomics.anl.gov:2379/v2/keys/services/cassandra-seed/cassandra-seed@1
-    # docker pull cassandra:3.7
-    # docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
-    # docker run -ti --rm --name cassandra-nodetool cassandra:3.7 /usr/bin/nodetool --host <> --port 7199 status # Connection refused
+    # get seed info
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout($useragent_timeout);
     
-    # need to test a query as handle can still be made but cluster in bad state
-    # test md5 is 74428bf03d3c75c944ea0b2eb632701f / E. coli alcohol dehydrogenase / m5nr version 1
-    my $test_md5_id = '74428bf03d3c75c944ea0b2eb632701f';
-    my $test_data = [];
-    my $host = "";
-
-    for (my $i=1; $i<=20; $i++) {
-        eval {
-            $host = "bio-worker".$i.".mcs.anl.gov";
-            my $chdl = DBI->connect("dbi:Cassandra:host=".$host.";keyspace=m5nr_v1", "", "");
-            $test_data = $chdl->selectall_arrayref("SELECT * FROM id_annotation WHERE id=".$test_md5_id);
-        };
-        if (@$test_data > 0) {
-            last;
-        }
+    my $etcd_seed = $info->{'seed'};
+    my $seed_host = undef;
+    eval {
+        my $response = $ua->get($etcd_seed);
+        my $result = decode_json($response->decoded_content);
+        $seed_host = $result->{'node'}{'value'};
+    };
+    
+    unless ($seed_host) {
+        &logger('error', "failed accessing etcd ($etcd_seed) for seed host info");
+        return {success => 0, message => "failed accessing etcd ($etcd_seed) for seed host info"};
     }
-    if (@$test_data == 0) {
-        #$failed{"M5NR database (cassandra)"} = $host;
-        return {success => 0, message => "failed: $host"};
+    
+    # get test data
+    my $test_md5 = $info->{'test-md5'};
+    my $keyspace = $info->{'keyspace'};
+    
+    my $chdl = DBI->connect("dbi:Cassandra:host=$seed_host;keyspace=$keyspace", "", "", { RaiseError => 1 });
+    my $test_data = $dbh->selectall_arrayref("SELECT * FROM md5_annotation WHERE md5=".$dbh->quote($test_md5));
+    
+    unless ($test_data && (scalar(@$test_data) > 0)) {
+        &logger('error', "data retrieval failed, host=$seed_host, keyspace=$keyspace");
+        return {success => 0, message => "data retrieval failed, host=$seed_host, keyspace=$keyspace"};
     }
+    
+    return {success => 1};
 }
 
 sub check_mysql {
@@ -200,7 +205,6 @@ sub check_etcdcluster {
             $etcd_host_unhealthy->{$host} = 0;
         }
         
-        $e = undef;
         $result = undef;
         eval {
             my $response = $ua->get($url);
@@ -227,6 +231,60 @@ sub check_etcdcluster {
     }
 
     return {success => 1, message => "cluster size: $clust_size"};
+}
+
+sub check_apiserver {
+    my $info = shift(@_);
+    
+    my $image = $info->{'image'};
+    my $testcmd = $info->{'test-cmd'};
+    
+    # build command
+    my @cmds = ();
+    if ($info->{"get-list"} && $info->{'host'}) {
+        push @cmds, './'.$info->{"get-list"}.' '.$info->{'host'}.' > API.server.list';
+    }
+    if ($info->{'test-file'}) {
+        push @cmds, "$testcmd > /dev/null 2>&1";
+        push @cmds, "cat ".$info->{'test-file'};
+    } else {
+        push @cmds, $testcmd;
+    }
+    
+    my $docker_cmd = "docker run --rm --name api-test $image bash -c '".join("; ", @cmds)."'";
+    &logger('info', "API test: $docker_cmd");
+    
+    my $e = undef
+    my $result = undef;
+    eval {
+        my $report = `$docker_cmd`;
+        $result = decode_json($report);
+        1;
+    } or do {
+        $e = $@;
+        &logger('error', "error running API test: ".$e);
+        return {success => 0, message => "error running API test: ".$e};
+    };
+    
+    unless ($result->{"report"} && $result->{"report"}{"summary"} && $result->{"report"}{"tests"} && (scalar(@{$result->{"report"}{"tests"}}) > 0)) {
+        &logger('error', "unknown error, tests did not run");
+        return {success => 0, message => "unknown error, tests did not run"};
+    }
+    
+    if ($result->{"report"}{"summary"}{"failed"} > 0) {
+        my $msg = $result->{"report"}{"summary"}{"failed"}." of ".$result->{"report"}{"summary"}{"num_tests"}." tests failed";
+        &logger('error', $msg);
+        my @errors = ();
+        foreach my $test (@{$result->{"report"}{"tests"}}) {
+            if ($test->{"outcome"} eq "failed") {
+                &logger('error', "failed: ".$test->{"name"});
+                push @errors, $test->{"name"};
+            }
+        }
+        return {success => 0, message => $msg."\n\t".join("\n\t", @errors)};
+    }
+    
+    return {success => 1};
 }
 
 sub check_aweserver {
@@ -322,60 +380,6 @@ sub check_shockserver {
     return {success => 1};
 }
 
-sub check_apiserver {
-    my $info = shift(@_);
-    
-    my $image = $info->{'image'};
-    my $testcmd = $info->{'test-cmd'};
-    
-    # build command
-    my @cmds = ();
-    if ($info->{"get-list"} && $info->{'host'}) {
-        push @cmds, './'.$info->{"get-list"}.' '.$info->{'host'}.' > API.server.list';
-    }
-    if ($info->{'test-file'}) {
-        push @cmds, "$testcmd > /dev/null 2>&1";
-        push @cmds, "cat ".$info->{'test-file'};
-    } else {
-        push @cmds, $testcmd;
-    }
-    
-    my $docker_cmd = "docker run --rm --name api-test $image bash -c '".join("; ", @cmds)."'";
-    &logger('info', "API test: $docker_cmd");
-    
-    my $e = undef
-    my $result = undef;
-    eval {
-        my $report = `$docker_cmd`;
-        $result = decode_json($report);
-        1;
-    } or do {
-        $e = $@;
-        &logger('error', "error running API test: ".$e);
-        return {success => 0, message => "error running API test: ".$e};
-    };
-    
-    unless ($result->{"report"} && $result->{"report"}{"summary"} && $result->{"report"}{"tests"} && (scalar(@{$result->{"report"}{"tests"}}) > 0)) {
-        &logger('error', "unknown error, tests did not run");
-        return {success => 0, message => "unknown error, tests did not run"};
-    }
-    
-    if ($result->{"report"}{"summary"}{"failed"} > 0) {
-        my $msg = $result->{"report"}{"summary"}{"failed"}." of ".$result->{"report"}{"summary"}{"num_tests"}." tests failed";
-        &logger('error', $msg);
-        my @errors = ();
-        foreach my $test (@{$result->{"report"}{"tests"}}) {
-            if ($test->{"outcome"} eq "failed") {
-                &logger('error', "failed: ".$test->{"name"});
-                push @errors, $test->{"name"};
-            }
-        }
-        return {success => 0, message => $msg."\n\t".join("\n\t", @errors)};
-    }
-    
-    return {success => 1};
-}
-
 sub test_service {
      my ($test) = @_;
 
@@ -422,6 +426,10 @@ my $tests = [
             {   name => "mysql-metadata",
                 function => \&check_mysql,
                 arg => $c->{'mysql-metadata'}
+            },
+            {   name => "cassandra-cluster",
+                function => \&check_cassandra,
+                arg => $c->{'cassandra-cluster'}
             },
             {   name => "etcd-cluster",
                 function => \&check_etcdcluster,
