@@ -355,19 +355,24 @@ sub check_apiserver {
         return {success => 0, message => "error running API test: ".$e};
     };
     
-    unless ($result->{"tests"} && (scalar(@{$result->{"tests"}}) > 0)) {
+    unless ($result->{"report"} && $result->{"report"}{"summary"} && $result->{"report"}{"tests"} && (scalar(@{$result->{"report"}{"tests"}}) > 0)) {
         &logger('error', "unknown error, tests did not run");
         return {success => 0, message => "unknown error, tests did not run"};
     }
     
-    foreach my $test (@{$result->{"tests"}}) {
-        if ($test->{"call"}{"outcome"} ne "passed") {
-            my $msg = $test->{"call"}{"longrepr"} || $test->{"call"}{"stderr"} || $test->{"call"}{"stdout"};
-            &logger('error', "test ".$test->{"name"}." failed: $msg");
-            return {success => 0, message => "test ".$test->{"name"}." failed: $msg"};
+    if ($result->{"report"}{"summary"}{"failed"} > 0) {
+        my $msg = $result->{"report"}{"summary"}{"failed"}." of ".$result->{"report"}{"summary"}{"num_tests"}." tests failed";
+        &logger('error', $msg);
+        my @errors = ();
+        foreach my $test (@{$result->{"report"}{"tests"}}) {
+            if ($test->{"outcome"} eq "failed") {
+                &logger('error', "failed: ".$test->{"name"});
+                push @errors, $test->{"name"};
+            }
         }
+        return {success => 0, message => $msg."\n\t".join("\n\t", @errors)};
     }
-
+    
     return {success => 1};
 }
 
