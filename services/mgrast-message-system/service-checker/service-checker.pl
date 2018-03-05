@@ -220,7 +220,7 @@ sub check_etcdcluster {
         return {success => 0, message => "$total_unhealthy out of $clust_size cluster members unhealthy"};
     }
     foreach my $host (keys %$etcd_host_unhealthy) {
-        if ($etcd_host_unhealthy->{$host} > $info->{'max-hosts-unhealthy'}) {
+        if ($etcd_host_unhealthy->{$host} > $info->{'max-times-unhealthy'}) {
             &logger('error', "member $host has been unhealthy ".$etcd_host_unhealthy->{$host}." checks in a row");
             return {success => 0, message => "member $host has been unhealthy ".$etcd_host_unhealthy->{$host}." checks in a row"};
         }
