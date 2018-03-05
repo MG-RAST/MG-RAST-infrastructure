@@ -130,7 +130,7 @@ sub check_cassandra {
     my $test_md5 = $info->{'test-md5'};
     my $keyspace = $info->{'keyspace'};
     
-    my $chdl = DBI->connect("dbi:Cassandra:host=$seed_host;keyspace=$keyspace", "", "", { RaiseError => 1 });
+    my $dbh = DBI->connect("dbi:Cassandra:host=$seed_host;keyspace=$keyspace", "", "", { RaiseError => 1 });
     my $test_data = $dbh->selectall_arrayref("SELECT * FROM md5_annotation WHERE md5=".$dbh->quote($test_md5));
     
     unless ($test_data && (scalar(@$test_data) > 0)) {
