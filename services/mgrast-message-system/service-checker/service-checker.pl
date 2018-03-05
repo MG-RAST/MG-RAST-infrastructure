@@ -98,6 +98,8 @@ sub check_mongo {
         my $test_doc = $mongo_coll->find_one();
         $id = $test_doc->{'id'};
     };
+    $mongo_client->disconnect;
+    
     unless ($id) {
         &logger('error', "document retrieval failed: $uri");
         return {success => 0, message => "document retrieval failed: $uri"};
@@ -130,12 +132,20 @@ sub check_cassandra {
     my $test_md5 = $info->{'test-md5'};
     my $keyspace = $info->{'keyspace'};
     
-    my $dbh = DBI->connect("dbi:Cassandra:host=$seed_host;keyspace=$keyspace", "", "", { RaiseError => 1 });
-    my $test_data = $dbh->selectall_arrayref("SELECT * FROM md5_annotation WHERE md5=".$dbh->quote($test_md5));
+    &logger('info', "checking cassandra $seed_host/$keyspace");
     
-    unless ($test_data && (scalar(@$test_data) > 0)) {
-        &logger('error', "data retrieval failed, host=$seed_host, keyspace=$keyspace");
-        return {success => 0, message => "data retrieval failed, host=$seed_host, keyspace=$keyspace"};
+    my $dbh = DBI->connect("dbi:Cassandra:host=$seed_host;keyspace=$keyspace;consistency=quorum", "", "");
+    unless ($dbh) {
+        &logger('error', "$seed_host/$keyspace - unable to connect: ".$DBI::errstr);
+        return {success => 0, message => "$seed_host/$keyspace - unable to connect: ".$DBI::errstr};
+    }
+    
+    my $data = $dbh->selectall_arrayref("SELECT * FROM md5_annotation WHERE md5=".$dbh->quote($test_md5));
+    $dbh->disconnect;
+    
+    unless ($data && (scalar(@$data) > 0)) {
+        &logger('error', "$seed_host/$keyspace - data retrieval failed");
+        return {success => 0, message => "$seed_host/$keyspace - data retrieval failed"};
     }
     
     return {success => 1};
@@ -151,17 +161,14 @@ sub check_mysql {
     
     &logger('info', "checking mysql $host/$db");
     
-    my $dbh  = DBI->connect(
-        "DBI:mysql:database=".$db.";host=".$host.";",
-        $user,
-        $pass
-    ) or return {success => 0, message => "$host/$db - ".$DBI::errstr};
-    
-    if ($dbh) {
-        return {success => 1};
+    my $dbh = DBI->connect("DBI:mysql:database=$db;host=$host", $user, $pass);
+    unless ($dbh) {
+        &logger('error', "$host/$db - unable to connect: ".$DBI::errstr);
+        return {success => 0, message => "$host/$db - unable to connect: ".$DBI::errstr};
     }
-    &logger('error', "$host/$db - unable to connect");
-    return {success => 0, message => "$host/$db - unable to connect"};
+    $dbh->disconnect;
+    
+    return {success => 1};
 }
 
 sub check_etcdcluster {
