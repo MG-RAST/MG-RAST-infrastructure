@@ -26,6 +26,7 @@ $ENV{TZ} = "America/Chicago";
 
 my $sleep_minutes = 5;
 my $useragent_timeout = 30;
+my $etcd_host_unhealthy = {};
 
 my $debug = 0;
 our $layout = '[%d] [%-5p] %m%n';
@@ -188,25 +189,40 @@ sub check_etcdcluster {
     my $clust_size = @{$result->{"members"}};
     
     # check members health
+    my $total_unhealthy = 0;
+    
     foreach my $member (@{$result->{"members"}}) {
         my $host = $member->{'clientURLs'}[0];
         $url = "$host/health";
+        
+        # populate host map
+        unless (exists $etcd_host_unhealthy->{$host}) {
+            $etcd_host_unhealthy->{$host} = 0;
+        }
         
         $e = undef;
         $result = undef;
         eval {
             my $response = $ua->get($url);
             $result = decode_json($response->decoded_content);
-            1;
-        } or do {
-            $e = $@;
-            &logger('error', "connection error ".$e);
-            return {success => 0, message => "Could not check health of member $host"};
         };
         
-        unless ($result->{"health"} && ($result->{"health"} eq "true")) {
-            &logger('error', "Member $host is not healthy");
-            return {success => 0, message => "Member $host is not healthy"};
+        unless ($result && exists($result->{"health"}) && ($result->{"health"} eq "true")) {
+            $etcd_host_unhealthy->{$host} += 1;
+            $total_unhealthy += 1;
+            next;
+        }
+        $etcd_host_unhealthy->{$host} = 0; # this host is healthy
+    }
+    
+    if ($total_unhealthy > $info->{'max-hosts-unhealthy'}) {
+        &logger('error', "$total_unhealthy out of $clust_size cluster members unhealthy");
+        return {success => 0, message => "$total_unhealthy out of $clust_size cluster members unhealthy"};
+    }
+    foreach my $host (keys %$etcd_host_unhealthy) {
+        if ($etcd_host_unhealthy->{$host} > $info->{'max-hosts-unhealthy'}) {
+            &logger('error', "member $host has been unhealthy ".$etcd_host_unhealthy->{$host}." checks in a row");
+            return {success => 0, message => "member $host has been unhealthy ".$etcd_host_unhealthy->{$host}." checks in a row"};
         }
     }
 
