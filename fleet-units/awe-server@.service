@@ -3,6 +3,7 @@ Description=AWE server
 After=docker.service
 Requires=docker.service
 Wants=%p-discovery@%i.service
+Wants=%p-monitor@%i.service
 
 [Service]
 Environment='CONTAINER=awe-server-%i'
