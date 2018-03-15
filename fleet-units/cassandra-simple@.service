@@ -44,7 +44,7 @@ ExecStart=/bin/bash -c '\
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-# bio-workers 2 - 18
+# bio-workers 2 - 17, 19
 Conflicts=cassandra-simple@*.service
 MachineMetadata=HOSTNAME=bio-worker2-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker3-10g.mcs.anl.gov
@@ -62,4 +62,4 @@ MachineMetadata=HOSTNAME=bio-worker14-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker15-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker16-10g.mcs.anl.gov
 MachineMetadata=HOSTNAME=bio-worker17-10g.mcs.anl.gov
-MachineMetadata=HOSTNAME=bio-worker18-10g.mcs.anl.gov
+MachineMetadata=HOSTNAME=bio-worker19-10g.mcs.anl.gov

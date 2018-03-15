@@ -84,6 +84,10 @@ docker exec cassandra-simple /usr/bin/nodetool status m5nr_v<version #> eg. m5nr
 # this command removes missing host from cluster list - run on any host
 docker exec cassandra-simple /usr/bin/nodetool removenode HostID
 
+# this command removes a running node from cluster (run on node you want to remove), streams data to other nodes
+docker exec cassandra-simple /usr/bin/nodetool decommission
+docker exec cassandra-simple /usr/bin/nodetool netstats -H
+
 # reboot of cassandra
 fleetctl stop cassandra-simple{,-discovery}@{1..19}.service
 fleetctl start cassandra-simple{,-discovery}@{1..19}.service
