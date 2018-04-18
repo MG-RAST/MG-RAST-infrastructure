@@ -5,49 +5,31 @@ use warnings;
 use DBI;
 
 use LWP::UserAgent;
-use POSIX qw(tzset); 
 use Log::Log4perl qw(:easy);
-use Net::SMTP;
 use YAML::Tiny;
 use Data::Dumper;
-use POSIX qw(strftime);
-use File::Slurp;
+use Digest::MD5 qw (md5_hex);
 use JSON;
-
-
+use MongoDB;
 use Net::RabbitMQ;
-my $mq = Net::RabbitMQ->new();
 
 # config
-my $c = YAML::Tiny->read( 'config.yml' )->[0];
+my $c = YAML::Tiny->read('config.yml')->[0];
 print Dumper($c);
-  
-my $do_send_mail = 0;
 
-
-my $rmq=$c->{rabbitmq} or die;
-my $rmq_user=$rmq->{user} or die;
-my $rmq_password=$rmq->{password} or die;
+# rabbit mq
+my $mq = Net::RabbitMQ->new();
+my $rmq_user = $c->{rabbitmq}->{user} or die "missing rabbitmq config";
+my $rmq_password = $c->{rabbitmq}->{password} or die "missing rabbitmq config";
 
 $ENV{TZ} = "America/Chicago";
 
+my $sleep_minutes = 5;
+my $useragent_timeout = 30;
+my $etcd_host_unhealthy = {};
 
 my $debug = 0;
 our $layout = '[%d] [%-5p] %m%n';
-
-
-
-# other gloabl variables
-
-
-my $status={};
-
-
-my $failures = 0;
-my $all_ok = 5;
-my $sleep_minutes = 2;
-
-########################################################################################
 
 if ($debug) {
     Log::Log4perl->easy_init({level => $DEBUG, layout => $layout});
@@ -56,7 +38,7 @@ if ($debug) {
 }
 our $logger = Log::Log4perl->get_logger();
 
-
+########################################################################################
 
 sub logger {
     my ($type, $msg) = @_;
@@ -74,689 +56,494 @@ sub logger {
     }
 }
 
-
-sub send_mail {
-    my ($cfg, $body, $subject) = @_;
-    
-    
-    my $email_server = $cfg->{'server'};
-    my $email_to = $cfg->{'to'};
-    my $email_from = $cfg->{'from'};
-    
-    my $smtp = Net::SMTP->new($email_server, Hello => $email_server);
-    
-    
-    #$smtp->mail('mg-rast');
-    my @data = (
-        "To: $email_to\n",
-        "From: $email_from\n",
-        "Date: ".strftime("%a, %d %b %Y %H:%M:%S %z", localtime)."\n",
-        "Subject: $subject\n\n",
-        $body
-    );
-    
-    $smtp->mail('wilke');
-    if ($smtp->to($email_to)) {
-        logger('debug', "sending mail now.");
-        $smtp->data(@data);
-    } else {
-        logger('error', $smtp->message());
-    }
-    $smtp->quit;
-
-}
-
-
 sub check_url {
-     my ($url) = @_;
-     $logger->info("checking url ".$url);
+    my $info = shift(@_);
     
-     my $ua = LWP::UserAgent->new;
-     $ua->timeout(10);
-     
-      my $response = $ua->get($url);
-     
-     if ($response->is_success) {
-         return {"success" => 1}
-     }
-     return {"success" => 0}
-}
-
-
-
-sub check_urls_deprecated {
-    my $urls = shift(@_);
+    my $url = $info->{'url'};
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout($useragent_timeout);
     
-    foreach my $resource (keys %{$urls}) {
-        my $url = $urls->{$resource};
-        
-        my $result = check_url($url);
-        
-        
-        $status->{$resource}->{'success'}= $result;
-        unless ($result) {
-            $status->{$resource}->{'report'} = "url failed: ".$url;
-        }
+    &logger('info', "checking url $url");
+    
+    my $response = $ua->get($url);
+    if ($response->is_success) {
+        return {"success" => 1};
     }
+    return {"success" => 0};
 }
-
 
 sub check_mongo {
-    require MongoDB;
+    my $info = shift(@_);
     
-    my $services = shift(@_);
-    my $success = 1;
-    my $message = undef;
-    foreach my $database (keys %{$services}) {
-        my $obj = $services->{$database};
-        my $mongo_client = MongoDB::MongoClient->new(host => $obj->{'host'}, port => $obj->{'port'});
-        
-        my $service = "MongoDB/".$database;
-        unless ($mongo_client) {
-            #TODO connect to database ? my $db = $mongo_client->get_database("test");
-           
-            $success = 0;
-            unless (defined $message) {
-                $message = ""
-            }
-            
-            $message .= "failed: ".$obj->{'host'}.':'.$obj->{'port'};
-        }
+    my $db  = $info->{'db'};
+    my $uri = $info->{'host'}.':'.$info->{'port'}.'/'.$db;
+    
+    &logger('info', "checking mongo $uri");
+    
+    my $mongo_client = MongoDB::MongoClient->new(
+        host => $info->{'host'},
+        port => $info->{'port'},
+        username => $info->{'user'},
+        password => $info->{'pass'},
+        db_name => $db
+    );
+    unless ($mongo_client) {
+        &logger('error', "connection failed: $uri");
+        return {success => 0, message => "connection failed: $uri"};
     }
     
-    if ($success) {
-        return {success => 1}
-    }
-    return {success => 0, message => $message}
+    my $id = undef;
+    eval {
+        my $mongo_coll = $mongo_client->get_namespace($db.".".$info->{'name'});
+        my $test_doc = $mongo_coll->find_one();
+        $id = $test_doc->{'id'};
+    };
+    $mongo_client->disconnect;
     
-   
+    unless ($id) {
+        &logger('error', "document retrieval failed: $uri");
+        return {success => 0, message => "document retrieval failed: $uri"};
+    }
+    
+    return {success => 1};
 }
 
-
-sub check_cassandra_depreacted {
+sub check_cassandra {
+    my $info = shift(@_);
     
-    # TODO: use curl localhost:2379/v2/keys/services/cassandra-seed/
-    # proxy.metagenomics.anl.gov:2379/v2/keys/services/cassandra-seed/cassandra-seed@1
-    # docker pull cassandra:3.7
-    # docker exec cassandra /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
-    # docker run -ti --rm --name cassandra-nodetool cassandra:3.7 /usr/bin/nodetool --host <> --port 7199 status # Connection refused
+    # get seed info
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout($useragent_timeout);
     
-    # need to test a query as handle can still be made but cluster in bad state
-    # test md5 is 74428bf03d3c75c944ea0b2eb632701f / E. coli alcohol dehydrogenase / m5nr version 1
-    my $test_md5_id = 10795366;
-    my $test_data = [];
-    my $host = "";
-
-    for (my $i=1; $i<=20; $i++) {
-        eval {
-            $host = "bio-worker".$i.".mcs.anl.gov";
-            my $chdl = DBI->connect("dbi:Cassandra:host=".$host.";keyspace=m5nr_v1", "", "");
-            $test_data = $chdl->selectall_arrayref("SELECT * FROM id_annotation WHERE id=".$test_md5_id);
-        };
-        if (@$test_data > 0) {
-            last;
-        }
+    my $etcd_seed = $info->{'seed'};
+    my $seed_host = undef;
+    eval {
+        my $response = $ua->get($etcd_seed);
+        my $result = decode_json($response->decoded_content);
+        $seed_host = $result->{'node'}{'value'};
+    };
+    
+    unless ($seed_host) {
+        &logger('error', "failed accessing etcd ($etcd_seed) for seed host info");
+        return {success => 0, message => "failed accessing etcd ($etcd_seed) for seed host info"};
     }
-    if (@$test_data == 0) {
-        #$failed{"M5NR database (cassandra)"} = $host;
-        $status->{"M5NR database (cassandra)"}->{'report'} = "failed: $host";
+    
+    # get test data
+    my $test_md5 = $info->{'test-md5'};
+    my $keyspace = $info->{'keyspace'};
+    
+    &logger('info', "checking cassandra $seed_host/$keyspace");
+    
+    my $dbh = DBI->connect("dbi:Cassandra:host=$seed_host;keyspace=$keyspace;consistency=quorum", "", "");
+    unless ($dbh) {
+        &logger('error', "$seed_host/$keyspace - unable to connect: ".$DBI::errstr);
+        return {success => 0, message => "$seed_host/$keyspace - unable to connect: ".$DBI::errstr};
     }
+    
+    my $data = $dbh->selectall_arrayref("SELECT * FROM md5_annotation WHERE md5=".$dbh->quote($test_md5));
+    $dbh->disconnect;
+    
+    unless ($data && (scalar(@$data) > 0)) {
+        &logger('error', "$seed_host/$keyspace - data retrieval failed");
+        return {success => 0, message => "$seed_host/$keyspace - data retrieval failed"};
+    }
+    
+    return {success => 1};
 }
-
 
 sub check_mysql {
-    my $jc = shift(@_);
+    my $info = shift(@_);
     
-    my $jobcache_db = $jc->{'db'};
-    my $jobcache_host = $jc->{'host'};
-    my $jobcache_user = $jc->{'user'};
-    my $jobcache_password = $jc->{'password'};
-    my $dbh = DBI->connect("DBI:mysql:database=".$jobcache_db.";host=".$jobcache_host.";",
-           $jobcache_user,
-           $jobcache_password)or return {success => 0, message => $jobcache_host." ".$DBI::errstr} ;
-    my $service = "MySQL/".$jobcache_db;
+    my $db   = $info->{'db'};
+    my $host = $info->{'host'};
+    my $user = $info->{'user'};
+    my $pass = $info->{'password'};
     
-    if ($dbh) {
-        #$status->{$service}->{'success'}=1;
-        return {success => 1}
-    } 
-    return {success => 0, message => $jobcache_host};
+    &logger('info', "checking mysql $host/$db");
     
+    my $dbh = DBI->connect("DBI:mysql:database=$db;host=$host", $user, $pass);
+    unless ($dbh) {
+        &logger('error', "$host/$db - unable to connect: ".$DBI::errstr);
+        return {success => 0, message => "$host/$db - unable to connect: ".$DBI::errstr};
+    }
+    $dbh->disconnect;
     
+    return {success => 1};
 }
 
-
 sub check_etcdcluster {
+    my $info = shift(@_);
     
-    my $resource = "etcdcluster";
     my $ua = LWP::UserAgent->new;
-    $ua->timeout(20); # etcd has timeout issues...
+    $ua->timeout($info->{'timeout'});
     
-    # http://metagenomics.anl.gov:2379/health
+    # get member list
+    my $url = "http://".$info->{'host'}.":2379/v2/members";
     
-    
-    #my $url = "http://metagenomics.anl.gov:2379/v2/members";
-    my $url = "http://metagenomics.anl.gov:2379/health";
-    
-    $logger->info("checking url ".$url);
-    my $response = $ua->get($url);
-    
-    unless ($response->is_success) {
-        return {ignore => 1 , message => "Could not check cluster health (json error) "};
-    }
+    &logger('info', "checking etcd members at $url");
     
     my $e = undef;
     my $result = undef;
     eval {
-     $result = decode_json($response->decoded_content);
-      $logger->info($response->decoded_content);
+        my $response = $ua->get($url);
+        $result = decode_json($response->decoded_content);
         1;
     } or do {
         $e = $@;
-        $logger->info("json error ".$e);
-        #$status->{$resource}->{'success'}=0;
-       
-        #$status->{$resource}->{'report'} = "Could not check cluster health (2)";
-        return {success => 0 , message => "Could not check cluster health (json error) "};
-        #return;
+        &logger('error', "connection error ".$e);
+        return {success => 0, message => "Could not get list of members"};
     };
     
-    unless (defined $result->{"health"}) {
-        $logger->info("health field null");
-        return {success => 0 , message => "Key health not found"};
+    unless ($result->{"members"} && (scalar(@{$result->{"members"}}) > 0)) {
+        &logger('error', "member list empty");
+        return {success => 0, message => "member list is empty"};
     }
+    my $clust_size = @{$result->{"members"}};
     
-    unless ($result->{"health"} eq "true") {
-        $logger->info("Cluster is not healthy !");
-
-        return {success => 0 , message => "Cluster is not healthy !"};
+    # check members health
+    my $total_unhealthy = 0;
+    
+    foreach my $member (@{$result->{"members"}}) {
+        my $host = $member->{'clientURLs'}[0];
+        $url = "$host/health";
         
+        # populate host map
+        unless (exists $etcd_host_unhealthy->{$host}) {
+            $etcd_host_unhealthy->{$host} = 0;
+        }
+        
+        $result = undef;
+        eval {
+            my $response = $ua->get($url);
+            $result = decode_json($response->decoded_content);
+        };
+        
+        unless ($result && exists($result->{"health"}) && ($result->{"health"} eq "true")) {
+            $etcd_host_unhealthy->{$host} += 1;
+            $total_unhealthy += 1;
+            next;
+        }
+        $etcd_host_unhealthy->{$host} = 0; # this host is healthy
     }
     
-    #$status->{$resource}->{'success'}=1;
+    if ($total_unhealthy > $info->{'max-hosts-unhealthy'}) {
+        &logger('error', "$total_unhealthy out of $clust_size cluster members unhealthy");
+        return {success => 0, message => "$total_unhealthy out of $clust_size cluster members unhealthy"};
+    }
+    foreach my $host (keys %$etcd_host_unhealthy) {
+        if ($etcd_host_unhealthy->{$host} > $info->{'max-times-unhealthy'}) {
+            &logger('error', "member $host has been unhealthy ".$etcd_host_unhealthy->{$host}." checks in a row");
+            return {success => 0, message => "member $host has been unhealthy ".$etcd_host_unhealthy->{$host}." checks in a row"};
+        }
+    }
+
+    return {success => 1, message => "cluster size: $clust_size"};
+}
+
+sub check_apiserver {
+    my $info = shift(@_);
     
-    # some info
-    $url = "http://metagenomics.anl.gov:2379/v2/members";
-    $response = $ua->get($url);
-    unless ($response->is_success) {
-        return {success => 0 , message => "Could not get list of members"};
+    my $image = $info->{'image'};
+    my $testcmd = $info->{'test-cmd'};
+    
+    # build command
+    my @cmds = ();
+    if ($info->{"get-list"} && $info->{'host'}) {
+        push @cmds, './'.$info->{"get-list"}.' '.$info->{'host'}.' > API.server.list';
+    }
+    if ($info->{'test-file'}) {
+        push @cmds, "$testcmd > /dev/null 2>&1";
+        push @cmds, "cat ".$info->{'test-file'};
+    } else {
+        push @cmds, $testcmd;
     }
     
+    my $docker_cmd = "docker run --rm --name api-test $image bash -c '".join("; ", @cmds)."'";
+    &logger('info', "API test: $docker_cmd");
     
+    my $e = undef
+    my $result = undef;
+    eval {
+        my $report = `$docker_cmd`;
+        $result = decode_json($report);
+        1;
+    } or do {
+        $e = $@;
+        &logger('error', "error running API test: ".$e);
+        return {success => 0, message => "error running API test: ".$e};
+    };
+    
+    unless ($result->{"report"} && $result->{"report"}{"summary"} && $result->{"report"}{"tests"} && (scalar(@{$result->{"report"}{"tests"}}) > 0)) {
+        &logger('error', "unknown error, tests did not run");
+        return {success => 0, message => "unknown error, tests did not run"};
+    }
+    
+    if ($result->{"report"}{"summary"}{"failed"} > 0) {
+        my $msg = $result->{"report"}{"summary"}{"failed"}." of ".$result->{"report"}{"summary"}{"num_tests"}." tests failed";
+        &logger('error', $msg);
+        my @errors = ();
+        foreach my $test (@{$result->{"report"}{"tests"}}) {
+            if ($test->{"outcome"} eq "failed") {
+                &logger('error', "failed: ".$test->{"name"});
+                push @errors, $test->{"name"};
+            }
+        }
+        return {success => 0, message => $msg."\n\t".join("\n\t", @errors)};
+    }
+    
+    return {success => 1};
+}
+
+sub check_aweserver {
+    my $info = shift(@_);
+    
+    my $url = $info->{'url'};
+    my $auth_bearer = $info->{'authorization'}->{'bearer'};
+    my $auth_token = $info->{'authorization'}->{'token'};
+    
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout($useragent_timeout);
+    $ua->default_header('Authorization' => $auth_bearer . ' ' . $auth_token);
+    
+    &logger('info', "checking AWE at $url");
+
+    my $e = undef;
+    my $result = undef;
+    eval {
+        my $response = $ua->get($url);
+        $result = decode_json($response->decoded_content);
+        1;
+    } or do {
+        $e = $@;
+        &logger('error', "connection error: ".$e);
+        return {success => 0, message => "connection error: ".$e};
+    };
+
+    if ($result->{"error"}) {
+        &logger('error', "error in response: ".$result->{"error"}[0]);
+        return {success => 0, message => "error in response: ".$result->{"error"}[0]};
+    }
+
+    unless ($result->{"data"} && (scalar(@{$result->{"data"}}) > 0)) {
+        &logger('error', "awe client list is empty");
+        return {success => 0, message => "awe client list is empty"};
+    }
+    
+    return {success => 1 , message => scalar(@{$result->{"data"}})." clients connected"};
+}
+
+sub check_shockserver {
+    my $info = shift(@_);
+    
+    my $url = $info->{'url'}."/node/".$info->{'node'};
+    
+    my $ua = LWP::UserAgent->new;
+    $ua->timeout($useragent_timeout);
+    
+    &logger('info', "checking Shock at $url");
+    
+    # get node
+    my $e = undef;
+    my $result = undef;
+    eval {
+        my $response = $ua->get($url);
+        $result = decode_json($response->decoded_content);
+        1;
+    } or do {
+        $e = $@;
+        &logger('error', "connection error: ".$e);
+        return {success => 0, message => "connection error: ".$e};
+    };
+    
+    if ($result->{"error"}) {
+        &logger('error', "error in response: ".$result->{"error"}[0]);
+        return {success => 0, message => "error in response: ".$result->{"error"}[0]};
+    }
+    
+    unless ($result->{"data"} && $result->{"data"}{"id"}) {
+        &logger('error', "node is missing");
+        return {success => 0, message => "node is missing"};
+    }
+    my $md5sum = $result->{"data"}{"file"}{"checksum"}{"md5"};
+    
+    # get download
     $e = undef;
     $result = undef;
     eval {
-     $result = decode_json($response->decoded_content);
-      $logger->info($response->decoded_content);
+        my $response = $ua->get($url.'?download');
+        $result = $response->content;
         1;
     } or do {
         $e = $@;
-        $logger->info("json error ".$e);
-        return {success => 0 , message => "Could not get list of members (json error)"};
+        &logger('error', "connection error: ".$e);
+        return {success => 0, message => "connection error: ".$e};
     };
     
-    if (defined $result->{"members"}) {
-        return {success => 1 , message => "Etcd cluster size: ".@{$result->{"members"}}};
+    unless ($result && (md5_hex($result) eq $md5sum)) {
+        &logger('error', "test md5sum does not match");
+        return {success => 0, message => "test md5sum does not match"};
     }
-    return {success => 0 , message => "List of member empty"};
+    
+    return {success => 1};
 }
-
-
-sub check_aweserver {
-    
-    my $cfg = shift(@_);
-    
-    
-    my $resource = 'awe-server';
-    my $url = $cfg->{'url'};
-    my $auth_bearer = $cfg->{'authorization'}->{'bearer'};
-    my $auth_token = $cfg->{'authorization'}->{'token'};
-    
-    
-    #'http://awe.metagenomics.anl.gov/client';
-
-    my $ua = LWP::UserAgent->new;
-    $ua->timeout(10);
-    $ua->default_header('Authorization' => $auth_bearer . ' ' . $auth_token);
-    
-    $logger->info("checking url ".$url);
-    my $response = $ua->get($url);
-
-
-    unless ($response->is_success) {
-        
-        return {success => 0 , message => $url. " ". ($response->message || "")};
-        
-    }
-
-    my $e = undef;
-    my $result = undef;
-    eval {
-        my $decoded_content = $response->decoded_content;
-        $result = decode_json($decoded_content);
-        $logger->info(sprintf("response: %s...", substr($decoded_content, 0, 50)));
-        1;
-    } or do {
-        $e = $@;
-        $logger->info("awe json error ".$e);
-        
-        return {success => 0 , message => "json error: ".$url};
-       
-    };
-
-    if (defined $result->{"error"}) {
-        $logger->info("awe error field non-null");
-        
-        return {success => 0 , message => "error in response: ".$url};
-     
-    }
-
-    unless (defined $result->{"data"}) {
-        $logger->info("awe data field null");
-        
-        return {success => 0 , message => "data field not defined: ".$url};
-      
-    }
-    
-    my $num_clients = @{$result->{"data"}};
-    
-    unless ($num_clients ) {
-        $logger->info("awe data field null");
-     
-        return {success => 0 , message => "data field empty: ".$url};
-     
-    }
-    
-   
-     return {success => 1 , message =>"$num_clients clients connected"};
-}
-
-
-sub check_apiserver {
-    
-    
-    my $text = read_file( '/host_tmp/api_test.json' ) ;
-
-   
-    my $resource = "api-server";
-    my $tests_total = 0;
-    my $tests_failed = 0;
-    
-   
-    my $api_testing_hash =undef;
-    eval {
-        $api_testing_hash = decode_json($text);
-        1;
-    } or do {
-        my $e = $@;
-        $logger->info($e);
-        
-        return {success => 0 , message => "Could not parse json: ".$e};
-      
-        };
-    
-    my $test_time = $api_testing_hash->{"epoch_utc_start"};
-    
-    
-    my $current_time = time();
-    
-    my $time_diff = $current_time - $test_time;
-    my $time_diff_minutes = $time_diff/60;
-    if ($time_diff_minutes > 60) { # 60 minutes
-       
-         return {success => 0 , message => "last test too long ago ($time_diff_minutes minutes)"};
-         
-    }
-    
-    
-    foreach my $test_key (keys %{$api_testing_hash->{"tests"}}) {
-        my $test_obj = $api_testing_hash->{"tests"}->{$test_key};
-        $tests_total += 1 ;
-        
-        if ( $test_obj->{"status"} == JSON::false ) {
-            $tests_failed +=1 ;
-        }
-        
-    }
-    
-    if ( $tests_failed > 0 ) {
-        # $failed{"api-server"} = 
-      
-      return {success => 0 , message => $tests_failed ." of ".$tests_total." tests failed"};
-    }
-     
-    
-    
-    $logger->info("API tests: ".$tests_failed ." of ".$tests_total." tests failed");
-    return { success => 1, message => "$tests_total tests successful"};
-}
-
-sub do_report {
-    
-    my ($count_failed, $cfg) = @_;
-    
-   
-    
-    if ($count_failed == 0) {
-        $logger->info("No resources failed to respond");
-    } else {
-    
-        my $time = localtime();
-        my $message = '';
-        
-        
-        
-        if ($count_failed == 1) {
-            $message .= "One service failed:\n\n";
-        } else {
-            $message .= $count_failed." services failed:\n\n";
-        }
-        #foreach my $res (keys %failed) {
-        #    $message .= "$res at $failed{$res}\n";
-        #}
-        foreach my $service (sort keys %$status) {
-            my $success = $status->{$service}->{'success'};
-            my $report = $status->{$service}->{'report'} || "";
-            if ($success == 0) {
-                $message .= "$service : $report\n";
-            }
-        }
-        
-        $message .= "\nfailures: $failures\n\nOverview: http://log.metagenomics.anl.gov/\n($time)\n\n";
-    
-        #print "message:\n".$message;
-    
-        if ($do_send_mail == 1) {
-            send_mail($cfg, $message, '[MG-RAST-STATUS-UPDATE] Failed to access a resource');
-        }
-    
-    }
-    
-}
-
-
-sub check_all_resources_deprecated {
-    
-    $status={};
-    
-    # Check that urls are working
-    check_urls($c->{'urls'});
-    
-    
-    # check etcd cluster
-    check_etcdcluster();
-    
-    ### Shock MongoDB anf AWE MongoDB
-    check_mongo($c->{'mongo'});
-    
-    
-    ### Cassandra
-    #check_cassandra();
-    
-    ### postgres
-    #check_postgress($c->{'postgres'});
-    
-    ### MySQL/JobDB
-    check_mysql($c->{'jobcache'});
-    
-    
-    ### check AWE
-    check_aweserver($c->{'awe-server'});
-    
-    ### check API server
-    #check_apiserver();
-    
-   
-    my $count_failed=0;
-    foreach my $service (sort keys %$status) {
-        my $success = $status->{$service}->{'success'};
-        unless (defined $success) {
-            $success = 0;
-        }
-        if ($success == 0) {
-            $count_failed++;
-        }
-    }
-    
-    return $count_failed;
-}
-
 
 sub test_service {
      my ($test) = @_;
-    
-    
+
      my $service_name = $test->{'name'};
-     print("service name: ".$service_name."\n");
-     
-     my $function =  $test->{'function'};
-     
+     my $function = $test->{'function'};
      my $result = &$function($test->{'arg'});
      
-     
      if (defined $result->{'ignore'} && $result->{'ignore'} == 1) {
-         print("Do not report test result, ignore flag was set");
+         &logger('warn', "Do not report test result, ignore flag was set");
          return;
      }
      
      $result->{'event_type'} = 'service_test';
      $result->{'service'} = $service_name;
      $result->{'time'} = DateTime->now()->iso8601().'Z';
-    
-    
-     my $result_json_pretty = to_json($result, {utf8 => 1, pretty => 1});
-     print($result_json_pretty."\n");
-     
      
      my $result_json = to_json($result, {utf8 => 1});
-     
      my $connection_result = eval { 
-     $mq->connect("rabbitmq", { user => $rmq_user, password => $rmq_password });
+         $mq->connect("rabbitmq", { user => $rmq_user, password => $rmq_password });
      };
+     
      if ($connection_result) {
          $mq->channel_open(1);
          $mq->publish(1, "event_service_test", $result_json);
          $mq->disconnect();
      } else {
-         print("Could not connect to rabbitmq.\n");
+         &logger('error', "Could not connect to rabbitmq.\n");
+         &logger('info', "test result: $result_json\n");
      }
-    
-     
 }
 
 ########################################################################################
 
-
-
-
-
-
-my $tests = [  
-            {   name => 'mongo',
-                function => \&check_mongo
+## tests that use functions
+my $tests = [
+            {   name => 'mongo-awe',
+                function => \&check_mongo,
+                arg => $c->{'mongo-awe'}
             },
-           
-            {   name => "mysql",
+            {   name => 'mongo-shock',
+                function => \&check_mongo,
+                arg => $c->{'mongo-shock'}
+            },
+            {   name => "mysql-metadata",
                 function => \&check_mysql,
-                arg => $c->{'jobcache'}
+                arg => $c->{'mysql-metadata'}
             },
-            {   name => "etcdcluster",
-                function => \&check_etcdcluster
-                
+            {   name => "cassandra-cluster",
+                function => \&check_cassandra,
+                arg => $c->{'cassandra-cluster'}
             },
-           # {   name => "",
-        #     function => \&check_apiserver  
-         #   },
+            {   name => "etcd-cluster",
+                function => \&check_etcdcluster,
+                arg => $c->{'etcd-cluster'}
+            },
+            {   name => "api-server",
+                function => \&check_apiserver,
+                arg => $c->{'api-server'}
+            },
             {   name => "awe-server",
-             function => \&check_aweserver,
-             arg => $c->{'awe-server'}
+                function => \&check_aweserver,
+                arg => $c->{'awe-server'}
+            },
+            {   name => "shock-server",
+                function => \&check_shockserver,
+                arg => $c->{'shock-server'}
             }
-           
 ];
 
-
-
+## add tests that have urls
 my $urls = $c->{'urls'};
-foreach my $resource (keys %{$urls}) {
-    my $url = $urls->{$resource};
-    
+foreach my $resource (@$urls) {
     my $new_test = {};
-        
-    $new_test->{'name'}=$resource;
-    $new_test->{'function'}=\&check_url;
-    $new_test->{'url'}=1;
-    $new_test->{'arg'}=$url;
-    
+    $new_test->{'name'} = $resource->{'name'};
+    $new_test->{'function'} = \&check_url;
+    $new_test->{'isUrl'} = 1;
+    $new_test->{'arg'} = {
+        'url' => $resource->{'url'},
+        'default-run' => $resource->{'default-run'}
+    };
     push(@{$tests}, $new_test)
-
 }
 
-
-# work-around
-#foreach my $file ($c->{'postgres'}->{'sslkey'}, $c->{'postgres'}->{'sslcert'}) {
-#    print("chmod 600 $file");
-#    chmod(0600, $file);
-#}
-
-
-
-# The $failures counter decides how often emails are sent out. With more failures, less often email are send out.
-# 5 successful tests will reset the failure counter.
-
-
+# do argument command than exit
+my $usage = qq(
+usage: service-checker.pl <argument>
+arguments: list | test_all | test_all_continues | test <service> | test_continues <service>
+note: test_all and test_all_continues only runs tests with config field 'default-run' as true
+      to run a test with 'default-run' as false, use 'test <service>' or 'test_continues <service>'
+);
 
 if (@ARGV > 0) {
-    
-    my $service = $ARGV[0];
-    #print($service);
-    
-    
-    if ($service eq "list") {
+    my $command = $ARGV[0];
         
+    if ($command eq "list") {
         foreach my $test (@{$tests}) {
-            if (defined $test->{'url'}) {
+            if (defined $test->{'isUrl'}) {
                 print("[URL]      ".$test->{'name'}."\n");
             } else {
                 print("[FUNCTION] ".$test->{'name'}."\n");
             }
         } 
-        
-        exit(0);
     }
-    if ($service eq "test_all") {
+    elsif ($command eq "test_all") {
         foreach my $test (@{$tests}) {
-            test_service($test);
+            # only run those with default true
+            if ($test->{'arg'}->{'default-run'}) {
+                test_service($test);
+            }
         }
-        exit(0);
     }
-    if ($service eq "test_all_continues") {
+    elsif ($command eq "test_all_continues") {
         while (1) {
             foreach my $test (@{$tests}) {
-                test_service($test);
+                # only run those with default true
+                if ($test->{'arg'}->{'default-run'}) {
+                    test_service($test);
+                }
             }
             my $seconds = $sleep_minutes * 60;
             logger('info', "sleeping ".$seconds." seconds");
             sleep($seconds);
         }
-        exit(0);
     }
-    
-    if ($service eq "test") {
-        $service = $ARGV[1] || die "service missing";
+    elsif ($command eq "test") {
+        my $service = $ARGV[1] || die "service name missing";
         foreach my $test (@{$tests}) {
-        
             if ($test->{'name'} eq $service) {
                 test_service($test);
                 exit(0);
             }
         }
-        die("test not found");
+        die "service $service not found";
     }
-    
+    elsif ($command eq "test_continues") {
+        my $service = $ARGV[1] || die "service name missing";
+        foreach my $test (@{$tests}) {
+            if ($test->{'name'} eq $service) {
+                while (1) {
+                    test_service($test);
+                    my $seconds = $sleep_minutes * 60;
+                    # override default sleep
+                    if ($test->{'arg'}->{'sleep-mins'} && ($test->{'arg'}->{'sleep-mins'} > 0)) {
+                        $seconds = $test->{'arg'}->{'sleep-mins'} * 60;
+                    }
+                    logger('info', "sleeping ".$seconds." seconds");
+                    sleep($seconds);
+                }
+            }
+        }
+        die "service $service not found";
+    }
+    else {
+        die "arguemnt $command not found\n$usage";
+    }
     exit(0);
 }
 
-
-print("count:".@ARGV ."\n");
-print ("arguments: list | test_all | test_all_continues | test <service> \n");
-
+print $usage;
 exit(0);
-
-
-
-
-
-while (1) {
-    my $count_failed = check_all_resources();
-
-    ### Report
-    if ($count_failed > 0) {
-        $failures+=1;
-        logger('info', "failures: ".$failures);
-        $all_ok = 0;
-    } else {
-        $all_ok += 1;
-        if ($all_ok >= 5) {
-            # reset failure counter now.
-            $failures = 0;
-            
-            if ($all_ok == 5) {
-                my $message = "No failures reported.\n\n";
-                
-                send_mail($c->{'email'}, $message, '[MG-RAST-STATUS-UPDATE] All resources active');
-            }
-            
-        }
-    }
-    
-    if ($count_failed > 0) {
-        
-        
-        if ( ($failures <=3) || # first three failures
-             (($failures-3) % 10 ==0 && $failures <= 30) ||  # every 20 minutes
-             (($failures-3) % 100 ==0 ) ) { # every 200 minutes
-            do_report($count_failed, $c->{'email'});
-            }
-        
-       
-    }
-    
-    print Dumper($status);
-    
-    ### create HTML file ###
-    if (0) {
-        open(my $fh, '>', '/html/status.html')
-          or die "Could not open file";
-      
-       
-        print $fh '<table border="1">'."\n";
-   
-    
-        foreach my $service (sort keys %$status) {
-            my $success = $status->{$service}->{'success'};
-            my $report = $status->{$service}->{'report'};
-            unless (defined $report) {
-                $report = "";
-            }
-        
-            print $fh '<tr>'."\n";
-            print $fh "<td>$service</td><td>".($success?'OK':'failed')."</td><td>".$report."</td>\n";
-            print $fh '</tr>'."\n";
-        }
-        print $fh '</table>'."\n";
-        print $fh "<br>\n";
-        print $fh "last updated: ".localtime()."\n";
-        close($fh);
-    }
-
-    my $seconds = $sleep_minutes * 60;
-    logger('info', "sleeping ".$seconds." seconds");
-    sleep($seconds);
-
-}
-
-
-
-
-
-
