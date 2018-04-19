@@ -44,6 +44,7 @@ services:
       - test_all_continues
     volumes:
       - ${MMS_CONFIG_FILE}:/config.yml:ro
+      - /var/run/fleet.sock:/var/run/fleet.sock
   
   service-monitor:
     image: mgrast/service-monitor

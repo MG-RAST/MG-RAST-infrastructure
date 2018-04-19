@@ -195,7 +195,7 @@ sub check_etcdcluster {
     };
     
     unless ($result->{"members"} && (scalar(@{$result->{"members"}}) > 0)) {
-        &logger('error', "member list empty");
+        &logger('error', "member list is empty");
         return {success => 0, message => "member list is empty"};
     }
     my $clust_size = @{$result->{"members"}};
@@ -238,6 +238,56 @@ sub check_etcdcluster {
     }
 
     return {success => 1, message => "cluster size: $clust_size"};
+}
+
+sub check_fleetunits {
+    my $info = shift(@_);
+    
+    # get fleet unit list
+    &logger('info', "checking fleet-units at: ".$info->{'socket'}." - ".$info->{'url'});
+    
+    my $e = undef;
+    my $cmd = "curl --unix-socket ".$info->{'socket'}." ".$info->{'url'};
+    my @states = ();
+    eval {
+        my $response = `$cmd`;
+        my $result = decode_json($response);
+        if ($result->{"states"} && (scalar(@{$result->{"states"}}) > 0) {
+            push @states, @{$result->{"states"}};
+        }
+        while (exists $result->{"nextPageToken"}) {
+            my $page = $cmd."?nextPageToken=".$result->{"nextPageToken"};
+            $response = `$page`;
+            $result = decode_json($response);
+            if ($result->{"states"} && (scalar(@{$result->{"states"}}) > 0) {
+                push @states, @{$result->{"states"}};
+            }
+        }
+        1;
+    } or do {
+        $e = $@;
+        &logger('error', "connection error ".$e);
+        return {success => 0, message => "Could not get list of fleet-units states"};
+    };
+    
+    if (scalar(@states) == 0) {
+        &logger('error', "fleet-unit state list is empty");
+        return {success => 0, message => "fleet-unit state list is empty"};
+    }
+    
+    # check fleet unit status
+    my %bad_states = ();
+    
+    foreach my $state (@states) {
+        if ($state['systemdSubState'] ne 'running') {
+            $bad_units{$state['name']} = $state['systemdSubState'];
+        }
+    }
+    
+    foreach my $name (keys %bad_states) {
+        &logger('error', "fleet-unit $name is in undesired state: ".$bad_states{$name});
+        return {success => 0, message => "fleet-unit $name is in undesired state: ".$bad_states{$name}};
+    }
 }
 
 sub check_apiserver {
@@ -308,15 +358,24 @@ sub check_aweserver {
     &logger('info', "checking AWE at $url");
 
     my $e = undef;
+    my $content = undef;
     my $result = undef;
     eval {
         my $response = $ua->get($url);
-        $result = decode_json($response->decoded_content);
+        $content = $response->decoded_content;
         1;
     } or do {
         $e = $@;
         &logger('error', "connection error: ".$e);
         return {success => 0, message => "connection error: ".$e};
+    };
+    
+    eval {
+        $result = decode_json($content);
+        1;
+    } or do {
+        &logger('error', "unable to parse JSON: ".$content);
+        return {success => 0, message => "unable to parse JSON: ".$content};
     };
 
     if ($result->{"error"}) {
@@ -344,15 +403,24 @@ sub check_shockserver {
     
     # get node
     my $e = undef;
+    my $content = undef;
     my $result = undef;
     eval {
         my $response = $ua->get($url);
-        $result = decode_json($response->decoded_content);
+        $content = $response->decoded_content;
         1;
     } or do {
         $e = $@;
         &logger('error', "connection error: ".$e);
         return {success => 0, message => "connection error: ".$e};
+    };
+    
+    eval {
+        $result = decode_json($content);
+        1;
+    } or do {
+        &logger('error', "unable to parse JSON: ".$content);
+        return {success => 0, message => "unable to parse JSON: ".$content};
     };
     
     if ($result->{"error"}) {
@@ -441,6 +509,10 @@ my $tests = [
             {   name => "etcd-cluster",
                 function => \&check_etcdcluster,
                 arg => $c->{'etcd-cluster'}
+            },
+            {   name => "fleet-units",
+                function => \&check_fleetunits,
+                arg => $c->{'fleet-units'}
             },
             {   name => "api-server",
                 function => \&check_apiserver,
