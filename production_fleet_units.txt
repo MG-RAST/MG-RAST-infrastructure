@@ -97,7 +97,7 @@ fleetctl start cassandra-simple{,-discovery}@{1..19}.service
 # docker exec cassandra-simple /usr/bin/cqlsh --request-timeout 600 --connect-timeout 600 -e 'USE mgrast_abundance; CONSISTENCY QUORUM; SELECT COUNT(*) FROM job_info;'
 
 ## elasticsearch
-fleetctl start elasticsearch{,-discovery}@{1..9}.service
+fleetctl start elasticsearch{,-discovery}@{1..8}.service
 
 ## log-courier
 # fleetctl start log-courier.service # global unit
