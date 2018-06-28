@@ -5,7 +5,7 @@ Requires=docker.service
 
 [Service]
 Environment='SERVICE=awe-worker'
-Environment='VERSION=0.9.62'
+Environment='VERSION=0.9.68'
 Environment='DIR=/media/ephemeral/awe-worker/%i'
 
 Restart=always
