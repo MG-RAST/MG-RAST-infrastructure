@@ -18,7 +18,7 @@ ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERV
 
 # get certs repo
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'sleep 3 ; chmod 600 ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem ; rm -rf ${SERVICE_DIR}/certs ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem" git clone git@github.com:MG-RAST/certs.git'
+ExecStartPre=/bin/bash -c 'sleep 3 ; chmod 600 ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem ; rm -rf ${SERVICE_DIR}/certs ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; sleep 3 ; GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem" git clone git@github.com:MG-RAST/certs.git'
 
 
 Environment='GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem"'
