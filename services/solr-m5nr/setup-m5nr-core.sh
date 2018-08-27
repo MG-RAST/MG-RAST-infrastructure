@@ -38,6 +38,7 @@ do
     
     cp schema.xml /opt/solr/server/solr/m5nr_${M5NR_VERSION}/conf/schema.xml
     cp solr.in.sh /opt/solr/bin
+    mkdir -p /mnt/m5nr_${M5NR_VERSION}/data
     tpage --define data_dir=/mnt/m5nr_${M5NR_VERSION}/data --define max_bool=100000 solrconfig.xml.tt > /opt/solr/server/solr/m5nr_${M5NR_VERSION}/conf/solrconfig.xml
 done
 exit 0;
