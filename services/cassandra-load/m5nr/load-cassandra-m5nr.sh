@@ -5,12 +5,26 @@ set -e
 # set default value
 MY_IP=""
 ALL_IPS=""
-VERSION=""
-REP_NUM=""
-DATA_DIR=""
+VERSION="1"
+REP_NUM="4"
+DATA_DIR="/var/lib/cassandra"
+DATA_URL=""
+
 CASS_BIN="/usr/bin"
 CASS_DIR="/usr/share/cassandra"
 CASS_CONF="/etc/cassandra/cassandra.yaml"
+LOAD_URL="https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load"
+
+function usage {
+  echo "Usage: $0 -i <this node IP> -a <all node IPs> -v <m5nr version> -r <replica number> -d <data install dir> -u <data shock URL> [-h <help>] "
+  echo "   -h <help>  "
+  echo "   -i this node IP "
+  echo "   -a all node IPs, comma seperated "
+  echo "   -v m5nr version, default use Version 1 "
+  echo "   -r replica number, default ${REP_NUM} "
+  echo "   -d data install dir, default ${DATA_DIR} "
+  echo "   -u data shock URL, default use Version 1 "
+}
 
 while getopts i:a:v:r:d: option; do
     case "${option}"
@@ -23,18 +37,15 @@ while getopts i:a:v:r:d: option; do
     esac
 done
 
-if [ -z "$VERSION" ]; then
-    VERSION="1"
-fi
-if [ -z "$REP_NUM" ]; then
-    REP_NUM="4"
-fi
-if [ -z "$DATA_DIR" ]; then
-    DATA_DIR="/var/lib/cassandra"
+# check options
+if [ "${HELP}" -eq 1 ]; then
+    usage
+    exit 0
 fi
 
 if [ -z "$MY_IP" ] || [ -z "$ALL_IPS" ]; then
     echo "Missing IPs"
+    usage
     exit 1
 fi
 
@@ -52,28 +63,25 @@ SST_LOAD=$CASS_BIN/sstableloader
 # download schema template
 mkdir -p $SCHEMA_DIR
 cd $SCHEMA_DIR
-curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/m5nr_table.cql.tt | \
+curl -s $LOAD_URL/m5nr/m5nr_table.cql.tt | \
     sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% replication \%\];$REP_NUM;g" > $SCHEMA_TABLE
-curl -s https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/m5nr/m5nr_copy.cql.tt | \
+curl -s $LOAD_URL/m5nr/m5nr_copy.cql.tt | \
     sed -e "s;\[\% version \%\];$VERSION;g" -e "s;\[\% data_dir \%\];$M5NR_DATA;g" > $SCHEMA_COPY
 
 # download bulkloader
 mkdir -p $LOAD_DIR
 cd $LOAD_DIR
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.sh
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/BulkLoader.java
-curl -s -O https://raw.githubusercontent.com/MG-RAST/MG-RAST-infrastructure/master/services/cassandra-load/BulkLoader/opencsv-3.4.jar
+curl -s -O $LOAD_URL/BulkLoader/BulkLoader.sh
+curl -s -O $LOAD_URL/BulkLoader/BulkLoader.java
+curl -s -O $LOAD_URL/BulkLoader/opencsv-3.4.jar
 
 # download data
-DATA_URL=""
 if [ "$VERSION" == "1" ]; then
-    #DATA_URL="http://shock.metagenomics.anl.gov/node/23506280-e153-4834-b98e-3102b6672a15?download"
     DATA_URL="http://shock.metagenomics.anl.gov/node/4ce1ec2f-58f1-48fa-86cd-3bff227db165?download"
-elif [ "$VERSION" == "10" ]; then
-    DATA_URL="http://shock.metagenomics.anl.gov/node/foo?download"
 fi
 if [ "$DATA_URL" == "" ]; then
-    echo "Data files not found for this m5nr version."
+    echo "Data URL required for version > 1"
+    usage
     exit 1
 fi
 
@@ -105,7 +113,7 @@ echo "Creating / loading sstables ..."
 SST_DIR=$DATA_DIR/sstable
 KEYSPACE=m5nr_v${VERSION}
 mkdir -p $SST_DIR
-for TYPE in index id midx md5; do
+for TYPE in midx md5; do
     # split large file
     cd $M5NR_DATA
     split -a 2 -d -l 2500000 ${KEYSPACE}.annotation.${TYPE} ${KEYSPACE}.annotation.${TYPE}.
