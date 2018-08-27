@@ -2,6 +2,7 @@
 
 # set default value
 M5NR_VERSIONS="1 10"
+ADD_NAME=1
 
 # binary location from http://stackoverflow.com/questions/59895/can-a-bash-script-tell-what-directory-its-stored-in
 BIN=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
@@ -17,6 +18,11 @@ source ${DEP_CONFIG}
 set -e
 set -x
 
+if [ "$1" != "" ]; then
+    M5NR_VERSIONS=$1
+    ADD_NAME=0
+fi
+
 for i in $M5NR_VERSIONS
 do
     M5NR_VERSION=$i
@@ -25,7 +31,11 @@ do
     echo ""
 
     cp -av /opt/solr/server/solr/configsets/sample_techproducts_configs /opt/solr/server/solr/m5nr_${M5NR_VERSION}
-    echo "name=m5nr_${M5NR_VERSION}" > /opt/solr/server/solr/m5nr_${M5NR_VERSION}/core.properties
+    
+    if [ "${ADD_NAME}" -eq 1 ]; then
+        echo "name=m5nr_${M5NR_VERSION}" > /opt/solr/server/solr/m5nr_${M5NR_VERSION}/core.properties
+    fi
+    
     cp schema.xml /opt/solr/server/solr/m5nr_${M5NR_VERSION}/conf/schema.xml
     cp solr.in.sh /opt/solr/bin
     tpage --define data_dir=/mnt/m5nr_${M5NR_VERSION}/data --define max_bool=100000 solrconfig.xml.tt > /opt/solr/server/solr/m5nr_${M5NR_VERSION}/conf/solrconfig.xml
