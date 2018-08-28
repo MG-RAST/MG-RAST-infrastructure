@@ -100,6 +100,9 @@ fleetctl start cassandra-simple{,-discovery}@{1..19}.service
 ## elasticsearch
 fleetctl start elasticsearch{,-discovery}@{1..8}.service
 
+# add new m5nr version to solr-m5nr
+# docker exec solr-m5nr bash -c 'cd /MG-RAST-infrastructure/services/solr-m5nr && git pull && ./setup-m5nr-core.sh <version #>'
+
 ## log-courier
 # fleetctl start log-courier.service # global unit
 
