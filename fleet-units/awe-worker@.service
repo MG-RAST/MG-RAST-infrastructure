@@ -28,14 +28,15 @@ ExecStart=/bin/bash -c ' \
   export NUMBER=$(echo %i | cut -d . -f 1); \
   export GROUP=$(echo %i | cut -d . -f 2); \
   ${DIR}/awe-worker \
-    --conf ${DIR}/mgrast-config/services/awe-worker/awe.cfg \
-    --debuglevel 3 \
+    --conf ${DIR}/mgrast-config/services/awe-worker/$GROUP.cfg \
     --workpath ${DIR}/work \
     --data ${DIR}/data \
     --logs ${DIR}/logs \
     --group $GROUP \
-    --name %H.$GROUP.$NUMBER' \
-    --domain bio-worker
+    --name %H.$GROUP.$NUMBER \
+    --hostname %H \
+    --host_ip ${COREOS_PUBLIC_IPV4}'
+
 
 [X-Fleet]
 Conflicts=solr-metagenome@*.service
