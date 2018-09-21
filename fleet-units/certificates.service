@@ -23,7 +23,7 @@ ExecStartPre=/bin/bash -c 'sleep 3 ; chmod 600 ${SERVICE_DIR}/mgrast-config/ssh_
 
 Environment='GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}/mgrast-config/ssh_key/mgrast-2017.pem"'
 
-ExecStart=/usr/bin/bash -c 'while [ 1 ] ; do cd ${SERVICE_DIR}/certs ; git pull ; sleep $[ ( $RANDOM % 60 ) + 24*60 ]m ; done'
+ExecStart=/usr/bin/bash -c 'while [ 1 ] ; do sleep 3 ; cd ${SERVICE_DIR}/certs ; git pull ; sleep $[ ( $RANDOM % 60 ) + 24*60 ]m ; done'
 
 
 [X-Fleet]
