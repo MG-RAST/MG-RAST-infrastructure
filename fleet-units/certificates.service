@@ -16,7 +16,7 @@ ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.an
 ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
 
 
-Environment='GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}mgrast-config/ssh_key/mgrast-2017.pem"'
+Environment=GIT_SSH_COMMAND="ssh -i ${SERVICE_DIR}mgrast-config/ssh_key/mgrast-2017.pem"
 
 
 # get certs repo
