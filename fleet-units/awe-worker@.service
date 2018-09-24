@@ -39,5 +39,5 @@ ExecStart=/bin/bash -c ' \
 
 
 [X-Fleet]
-Conflicts=solr-metagenome@*.service
 Conflicts=awe-server@*.service
+Conflicts=awe-worker@*.service
