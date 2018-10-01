@@ -1,0 +1,54 @@
+[Unit]
+Description=MG-RAST Confd
+Requires=docker.service
+After=docker.service
+
+[Service]
+Environment='CONTAINER=confd'
+Environment='IMAGE=mgrast/confd'
+
+Environment='SERVICE_DIR=/media/ephemeral/confd'
+
+
+TimeoutStartSec=300s
+
+Restart=always
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+
+
+# this fleet unit repsonsible to get the nginx image as well !
+
+
+ExecStartPre=-/bin/bash -c "/usr/bin/docker pull nginx:1.15.4 > /dev/null 2>&1" # this makes sure that the image is already there in case a fall-over happens
+
+
+#ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
+
+# remove old confd container TODO remove this
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm mgrast_confd > /dev/null 2>&1"
+
+
+ExecStartPre=-/bin/bash -c "/usr/bin/docker pull ${IMAGE} > /dev/null 2>&1"
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'eval $(ssh-agent) ; ssh-add /etc/ssh/mgrast_coreos.pem ; rm -rf ${SERVICE_DIR}/mgrast-config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+ExecStartPre=/usr/bin/mkdir -p ${SERVICE_DIR}/sites-enabled ${SERVICE_DIR}/docker
+ExecStartPre=-/usr/bin/find ${SERVICE_DIR}/sites-enabled -iname ".meta*" -exec rm -v {} \;
+
+
+# I do not get output from docker....
+ExecStart=/usr/bin/bash -c "/usr/bin/docker run --rm --name ${CONTAINER} --env DOCKERVERSION=$(/usr/bin/docker --version | grep '[0-9]*\.[0-9]*\.[0-9][a-z-]*' -o) -v ${SERVICE_DIR}/sites-enabled/:/etc/nginx/sites-enabled:rw -v ${SERVICE_DIR}/docker/:/docker:rw -v ${SERVICE_DIR}/mgrast-config/services/confd:/config:ro -v /var/run/docker.sock:/var/run/docker.sock ${IMAGE} run_confd.sh"
+
+
+ExecStop=/usr/bin/docker stop ${CONTAINER}
+
+
+[X-Fleet]
+Global=true
+
+
+
