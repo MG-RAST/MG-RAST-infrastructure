@@ -1,8 +1,8 @@
-[
+
 DRAFT !
 
 
-Unit]
+[Unit]
 Description=AWE2 server
 After=docker.service
 Requires=docker.service
@@ -36,7 +36,7 @@ ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/logs ${SERVICE_DIR}/data
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001 \
-  -v ${SERVICE_DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro \
+  -v ${SERVICE_DIR}/mgconf/services/awe2-server/awe.cfg:/awe.cfg:ro \
   -v ${SERVICE_DIR}/logs/:/mnt/awe/logs/ \
   -v ${SERVICE_DIR}/data/:/mnt/awe/data/ \
   ${IMAGE} \
