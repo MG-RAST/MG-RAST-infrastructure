@@ -5,6 +5,8 @@
 
 FROM alpine
 
+RUN apk update && apk add bash
+
 ADD https://github.com/kelseyhightower/confd/releases/download/v0.16.0/confd-0.16.0-linux-amd64 /usr/bin/confd
 RUN chmod +x /usr/bin/confd
 
