@@ -44,6 +44,6 @@ ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-MachineOf=mg-rast-confd.service
+MachineOf=confd.service
 Conflicts=mg-rast-nginx*
 Conflicts=awe-monitor*
