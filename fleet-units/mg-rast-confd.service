@@ -22,7 +22,8 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 # this fleet unit repsonsible to get the nginx image as well !
 
 
-ExecStartPre=/usr/bin/docker pull nginx:1.15.4 # this makes sure that the image is already there in case a fall-over happens
+ExecStartPre=-/bin/bash -c "/usr/bin/docker pull nginx:1.15.4 > /dev/null 2>&1" # this makes sure that the image is already there in case a fall-over happens
+
 
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
