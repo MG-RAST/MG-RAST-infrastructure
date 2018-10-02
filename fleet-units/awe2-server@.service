@@ -48,3 +48,4 @@ ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
 Conflicts=awe-server@*.service
+MachineMetadata=HOSTNAME=bio-worker19-10g.mcs.anl.gov
