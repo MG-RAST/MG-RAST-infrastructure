@@ -21,7 +21,8 @@ for service in API-testing ; do
     rm -rf ${service}
     git clone https://github.com/MG-RAST/${service}.git
     cd ${service}
-    docker build -t mgrast/${service} .
+    NAME=`echo "${service}" | tr '[:upper:]' '[:lower:]'`
+    docker build -t mgrast/${NAME} .
     set +x
 done
 
