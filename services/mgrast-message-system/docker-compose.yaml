@@ -31,6 +31,7 @@ services:
       - test_continues
       - api-server
     volumes:
+      - ${SERVICE_DIR}/api:/api
       - ${MMS_CONFIG_FILE}:/config.yml:ro
       - ${DOCKER_BINARY}:/usr/bin/docker
       - /var/run/docker.sock:/var/run/docker.sock

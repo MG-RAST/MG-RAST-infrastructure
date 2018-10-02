@@ -8,10 +8,10 @@ if [[ $_ == $0 ]]; then
 fi
 
 
-mkdir -p /media/ephermeral/opt/
+mkdir -p /media/ephemeral/opt/
 
 if [ ! -h  /opt ]; then
-    ln -s /media/ephermeral/opt/ /opt
+    ln -s /media/ephemeral/opt/ /opt
 fi
 
 mkdir -p /opt/bin/

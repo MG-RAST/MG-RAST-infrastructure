@@ -308,6 +308,16 @@ sub check_apiserver {
         push @cmds, $testcmd;
     }
     
+    my $pull = undef;
+    eval {
+        $pull = `docker pull $image`;
+        1;
+    }or do {
+        $e = $@;
+        &logger('error', "error with docker pull: ".$e.": ".$pull);
+        return {success => 0, message => "error with docker pull: ".$e.": ".$pull};
+    };
+    
     my $docker_cmd = "docker run --rm --name api-test $image bash -c '".join("; ", @cmds)."'";
     &logger('info', "API test: $docker_cmd");
     
