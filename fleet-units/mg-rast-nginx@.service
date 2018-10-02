@@ -6,7 +6,10 @@ Requires=docker.service
 
 [Service]
 Environment='CONTAINER=mgrast_nginx'
-Environment='IMAGE=mgrast/nginxconfd'
+Environment='IMAGE=nginx:1.15.4'
+ # !!!!!!   if you update this version number, also update it mg-rast-confd.service !!!!!!
+
+#old: Environment='IMAGE=mgrast/nginxconfd'
 Environment='SERVICE=mg-rast-nginx'
 
 Environment='VIRTUAL_IP=140.221.76.250'
@@ -31,7 +34,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 443:443 -v ${SERVICE_DIR}/mgrast-config/services/nginx/:/config:ro -v ${SERVICE_DIR}/mgrast-config/services/ssl/:/ssl:ro -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro -v /media/ephemeral/letsencrypt/:/letsencrypt/:ro  ${IMAGE}:latest /usr/sbin/nginx -c /config/nginx.conf
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 80:80 -p 443:443 -v ${SERVICE_DIR}/mgrast-config/services/nginx/:/config:ro -v ${SERVICE_DIR}/mgrast-config/services/ssl/:/ssl:ro -v /media/ephemeral/confd/sites-enabled/:/sites-enabled-confd/:ro -v /media/ephemeral/letsencrypt/:/letsencrypt/:ro  ${IMAGE} /usr/sbin/nginx -c /config/nginx.conf
 
 #ExecStartPost=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/arping -A -c 2 -I ${DEVICE} ${VIRTUAL_IP} ; fi'
 
@@ -41,6 +44,6 @@ ExecStop=-/bin/bash -c 'if [ %i == 1 ] ; then /usr/bin/ip addr del ${VIRTUAL_IP}
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 
 [X-Fleet]
-MachineOf=mg-rast-confd.service
+MachineOf=confd.service
 Conflicts=mg-rast-nginx*
 Conflicts=awe-monitor*

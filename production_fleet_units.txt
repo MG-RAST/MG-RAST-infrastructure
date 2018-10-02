@@ -62,7 +62,7 @@ fleetctl start mg-rast-v4-web{,-discovery}@1.v4-web.service
 ## confd / nginx
 
 fleetctl start certificates.service
-fleetctl start mg-rast-confd.service # global unit
+fleetctl start confd.service # global unit
 fleetctl start mg-rast-nginx@1.service
 fleetctl start certs_renewal@1.service
 
@@ -128,7 +128,7 @@ fleetctl list-units > fleetunits.txt
 # shutdown the production services in the proper order
 
 fleetctl stop mg-rast-nginx@1.service
-fleetctl stop mg-rast-confd.service
+fleetctl stop confd.service
 fleetctl stop mg-rast-v4-web{,-discovery}@{1,2,3}.v4-web.service
 fleetctl stop api-server{,-discovery,-update}@{1,2,3,4}.api.service
 fleetctl stop awe-server{,-discovery,-monitor}@1.service
