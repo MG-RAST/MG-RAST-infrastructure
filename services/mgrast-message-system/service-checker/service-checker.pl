@@ -252,14 +252,14 @@ sub check_fleetunits {
     eval {
         my $response = `$cmd`;
         my $result = decode_json($response);
-        if ($result->{"states"} && (scalar(@{$result->{"states"}}) > 0) {
+        if ($result->{"states"} && (scalar(@{$result->{"states"}}) > 0)) {
             push @states, @{$result->{"states"}};
         }
         while (exists $result->{"nextPageToken"}) {
             my $page = $cmd."?nextPageToken=".$result->{"nextPageToken"};
             $response = `$page`;
             $result = decode_json($response);
-            if ($result->{"states"} && (scalar(@{$result->{"states"}}) > 0) {
+            if ($result->{"states"} && (scalar(@{$result->{"states"}}) > 0)) {
                 push @states, @{$result->{"states"}};
             }
         }
@@ -312,7 +312,7 @@ sub check_apiserver {
     eval {
         $pull = `docker pull $image`;
         1;
-    }or do {
+    } or do {
         $e = $@;
         &logger('error', "error with docker pull: ".$e.": ".$pull);
         return {success => 0, message => "error with docker pull: ".$e.": ".$pull};
