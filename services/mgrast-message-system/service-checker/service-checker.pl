@@ -280,13 +280,13 @@ sub check_fleetunits {
     
     foreach my $state (@states) {
         if ($state->['systemdSubState'] ne 'running') {
-            $bad_units{$state->['name']} = $state->['systemdSubState'];
+            $bad_states{$state->['name']} = $state->['systemdSubState'];
         }
     }
     
     foreach my $name (keys %bad_states) {
-        &logger('error', "fleet-unit $name is in undesired state: ".$bad_states->{$name});
-        return {success => 0, message => "fleet-unit $name is in undesired state: ".$bad_states->{$name}};
+        &logger('error', "fleet-unit $name is in undesired state: ".$bad_states{$name});
+        return {success => 0, message => "fleet-unit $name is in undesired state: ".$bad_states{$name}};
     }
 }
 
