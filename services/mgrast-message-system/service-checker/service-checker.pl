@@ -279,14 +279,14 @@ sub check_fleetunits {
     my %bad_states = ();
     
     foreach my $state (@states) {
-        if ($state['systemdSubState'] ne 'running') {
-            $bad_units{$state['name']} = $state['systemdSubState'];
+        if ($state->['systemdSubState'] ne 'running') {
+            $bad_units{$state->['name']} = $state->['systemdSubState'];
         }
     }
     
     foreach my $name (keys %bad_states) {
-        &logger('error', "fleet-unit $name is in undesired state: ".$bad_states{$name});
-        return {success => 0, message => "fleet-unit $name is in undesired state: ".$bad_states{$name}};
+        &logger('error', "fleet-unit $name is in undesired state: ".$bad_states->{$name});
+        return {success => 0, message => "fleet-unit $name is in undesired state: ".$bad_states->{$name}};
     }
 }
 
@@ -308,6 +308,7 @@ sub check_apiserver {
         push @cmds, $testcmd;
     }
     
+    my $e = undef
     my $pull = undef;
     eval {
         $pull = `docker pull $image`;
@@ -321,7 +322,6 @@ sub check_apiserver {
     my $docker_cmd = "docker run --rm --name api-test $image bash -c '".join("; ", @cmds)."'";
     &logger('info', "API test: $docker_cmd");
     
-    my $e = undef
     my $result = undef;
     eval {
         my $report = `$docker_cmd`;

@@ -32,11 +32,13 @@ echo "----------------------------"
 
 
 for service in event-loader mms-email service-checker service-monitor API-testing ; do
+  docker push mgrast/${service}
   echo "docker push mgrast/${service}"
 done
 
 echo "---------"
 
 for service in event-loader mms-email service-checker service-monitor API-testing ; do
+  docker pull mgrast/${service}
   echo "docker pull mgrast/${service}"
 done
