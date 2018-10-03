@@ -537,6 +537,7 @@ my $tests = [
                 arg => $c->{'shock-server'}
             }
 ];
+print Dumper($tests);
 
 ## add tests that have urls
 my $urls = $c->{'urls'};
