@@ -35,6 +35,7 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001
   -v ${SERVICE_DIR}/mgconf/services/awe2-server/awe.cfg:/awe.cfg:ro \
   -v ${SERVICE_DIR}/logs/:/mnt/awe/logs/ \
   -v ${SERVICE_DIR}/data/:/mnt/awe/data/ \
+  -e TZ=America/Chicago \
   ${IMAGE} \
     /gopath/bin/awe-server \
       --recover \
