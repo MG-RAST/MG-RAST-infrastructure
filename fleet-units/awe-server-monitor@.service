@@ -5,7 +5,7 @@ After=awe-server@%i.service
 
 [Service]
 Environment='CONTAINER=awe-monitor-%i'
-Environment='IMAGE=mgrast/awe-monitor'
+Environment='IMAGE=mgrast/awe-monitor:stable'
 Environment='SERVICE_DIR=/media/ephemeral/awe-monitor/'
 
 TimeoutStartSec=300s
