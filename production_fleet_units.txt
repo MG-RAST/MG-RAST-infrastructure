@@ -79,7 +79,7 @@ docker exec cassandra-simple bash -c 'apt-get update && apt-get install -y curl 
 docker exec cassandra-simple bash /var/lib/cassandra/load-cassandra-m5nr.sh -i <this host IP> -a <comma seperated list of all cassandra host IPs>
 
 # this command lets you see cluster hosts and their status
-docker exec cassandra-simple /usr/bin/nodetool status mgrast_analysis
+docker exec cassandra-simple /usr/bin/nodetool status mgrast_abundance
 docker exec cassandra-simple /usr/bin/nodetool status m5nr_v<version #> eg. m5nr_v1
 
 # this command removes missing host from cluster list - run on any host
