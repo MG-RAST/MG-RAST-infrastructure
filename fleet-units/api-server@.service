@@ -37,7 +37,7 @@ ExecStartPre=/bin/bash -c "${SERVICE_DIR}/mgrast-config/services/api-server/prep
 ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker kill ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker rm ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 
-ExecStart=/bin/bash -c '${SERVICE_DIR}/mgrast-config/services/api-server/start_container.sh %i'
+ExecStart=/bin/bash -c "export HOSTNAME=${HOSTNAME} ; ${SERVICE_DIR}/mgrast-config/services/api-server/start_container.sh %i"
 
 ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker stop ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 
