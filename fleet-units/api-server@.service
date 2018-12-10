@@ -29,7 +29,7 @@ ExecStartPre=/bin/chmod 777 ${SERVICE_DIR}/tmp
 
 # get image
 #ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
-ExecStartPre=/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); echo "CHANNEL=${CHANNEL}" \
+ExecStartPre=/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2) ; echo "CHANNEL=${CHANNEL}" ; \
   export TAG=$(if [ "${CHANNEL}x" == "apix" ] ; then echo "latest" ; else echo "dev" ; fi); echo "TAG=${TAG}" \
   docker pull ${IMAGE}:${TAG}" 
 
@@ -41,7 +41,7 @@ ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  export TAG=$(if [ "${CHANNEL}x" == "apix" ] ; then echo "latest" ; else echo "dev" ; fi); \
+  export TAG=$(if [ "${CHANNEL}x" == "apix" ] ; then echo "latest" ; else echo "dev" ; fi ) ; \
   docker run \
   --rm \
   --name ${SERVICE}-$CHANNEL \
