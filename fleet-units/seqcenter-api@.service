@@ -1,0 +1,41 @@
+[Unit]
+Description=SeqCenter API
+After=docker.service
+Requires=docker.service
+Wants=%p-discovery@%i.service
+
+[Service]
+Environment='IMAGE=mgrast/seqcenter-api'
+Environment='SERVICE=seqcenter-api'
+Environment='SERVICE_DIR=/media/ephemeral/%p/%i'
+Environment='CONTAINER=seqcenter-api'
+
+
+Restart=always
+TimeoutStartSec=0
+
+EnvironmentFile=-/etc/environment
+ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
+ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+
+
+
+# Set v4url.confd
+#ExecStartPre=/bin/bash -c "mkdir -p ${SERVICE_DIR}/conf.d && echo \"SetEnv V4URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${SERVICE_DIR}/conf.d/v4url.conf"
+
+# get image
+#ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+ExecStartPre=/usr/bin/docker pull ${IMAGE}
+
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::80  -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/:/config/ ${IMAGE}:latest
+
+ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
+ExecStop=-/bin/rm -rf ${SERVICE_DIR}
+
+[X-Fleet]
+Conflicts=mg-rast-v4-web@*.service
+Conflicts=solr-metagenome@*.service
