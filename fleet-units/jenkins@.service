@@ -31,10 +31,11 @@ ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR
 #ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::8080 -p 50000:50000  -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/:/config/ ${IMAGE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}::8080 -p 50000:50000  -v jenkins_home:/var/jenkins_home -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/:/config/ ${IMAGE}
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${SERVICE_DIR}
 
 [X-Fleet]
 Conflicts=solr-metagenome@*.service
+MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
