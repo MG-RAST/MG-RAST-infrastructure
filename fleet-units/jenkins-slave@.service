@@ -25,6 +25,7 @@ ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR
 
 
 # get image
+ExecStartPre=/usr/sbin/iptables -A INPUT -p tcp -s 140.221.76.71 --dport 8002 -j ACCEPT -m comment --comment "jenkins"
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 ExecStartPre=/bin/bash -c 'cd ${SERVICE_DIR}/mgconf/services/${SERVICE}/ ; ./get_docker_binary.sh'
 
