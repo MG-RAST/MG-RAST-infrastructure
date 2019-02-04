@@ -35,3 +35,5 @@ ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8002:22 --env-file ${S
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${SERVICE_DIR}
 
+[X-Fleet]
+Conflicts=jenkins-slave@*.service
