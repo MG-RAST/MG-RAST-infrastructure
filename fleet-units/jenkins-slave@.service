@@ -28,12 +28,10 @@ ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 ExecStartPre=/bin/bash -c 'cd ${SERVICE_DIR}/mgconf/services/${SERVICE}/ ; ./get_docker_binary.sh'
 
-### ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}:32769:8080 -p 50000:50000  --env JENKINS_OPTS="--prefix=/jenkins" -v jenkins_home:/var/jenkins_home -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/jenkins.conf:/etc/default/jenkins ${IMAGE}
+
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8002:22 --env-file ${SERVICE_DIR}/mgconf/services/${SERVICE}/slave.env -v /var/run/docker.sock:/var/run/docker.sock -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/docker:/usr/bin/docker ${IMAGE}
 
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${SERVICE_DIR}
 
-[X-Fleet]
-MachineMetadata=HOSTNAME=bio-worker5-10g.mcs.anl.gov
