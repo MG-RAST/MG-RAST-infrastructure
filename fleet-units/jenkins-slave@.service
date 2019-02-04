@@ -24,9 +24,13 @@ ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR
 
 
 
+# set iptables rules
+ExecStartPre=/bin/bash -c 'if [ $(iptables -L | grep jenkins | wc -l) == 0 ] ; then iptables -A INPUT -p tcp -s 140.221.76.71 --dport 8002 -j ACCEPT -m comment --comment "jenkins" ; fi'
+
 # get image
-ExecStartPre=/usr/sbin/iptables -A INPUT -p tcp -s 140.221.76.71 --dport 8002 -j ACCEPT -m comment --comment "jenkins"
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
+
+# get docker binary
 ExecStartPre=/bin/bash -c 'cd ${SERVICE_DIR}/mgconf/services/${SERVICE}/ ; ./get_docker_binary.sh'
 
 
