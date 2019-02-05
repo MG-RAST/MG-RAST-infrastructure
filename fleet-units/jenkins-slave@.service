@@ -34,7 +34,7 @@ ExecStartPre=/usr/bin/docker pull ${IMAGE}
 ExecStartPre=/bin/bash -c 'cd ${SERVICE_DIR}/mgconf/services/${SERVICE}/ ; ./get_docker_binary.sh'
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8002:22 --env-file ${SERVICE_DIR}/mgconf/services/${SERVICE}/slave.env -v /var/run/docker.sock:/var/run/docker.sock -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/docker:/usr/bin/docker ${IMAGE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8002:22 --env-file ${SERVICE_DIR}/mgconf/services/${SERVICE}/slave.env -v /var/run/docker.sock:/var/run/docker.sock -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/docker:/usr/bin/docker -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/docker-compose:/usr/bin/docker-compose ${IMAGE}
 
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
