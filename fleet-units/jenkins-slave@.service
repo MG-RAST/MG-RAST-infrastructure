@@ -5,7 +5,7 @@ Requires=docker.service
 #Wants=%p-discovery@%i.service
 
 [Service]
-Environment='IMAGE=jenkins/ssh-slave:latest'
+Environment='IMAGE=mgrast/jenkins-ssh-slave:latest'
 Environment='SERVICE=jenkins'
 Environment='SERVICE_DIR=/media/ephemeral/%p/%i'
 Environment='CONTAINER=jenkins-slave-%i'
