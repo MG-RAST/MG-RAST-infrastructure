@@ -18,8 +18,8 @@ RUN echo "alias docker='sudo docker '" >> /home/jenkins/.bashrc
 RUN echo "alias docker='sudo docker-compose '" >> /home/jenkins/.bashrc
 
 # create wrapper to avoid havin to use sudo
-RUN echo -e '#!/bin/bash\nsudo /usr/bin/docker $@' > /usr/local/bin/docker
+RUN /bin/echo -e '#!/bin/bash\nsudo -E /usr/bin/docker $@' > /usr/local/bin/docker
 RUN chmod 775 /usr/local/bin/docker
 
-RUN echo -e '#!/bin/bash\nsudo /usr/bin/docker-compose $@' > /usr/local/bin/docker-compose
+RUN /bin/echo -e '#!/bin/bash\nsudo -E /usr/bin/docker-compose $@' > /usr/local/bin/docker-compose
 RUN chmod 775 /usr/local/bin/docker-compose
