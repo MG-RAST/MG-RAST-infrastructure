@@ -44,3 +44,4 @@ ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/dock
 [X-Fleet]
 Conflicts=api-server@*.service
 Conflicts=solr-metagenome@*.service
+Conflicts=awe-server@*.service
