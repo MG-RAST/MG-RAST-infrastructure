@@ -1,11 +1,11 @@
 [Unit]
-Description=Monitor for AWE
+Description=AWE monitor
 BindsTo=awe-server@%i.service
 After=awe-server@%i.service
 
 [Service]
 Environment='CONTAINER=awe-monitor-%i'
-Environment='IMAGE=mgrast/awe-monitor'
+Environment='IMAGE=mgrast/awe-monitor:stable'
 Environment='SERVICE_DIR=/media/ephemeral/awe-monitor/'
 
 TimeoutStartSec=300s
@@ -24,8 +24,9 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStartPre=/usr/bin/docker pull mgrast/awe-monitor
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --env-file ${SERVICE_DIR}/mgconf/services/awe-monitor/awe-monitor.env -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/local/apache2/htdocs/js/config.js -p 8085:80 ${IMAGE}  httpd -DFOREGROUND -C 'Define servername https://awe.mg-rast.org/monitor/'
-            
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/share/nginx/html/js/config.js -p 8085:80 ${IMAGE}
+
+
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
 [X-Fleet]
