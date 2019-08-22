@@ -6,7 +6,8 @@ Requires=docker.service
 
 [Service]
 Environment='CONTAINER=mgrast_nginx'
-Environment='IMAGE=nginx:1.15.4'
+Environment='IMAGE=nginx:1.17.3'
+#Environment='IMAGE=nginx:1.15.4'
  # !!!!!!   if you update this version number, also update it mg-rast-confd.service !!!!!!
 
 #old: Environment='IMAGE=mgrast/nginxconfd'
