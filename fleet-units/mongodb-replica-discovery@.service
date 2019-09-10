@@ -21,7 +21,7 @@ EnvironmentFile=-/etc/environment
 ExecStart=/bin/bash -c " \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
   echo \"channel detected: $CHANNEL\"; \
-  if [ $CHANNEL_ == "shock_" ] ; then export PORT=28017 ; else export PORT=27017 ; fi ; \
+  if [[ $CHANNEL == *"shock"* ]] ; then export PORT=28017 ; else export PORT=27017 ; fi ; \
   echo \"port detected: $PORT\"; \
   while true; do \
     etcdctl set /services/${SERVICE}/$CHANNEL/${SERVICE}@%i \'{\"address\":\"${COREOS_PUBLIC_IPV4}:\'\"$PORT\"\'\",\"host\":\"%H\",\"port\":\'\"$PORT\"\',\"COREOS_PRIVATE_IPV4\":\"${COREOS_PRIVATE_IPV4}\",\"COREOS_PUBLIC_IPV4\":\"${COREOS_PUBLIC_IPV4}\"}\' --ttl 60; \
