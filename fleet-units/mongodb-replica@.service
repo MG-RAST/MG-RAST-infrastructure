@@ -44,7 +44,8 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStart=/bin/bash -c ' \
   export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${CONTAINER} --log-driver=journald -v ${SERVICE_DIR}/$CHANNEL/mgrast-config/services/mongod/key-file:/keyfile:rw -v ${SERVICE_DIR}-$CHANNEL:/data/db -p 27017:27017 ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --quiet --bind_ip 0.0.0.0 --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
+  if [ $CHANNEL_ == "shock_" ] ; then export PORT=28017 ; else export PORT=27017 ; fi ; \
+  docker run --rm --name ${CONTAINER} --log-driver=journald -v ${SERVICE_DIR}/$CHANNEL/mgrast-config/services/mongod/key-file:/keyfile:rw -v ${SERVICE_DIR}-$CHANNEL:/data/db -p $PORT:$PORT ${IMAGE} bash -c "/bin/chmod 600 /keyfile; /bin/chown mongodb:mongodb /keyfile; mongod --port $PORT --quiet --bind_ip 0.0.0.0 --keyFile /keyfile --dbpath /data/db --replSet $CHANNEL"'
 
 #This should only run on primary after mongo is running first time
 # docker exec mongodb-replica mongo --quiet -u $USER -p $PASS --eval 'printjson(rs.initiate({_id:"$CHANNEL",members:[{_id:0,host:"${COREOS_PUBLIC_IPV4}:27017"}]}))' admin
