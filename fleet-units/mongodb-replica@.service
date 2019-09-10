@@ -24,6 +24,7 @@ ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); eval $(ssh
 
 #ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
+ExecStartPre=/usr/bin/docker pull ${IMAGE}
 # set data dir
 # if exists remove old local config, but not real data
 ExecStartPre=/bin/bash -c ' \
