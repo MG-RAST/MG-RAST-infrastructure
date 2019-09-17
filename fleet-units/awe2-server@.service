@@ -7,7 +7,7 @@ Wants=%p-monitor@%i.service
 
 [Service]
 Environment='CONTAINER=awe2-server-%i'
-Environment='IMAGE=mgrast/awe:develop'
+Environment='IMAGE=mgrast/awe-server:develop'
 Environment='SERVICE=awe2-server'
 Environment='SERVICE_DIR=/media/ephemeral/awe2-server-%i'
 Environment='TITLE=MG-RAST AWE2 server'
