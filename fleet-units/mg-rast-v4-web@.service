@@ -24,11 +24,16 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 ExecStartPre=/bin/bash -c "mkdir -p ${SERVICE_DIR}/conf.d && echo \"SetEnv V4URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${SERVICE_DIR}/conf.d/v4url.conf"
 
 # get image
-ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+#ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
+ExecStartPre=/bin/bash -c "${SERVICE_DIR}/mgrast-config/services/web_v4/pull_docker_image.sh %i" 
 
-ExecStart=/bin/bash -c 'set -x ; \
-  export CHANNEL=$(echo %i | cut -d . -f 2); \
-  docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${SERVICE_DIR}/mgrast-config/services/web_v4/config.js:/usr/share/nginx/html/js/config.js ${IMAGE}:latest'
+
+
+#ExecStart=/bin/bash -c 'set -x ; \
+#  export CHANNEL=$(echo %i | cut -d . -f 2); \
+#  docker run --rm --name ${SERVICE}-$CHANNEL -p ${COREOS_PRIVATE_IPV4}::80 -v ${SERVICE_DIR}/mgrast-config/services/web_v4/config.js:/usr/share/nginx/html/js/config.js ${IMAGE}:latest'
+
+ExecStart=/bin/bash -c "export HOSTNAME=${HOSTNAME} ; ${SERVICE_DIR}/mgrast-config/services/web_v4/start_container.sh %i"
 
 ExecStop=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker stop ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${SERVICE_DIR}
