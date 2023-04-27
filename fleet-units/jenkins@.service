@@ -19,15 +19,18 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+# ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
 
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
 
 
 # get image
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}:32769:8080 -p 50000:50000 -e TZ=America/Chicago --env JENKINS_OPTS="--prefix=/jenkins" -v jenkins_home:/var/jenkins_home -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/jenkins.conf:/etc/default/jenkins ${IMAGE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p ${COREOS_PRIVATE_IPV4}:32769:8080 -p 50000:50000 -e TZ=America/Chicago --env JENKINS_OPTS="--prefix=/jenkins" -v jenkins_home:/var/jenkins_home -v ${SERVICE_DIR}/config/services/${SERVICE}/jenkins.conf:/etc/default/jenkins ${IMAGE}
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${SERVICE_DIR}

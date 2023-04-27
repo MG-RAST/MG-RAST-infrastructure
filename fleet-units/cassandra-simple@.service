@@ -18,8 +18,12 @@ ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/data ${SERVICE_DIR}/commitlog ${SERVIC
 ExecStartPre=-/bin/chattr -R +C ${SERVICE_DIR}/data
 
 # get config
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+# ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
 
 # clear containers
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
@@ -31,7 +35,7 @@ ExecStartPre=/usr/bin/docker pull ${IMAGE}
 ExecStartPre=/usr/bin/docker run -i --rm -e COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} -v ${SERVICE_DIR}/mgrast-config/services/cassandra/:/config -v ${SERVICE_DIR}/ssl:/ssl ${IMAGE} /config/ssl.sh
 
 #  make sure seed gets lock
-ExecStartPre=/media/ephemeral/cassandra-simple/mgrast-config/services/cassandra/get_lock.sh
+ExecStartPre=/media/ephemeral/cassandra-simple/config/services/cassandra/get_lock.sh
 
 ExecStart=/bin/bash -c '\
   export INSTANCE_NAME=%i ; \
@@ -39,7 +43,7 @@ ExecStart=/bin/bash -c '\
   export CONTAINER=${CONTAINER} ; \
   export COREOS_PUBLIC_IPV4=${COREOS_PUBLIC_IPV4} ; \
   export IMAGE=${IMAGE} ; \
-  ${SERVICE_DIR}/mgrast-config/services/cassandra/run_cassandra.sh'
+  ${SERVICE_DIR}/config/services/cassandra/run_cassandra.sh'
 
 ExecStop=/usr/bin/docker stop ${CONTAINER}
 

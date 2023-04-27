@@ -6,7 +6,7 @@ After=mongodb-replica-update@%i.service
 [Service]
 Environment='CONTAINER=mongodb-replica'
 Environment='SERVICE_DIR=/media/ephemeral/mongodb'
-Environment='CONFIG_PATH=mgrast-config/services/mongod'
+Environment='CONFIG_PATH=config/services/mongod'
 EnvironmentFile=-/etc/environment
 
 ExecStartPre=/bin/bash -c " \

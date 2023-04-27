@@ -4,7 +4,7 @@ BindsTo=api-server-discovery@%i.service
 After=api-server-discovery@%i.service
 
 [Service]
-Environment='DIR=/media/ephemeral/api-server-%i/mgrast-config/services/api-server'
+Environment='DIR=/media/ephemeral/api-server-%i/config/services/api-server'
 
 # This is to update the Conf.pm file with changes in available memcached or cassandra hosts
 ExecStart=/bin/bash ${DIR}/update_conf.sh ${DIR}/Conf.pm

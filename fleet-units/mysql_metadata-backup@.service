@@ -6,7 +6,7 @@ After=mysql_metadata@%i.service
 [Service]
 Environment='CONTAINER=mysql-metadata-%i'
 Environment='DATA_DIR=/media/ephemeral/mysql_metadata-%i/data'
-Environment='CONFIG_DIR=/media/ephemeral/mysql_metadata-%i/mgrast-config/services/mysql_metadata'
+Environment='CONFIG_DIR=/media/ephemeral/mysql_metadata-%i/config/services/mysql_metadata'
 
 ExecStartPre=/bin/mkdir -p ${DATA_DIR}/backup
 ExecStartPre=/bin/chmod 777 ${DATA_DIR}/backup

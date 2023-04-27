@@ -20,8 +20,13 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+# ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${DIR}/mgrast-config; mkdir -p ${DIR}; cd ${DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
+
 
 # set dirs
 ExecStartPre=/bin/mkdir -p ${DIR}/logs ${DIR}/data
@@ -29,7 +34,7 @@ ExecStartPre=/bin/mkdir -p ${DIR}/logs ${DIR}/data
 # get image
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001 -e TZ=America/Chicago -v ${DIR}/mgrast-config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE} --logoutput=file --memprofile=/mnt/awe/logs/memprofile.prof
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001 -e TZ=America/Chicago -v ${DIR}/config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE} --logoutput=file --memprofile=/mnt/awe/logs/memprofile.prof
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 

@@ -13,9 +13,12 @@ TimeoutStartSec=300s
 Restart=always
 
 # get config repo
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+# ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
 
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
 
 
 ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
@@ -24,7 +27,7 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 ExecStartPre=/usr/bin/docker pull mgrast/awe-monitor
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --env-file ${SERVICE_DIR}/mgconf/services/awe-monitor/awe-monitor.env -v ${SERVICE_DIR}/mgconf/services/awe-monitor/config.js:/usr/local/apache2/htdocs/js/config.js -p 8085:80 ${IMAGE}  httpd -DFOREGROUND -C 'Define servername https://awe.mg-rast.org/monitor/'
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} --env-file ${SERVICE_DIR}/config/services/awe-monitor/awe-monitor.env -v ${SERVICE_DIR}/config/services/awe-monitor/config.js:/usr/local/apache2/htdocs/js/config.js -p 8085:80 ${IMAGE}  httpd -DFOREGROUND -C 'Define servername https://awe.mg-rast.org/monitor/'
             
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 

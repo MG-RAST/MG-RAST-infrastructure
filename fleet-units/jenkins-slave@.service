@@ -19,8 +19,12 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+# ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+
+# get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
 
 
 
@@ -31,10 +35,10 @@ ExecStartPre=/bin/bash -c 'if [ $(iptables -L | grep jenkins | wc -l) == 0 ] ; t
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
 # get docker binary
-ExecStartPre=/bin/bash -c 'cd ${SERVICE_DIR}/mgconf/services/${SERVICE}/ ; ./get_docker_binary.sh'
+ExecStartPre=/bin/bash -c 'cd ${SERVICE_DIR}/config/services/${SERVICE}/ ; ./get_docker_binary.sh'
 
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8002:22 --env-file ${SERVICE_DIR}/mgconf/services/${SERVICE}/slave.env -v /var/run/docker.sock:/var/run/docker.sock -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/docker:/usr/bin/docker -v ${SERVICE_DIR}/mgconf/services/${SERVICE}/docker-compose:/usr/bin/docker-compose ${IMAGE}
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8002:22 --env-file ${SERVICE_DIR}/config/services/${SERVICE}/slave.env -v /var/run/docker.sock:/var/run/docker.sock -v ${SERVICE_DIR}/config/services/${SERVICE}/docker:/usr/bin/docker -v ${SERVICE_DIR}/config/services/${SERVICE}/docker-compose:/usr/bin/docker-compose ${IMAGE}
 
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"

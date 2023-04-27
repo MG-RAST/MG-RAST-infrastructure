@@ -20,8 +20,12 @@ ExecStartPre=-/bin/bash -c "/usr/bin/docker kill ${CONTAINER} > /dev/null 2>&1"
 ExecStartPre=-/bin/bash -c "/usr/bin/docker rm ${CONTAINER} > /dev/null 2>&1"
 
 # get config repo
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+# ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+
+# get config
 ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
-ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/mgconf ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/mgconf.git'
+ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR} ; cd ${SERVICE_DIR} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
 
 
 
@@ -32,7 +36,7 @@ ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/logs ${SERVICE_DIR}/data
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
 ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001 \
-  -v ${SERVICE_DIR}/mgconf/services/awe2-server/awe.cfg:/awe.cfg:ro \
+  -v ${SERVICE_DIR}/conf/services/awe2-server/awe.cfg:/awe.cfg:ro \
   -v ${SERVICE_DIR}/logs/:/mnt/awe/logs/ \
   -v ${SERVICE_DIR}/data/:/mnt/awe/data/ \
   -e TZ=America/Chicago \

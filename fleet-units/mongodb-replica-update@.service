@@ -7,7 +7,7 @@ Wants=mongodb-replica-backup@%i.service
 [Service]
 Environment='SERVICE=mongodb-replica'
 Environment='SERVICE_DIR=/media/ephemeral/mongodb'
-Environment='CONFIG_PATH=mgrast-config/services/mongod'
+Environment='CONFIG_PATH=config/services/mongod'
 EnvironmentFile=-/etc/environment
 
 # if this is running on primary host, will update it every time change in etcd
