@@ -9,7 +9,7 @@ Wants=%p-monitor@%i.service
 Environment='CONTAINER=awe-server-%i'
 Environment='IMAGE=mgrast/awe-server'
 Environment='SERVICE=awe-server'
-Environment='DIR=/media/ephemeral/awe-server-%i'
+Environment='SERVICE_DIR=/media/ephemeral/awe-server-%i'
 Environment='TITLE=MG-RAST AWE server'
 
 TimeoutStartSec=0
@@ -29,12 +29,12 @@ ExecStartPre=/bin/bash -c 'rm -rf ${SERVICE_DIR}/config ; mkdir -p ${SERVICE_DIR
 
 
 # set dirs
-ExecStartPre=/bin/mkdir -p ${DIR}/logs ${DIR}/data
+ExecStartPre=/bin/mkdir -p ${SERVICE_DIR}/logs ${SERVICE_DIR}/data
 
 # get image
 ExecStartPre=/home/core/skycore pull --tag=latest etcd:${SERVICE}
 
-ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001 -e TZ=America/Chicago -v ${DIR}/config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${DIR}/logs/:/mnt/awe/logs/ -v ${DIR}/data/:/mnt/awe/data/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE} --logoutput=file --memprofile=/mnt/awe/logs/memprofile.prof
+ExecStart=/usr/bin/docker run --rm --name ${CONTAINER} -p 8000:8000 -p 8001:8001 -e TZ=America/Chicago -v ${SERVICE_DIR}/config/services/awe-server/awe.cfg:/awe.cfg:ro -v ${SERVICE_DIR}/logs/:/mnt/awe/logs/ -v ${SERVICE_DIR}/data/:/mnt/awe/data/ ${IMAGE}:latest /gopath/bin/awe-server --recover --conf=/awe.cfg --use_app_defs=yes --title=${TITLE} --logoutput=file --memprofile=/mnt/awe/logs/memprofile.prof
 
 ExecStop=-/bin/bash -c "/usr/bin/docker stop ${CONTAINER} > /dev/null 2>&1"
 
