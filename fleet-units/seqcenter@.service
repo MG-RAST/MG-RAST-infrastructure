@@ -17,8 +17,13 @@ ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/
 ExecStartPre=-/bin/bash -c "export CHANNEL=$(echo %i | cut -d . -f 2); /usr/bin/docker rm ${SERVICE}-$CHANNEL > /dev/null 2>&1"
 
 # get config
-ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
-ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+# ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/; if [ `ssh-keygen -F gitlab.cels.anl.gov | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H gitlab.cels.anl.gov >> ~/.ssh/known_hosts; fi'
+# ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem; rm -rf ${SERVICE_DIR}/mgrast-config; mkdir -p ${SERVICE_DIR}; cd ${SERVICE_DIR}; git clone git@gitlab.cels.anl.gov:MG-RAST/mgrast-config.git'
+
+# get config
+ExecStartPre=/bin/bash -c 'mkdir -p ~/.ssh/ ; if [ `ssh-keygen -F github.com | grep -v "^#" | wc -l` -eq "0" ]; then ssh-keyscan -H github.com >> ~/.ssh/known_hosts ; fi'
+ExecStartPre=/bin/bash -c 'export CHANNEL=$(echo %i | cut -d . -f 2); rm -rf ${SERVICE_DIR}/${CHANNEL}/config ; mkdir -p ${SERVICE_DIR}/${CHANNEL} ; cd ${SERVICE_DIR}/${CHANNEL} ; GIT_SSH_COMMAND="ssh -i /etc/ssh/mgrast_coreos.pem" git clone git@github.com:MG-RAST/config.git'
+
 
 # Set v4url.confd
 #ExecStartPre=/bin/bash -c "mkdir -p ${SERVICE_DIR}/conf.d && echo \"SetEnv V4URL $(echo %i | cut -d . -f 2).metagenomics.anl.gov\" > ${SERVICE_DIR}/conf.d/v4url.conf"
@@ -27,7 +32,7 @@ ExecStartPre=/bin/bash -c 'eval $(ssh-agent); ssh-add /etc/ssh/mgrast_coreos.pem
 #ExecStartPre=/bin/bash -c "/home/core/skycore pull --tag=latest etcd:${SERVICE}-$(echo %i | cut -d . -f 2)"
 ExecStartPre=/usr/bin/docker pull ${IMAGE}
 
-ExecStart=/usr/bin/docker run --rm --name ${SERVICE} -p ${COREOS_PRIVATE_IPV4}::80  -v ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/OAuthConfig.pm:/usr/local/apache2/htdocs/SequenceCenter/authServer/cgi-bin/OAuthConfig.pm -v ${SERVICE_DIR}/mgrast-config/services/${SERVICE}/ClientConfig.pm:/usr/local/apache2/htdocs/SequenceCenter/authServer/cgi-bin/ClientConfig.pm ${IMAGE}:latest
+ExecStart=/usr/bin/docker run --rm --name ${SERVICE} -p ${COREOS_PRIVATE_IPV4}::80  -v ${SERVICE_DIR}/config/services/${SERVICE}/OAuthConfig.pm:/usr/local/apache2/htdocs/SequenceCenter/authServer/cgi-bin/OAuthConfig.pm -v ${SERVICE_DIR}/config/services/${SERVICE}/ClientConfig.pm:/usr/local/apache2/htdocs/SequenceCenter/authServer/cgi-bin/ClientConfig.pm ${IMAGE}:latest
 
 ExecStop=-/usr/bin/docker stop ${SERVICE} > /dev/null 2>&1"
 ExecStop=-/bin/rm -rf ${SERVICE_DIR}
