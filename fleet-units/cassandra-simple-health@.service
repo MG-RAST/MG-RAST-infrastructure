@@ -31,7 +31,7 @@ ExecStart=/bin/bash -c ' \
     else \
       R="fail:probe-missing"; \
     fi; \
-    etcdctl set /services/${SERVICE}/health/${SERVICE}@%i "$R ${COREOS_PRIVATE_IPV4} $(date -u +%s)" --ttl 150 > /dev/null; \
+    etcdctl set /services/${SERVICE}/health/${SERVICE}@%i "$R ${COREOS_PRIVATE_IPV4} $(date -u +%%s)" --ttl 150 > /dev/null; \
     sleep 45; \
   done'
 
