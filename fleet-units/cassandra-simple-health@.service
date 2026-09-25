@@ -1,0 +1,41 @@
+[Unit]
+# Active health signal for cassandra-simple, separate from -discovery@.
+#
+# cassandra-simple-discovery@ writes its etcd key unconditionally every 45s, so it
+# only proves the UNIT is alive. On 2026-09-22 bw6 was found reporting UN with gossip
+# active while its Cassandra had logged nothing for 2.5 months and would not service a
+# JMX request (nodetool drain hung >12 min). Discovery kept publishing happily.
+#
+# This unit runs an ACTIVE probe (JMX + a real CQL read, all with timeouts) and
+# publishes the verdict. Three distinguishable states:
+#   key = "ok ..."            -> node genuinely serving
+#   key = "fail:<reason> ..." -> probe ran and the node is sick (see reason)
+#   key absent (TTL expired)  -> this unit itself is dead/not scheduled
+Description=cassandra-simple active health probe
+BindsTo=cassandra-simple@%i.service
+After=cassandra-simple@%i.service
+
+[Service]
+Environment='SERVICE=cassandra-simple'
+Environment='CONTAINER=cassandra-simple'
+Environment='PROBE=/media/ephemeral/cassandra-simple/config/services/cassandra/health_probe.sh'
+EnvironmentFile=-/etc/environment
+Restart=always
+RestartSec=30
+
+ExecStart=/bin/bash -c ' \
+  while true; do \
+    if [ -r "${PROBE}" ]; then \
+      R=$(CONTAINER=${CONTAINER} COREOS_PRIVATE_IPV4=${COREOS_PRIVATE_IPV4} timeout 120 bash "${PROBE}" 2>/dev/null | tail -1); \
+      [ -z "$R" ] && R="fail:probe-error"; \
+    else \
+      R="fail:probe-missing"; \
+    fi; \
+    etcdctl set /services/${SERVICE}/health/${SERVICE}@%i "$R ${COREOS_PRIVATE_IPV4} $(date -u +%s)" --ttl 150 > /dev/null; \
+    sleep 45; \
+  done'
+
+ExecStop=-/bin/bash -c "/usr/bin/etcdctl rm /services/${SERVICE}/health/${SERVICE}@%i"
+
+[X-Fleet]
+MachineOf=cassandra-simple@%i.service
