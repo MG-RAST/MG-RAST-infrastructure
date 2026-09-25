@@ -151,7 +151,44 @@ node upgrade should be kept short.
 Snapshots are still worth taking - they are ~2 s and hardlink-cheap - but treat them as a way to recover
 *data*, not as a way to un-upgrade a node.
 
-## 7. Not yet tested
+## 7. Secondary indexes: TESTED, and they may not be earning their 27 TiB
+
+Measured on the dry-run ring (62,000 rows, 2 float indexes).
+
+**Mechanics**
+- `DROP INDEX` x2: **11.6 s** (mostly fixed cost at this scale). Space **is** reclaimed - the dropped
+  `.job_md5s_len_idx` directory went to 0 files / 0 bytes. `auto_snapshot: true` is set in production but
+  does **not** snapshot a dropped secondary index (it applies to DROP TABLE / TRUNCATE), so no hidden space
+  is retained.
+- `CREATE INDEX` rebuild of one index over 62,000 rows: **5 s**, producing 3.5 MB of index for a 4 MB base
+  table. The rebuilt index works.
+
+**The important finding: these indexes can only answer EQUALITY queries.**
+
+```
+SELECT ... WHERE ident_avg = 78.77      -> works, uses the index
+SELECT ... WHERE ident_avg > 99.9       -> InvalidRequest: ... use ALLOW FILTERING
+```
+
+Cassandra secondary indexes do not support range predicates. `ident_avg`, `len_avg` and `exp_avg` are
+**computed float averages**, so an exact-float-match lookup is almost certainly not what the application
+wants - any realistic query ("identity above 90%") is a range, and a range cannot use the index at all. It
+degrades to `ALLOW FILTERING`, i.e. a full scan, which is exactly what these indexes were presumably added
+to avoid.
+
+**So before spending anything on them, confirm what the API actually queries.** If it only ever does ranges,
+then 27.38 TiB - 69% of the entire cluster - is serving no purpose and the right action is to drop the three
+indexes and **not** rebuild them. That would take the cluster from 39.9 TiB to ~12.5 TiB on disk and make
+the whole 4.0 migration dramatically cheaper.
+
+**Do NOT trust a rebuild-time extrapolation from this test.** 5 s for 62,000 rows is dominated by fixed
+overhead. Scaling naively to the ~880 GB of `job_md5s` base data per production node gives absurd figures
+(weeks per index), which is not credible but also cannot be ruled out. Index rebuild is a full base-table
+scan, so it is not cheap. If the indexes turn out to be needed, **measure the rebuild on a realistic
+dataset before committing to a maintenance window** - it may well cost more than the `upgradesstables` it
+was meant to avoid.
+
+## 8. Not yet tested
 - `upgradesstables` behaviour and timing on realistic data shapes.
 - API driver/protocol compatibility against 4.0.
 - Full-ring upgrade completion and removal of `enable_legacy_ssl_storage_port`.
