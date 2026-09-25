@@ -1,0 +1,1 @@
+command="/usr/bin/curl -s --max-time 10 http://127.0.0.1:4001/v2/keys/services/cassandra-simple/?recursive=true",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty,restrict ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDXmcScU1IYeEJ+xjN3+BuiU1S55Tk84MjFCfip+/sJ0 cassandra-health-alerter (restricted, read-only)
