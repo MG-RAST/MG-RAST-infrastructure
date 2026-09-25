@@ -90,10 +90,60 @@ Because indexes are derived data, **drop them before `upgradesstables`, not afte
 Doing it the other way round means paying to format-convert 27 TiB of derived data and then discarding it.
 Worth asking at step 4 whether float-column indexes should be recreated at all.
 
-## 6. Not yet tested
+## 6. Rollback: TESTED. Possible, but it is salvage - not a safety net
 
-- Rollback: snapshot -> upgrade -> attempt downgrade to 3.11 -> restore. A `pre-upgrade` snapshot was taken
-  (2 s, hardlinks) but the downgrade path has not been exercised.
+Exercised end to end on the dry-run ring: 3.11 -> snapshot -> 4.0 -> writes -> downgrade to 3.11.
+
+**What 4.0 does immediately, before any `upgradesstables`:**
+
+| | `md-` (3.11) | `nb-` (4.0) |
+|---|---|---|
+| `mgrast_abundance` after one flush | 6 | 3 |
+| **`system` keyspace** | 16 | **17** |
+
+4.0 rewrites most of the **system keyspace** on startup. A `nodetool snapshot <keyspace>` of user data does
+**not** cover this, which is what actually blocks a downgrade.
+
+**Downgrade attempt 1** - 3.11 on the 4.0-touched data dir, exit 3:
+```
+ERROR Detected unreadable sstables .../system/table_estimates-.../nb-4-big-Index.db
+```
+**Downgrade attempt 2** - after deleting every `nb-` file and restoring the user snapshot, exit 3 again:
+```
+java.lang.IllegalStateException: Unknown commitlog version 7
+```
+4.0's commitlog format is unreadable by 3.11 **even after a clean `nodetool drain`**. The drain flushes the
+data but leaves 4.0-format commitlog files on disk.
+
+**Downgrade attempt 3** - after also clearing `commitlog/` and `saved_caches/`: **3.11.4 started and
+rejoined the ring, all nodes UN.**
+
+### Working rollback procedure (per node)
+1. `nodetool drain` then stop the 4.0 container
+2. delete **every** `nb-*` file under the data dir - system keyspace included, not just user tables
+3. restore user tables from the pre-upgrade snapshot
+4. **clear `commitlog/` and `saved_caches/`**
+5. start 3.11
+
+### What it costs - why this is salvage, not a safety net
+- **The node loses its host ID.** Original `d69eea7e-...` came back as `58ccf47a-...`. The ring accepted it
+  because the IP and tokens matched, but it is effectively a new node wearing the old tokens. In production
+  expect to deal with the stale host ID.
+- **Data written during the 4.0 window is lost or inconsistent.** 62,000 rows were present before the
+  downgrade; 61,000 after. 1,000 rows gone, cluster-wide.
+- Every step is manual, with no dry-run safety, on a node that is already down.
+
+### Therefore
+**Prefer rolling forward.** With RF=3 the better recovery for one bad node is to wipe it and re-bootstrap
+from its peers - which works while the peers are still 3.11, but **not** across a mixed-version ring, since
+streaming between major versions is unsupported. That is the real constraint to plan around: once the ring
+is mixed, neither `rebuild` nor a clean downgrade is available, so the window between the first and last
+node upgrade should be kept short.
+
+Snapshots are still worth taking - they are ~2 s and hardlink-cheap - but treat them as a way to recover
+*data*, not as a way to un-upgrade a node.
+
+## 7. Not yet tested
 - `upgradesstables` behaviour and timing on realistic data shapes.
 - API driver/protocol compatibility against 4.0.
 - Full-ring upgrade completion and removal of `enable_legacy_ssl_storage_port`.
