@@ -129,9 +129,17 @@ rejoined the ring, all nodes UN.**
 - **The node loses its host ID.** Original `d69eea7e-...` came back as `58ccf47a-...`. The ring accepted it
   because the IP and tokens matched, but it is effectively a new node wearing the old tokens. In production
   expect to deal with the stale host ID.
-- **Data written during the 4.0 window is lost or inconsistent.** 62,000 rows were present before the
-  downgrade; 61,000 after. 1,000 rows gone, cluster-wide.
+- **Data survived** - corrected 2026-09-25. An initial reading of 61,000 rows (vs 62,000 before the
+  downgrade) suggested 1,000 rows were lost. That was wrong: a re-check against all three nodes
+  independently returned **62,000 on every node**, with both 4.0-era partitions (`job=900`, `job=901`)
+  complete. The first reading was a fragile parse plus a `CONSISTENCY ONE` read that hit the rolled-back
+  node before read-repair had caught it up. Hints played no part - the hints directories were empty on all
+  nodes and no handoff appears in the logs.
+  **Why it survived: RF=3.** The peers still held the writes made while node1 was on 4.0, so wiping node1's
+  local copy lost nothing. This is the replication factor doing exactly its job, and it is the strongest
+  argument for the wipe-and-re-bootstrap recovery below rather than a downgrade.
 - Every step is manual, with no dry-run safety, on a node that is already down.
+- The surviving cost is therefore **the host ID, not the data** - provided RF=3 peers are healthy.
 
 ### Therefore
 **Prefer rolling forward.** With RF=3 the better recovery for one bad node is to wipe it and re-bootstrap
