@@ -413,7 +413,73 @@ before the first node is upgraded.
 - `BulkLoader.sh` runs at `-Xmx20G` alongside Cassandra's fixed 20 GB heap - 40 of 71 GB - relevant only if a
   co-located reload is ever attempted.
 
-## 10. Not yet tested
+## 10. CANARY RESULT (2026-09-26): rebuild measured on production. It is a multi-week operation.
+
+Ran the full drop -> rebuild -> drop cycle on `job_lcas_exp_idx` in production, as designed by the review.
+
+### Drop
+| | |
+|---|---|
+| `DROP INDEX` wall time | **32 s** (and 31 s for the second drop) |
+| Space reclaimed | **~103 GiB** cluster-wide (2.3 GiB on bw16 to 9.8 GiB on bw8) |
+| Leftover dirs | empty shells, 0 files / 0 bytes - clean reclaim |
+| Ring / schema | 14 UN, converged to one schema version |
+
+### Rebuild - the number that matters
+`CREATE INDEX` DDL returned in **29 s**, but the build runs asynchronously on every node. Measured per-node
+wall time to completion (all 14 building in parallel):
+
+| node | time | | node | time |
+|---|---|---|---|---|
+| bw16 | **22.3 min** | | bw12 | 64.0 min |
+| bw5 | 54.1 min | | bw13 | 66.2 min |
+| bw11 | 55.4 min | | bw17 | 67.3 min |
+| bw3 | 56.8 min | | bw6 | 69.4 min |
+| bw15 | 59.4 min | | bw2 | **76.6 min** |
+| bw10 | 60.4 min | | | |
+| bw4 | 60.6 min | | **median** | **~62 min** |
+| bw8 | 61.6 min | | **wall clock** | **77 min** |
+| bw7 | 62.9 min | | | |
+
+Rebuilt index verified functional (equality query returned rows via the index). Cluster stayed 14 UN with a
+single schema version throughout, and the health probe reported OK the whole time.
+
+### Extrapolation to `job_md5s` - scaled by data volume, per node (bw7)
+| table | live data | partitions | mean partition |
+|---|---|---|---|
+| `job_lcas` (measured) | **6.1 GiB** | 89,557 | 0.30 MB |
+| `job_md5s` (target) | **901.1 GiB** | 92,062 | 16.7 MB |
+
+Partition *counts* are nearly identical (89.5k vs 92k); the difference is **~148x the data volume**. An index
+build scans the base table, so cost tracks cells scanned:
+
+**~62 min x 148 = ~153 hours = ~6.4 days per index, per node.** Nodes build in parallel, so that is also the
+wall clock per index. `CREATE INDEX` cannot batch, so three indexes require three separate full base scans:
+
+> **Rebuilding the three `job_md5s` indexes is on the order of 19 days of continuously degraded cluster.**
+
+An independent estimate arrived at ~2 days per index by a different route; mine says ~6.4. Both agree on the
+order of magnitude: **days per index, weeks in total.** Treat the extrapolation as approximate and probably
+optimistic - `job_md5s` mean partitions are 55x larger (16.7 MB vs 0.30 MB, p99 224 MB), and larger partitions
+make index builds less efficient per byte, not more.
+
+### Conclusion
+**The drop is effectively irreversible, now with a measured basis rather than a fear.** 103 GiB came back in
+32 seconds; putting it back took 77 minutes. Scaled to the real target that asymmetry becomes seconds versus
+weeks, with no resumability and no metrics to watch it by. Proceed - but on the understanding that this is a
+one-way door, and that the only capability behind it is global equality lookup on a computed float average,
+which no consumer issues.
+
+### Operational notes from the canary
+- Every schema change emits `schema version mismatch detected`. It is transient - the ring reconverged to a
+  single version each time - but `describecluster` reports `UNREACHABLE: [140.221.76.82, 140.221.76.75]`, so
+  **this warning will recur on every DDL until the two dead ring members are removed.** Do not let it mask a
+  real disagreement; check `describecluster` after each change.
+- `DROP INDEX` returns in ~30 s at this scale; space appears within ~90 s (btrfs unlink is async).
+- Use `cqlsh --request-timeout=300` for schema statements and verify via `system_schema.indexes` rather than
+  retrying a DDL that may already have applied.
+
+## 11. Not yet tested
 - `upgradesstables` behaviour and timing on realistic data shapes.
 - API driver/protocol compatibility against 4.0.
 - Full-ring upgrade completion and removal of `enable_legacy_ssl_storage_port`.
