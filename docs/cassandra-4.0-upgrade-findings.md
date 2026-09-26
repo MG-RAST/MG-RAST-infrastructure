@@ -191,8 +191,23 @@ already-pinned partition (lines 187/193, 208/214, 242/245):
 ```
 ... WHERE version = ? AND job = ? AND ident_avg >= ? ALLOW FILTERING
 ```
-A secondary index cannot serve a range, and is not needed once the partition is pinned - Cassandra just
-filters within it, which is bounded and cheap.
+**CORRECTION (2026-09-26).** An earlier version of this section claimed a secondary index "is not needed
+once the partition is pinned". **That is wrong** - Cassandra does use a 2i inside a single partition. Proven
+by `TRACING ON`:
+
+| query shape | trace |
+|---|---|
+| `ident_avg = 95.5` (equality, indexed, partition pinned) | `Scanning with job_md5s_ident_idx` / `Executing read ... using index job_md5s_ident_idx` |
+| `ident_avg >= 90` (range, indexed) | **`No applicable indexes found`** |
+| `len_avg >= 100` (range, index dropped) | `No applicable indexes found` |
+
+So the indexes are skipped here for exactly **one** reason: **a standard secondary index supports only
+equality, not ranges**, and every API filter on these columns is `>=`. Cassandra says so itself -
+"No applicable indexes found".
+
+This matters for the risk assessment: if any consumer ever issues an **equality** query on these columns, the
+index *would* be used, and dropping it would turn that into a within-partition scan (still correct, and
+bounded by partition size, but slower).
 
 **Proven empirically on the dry ring**, where `len_idx` was dropped and `ident_idx` kept:
 
@@ -202,6 +217,23 @@ filters within it, which is bounded and cheap.
 | `... AND len_avg  >= 100 ALLOW FILTERING` | **dropped** | 500 rows |
 
 Identical behaviour. The index contributes nothing.
+
+**The indexes are worse than unused - they FORBID a query shape you may want.** Cassandra rejects a
+secondary-index predicate combined with an `IN` on the partition key. Same query, same data, only the index
+differs:
+
+| predicate | index | result |
+|---|---|---|
+| `job IN (900,901) AND len_avg = 120.0 ALLOW FILTERING` | **dropped** | **3 rows** |
+| `job IN (900,901) AND ident_avg = 95.5 ALLOW FILTERING` | present | `InvalidRequest: Select on indexed columns and with IN clause for the PRIMARY KEY are not supported` |
+
+So "give me all hits across this list of jobs where <column> = x" is **illegal while the index exists** and
+becomes legal once it is dropped. A cross-job *range* query
+(`job IN (...) AND ident_avg >= 90 ALLOW FILTERING`) works either way - tested, 3 rows.
+
+**The API does not support multi-job queries today**: `get_job_records(self, job, ...)` takes a single job,
+and its `IN` clauses are on `md5` and on lookup tables, never on `job`. Multiple jobs are handled by looping
+one query per job at the application layer.
 
 **Other consumers:** `mgrast/v4-web` contains no reference to cassandra or `job_md5s` - it calls the API over
 HTTP. The `BulkLoader` (`services/cassandra-load/`) references the columns only in CREATE TABLE and INSERT,
