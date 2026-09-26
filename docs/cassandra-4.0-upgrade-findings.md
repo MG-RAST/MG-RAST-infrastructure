@@ -381,7 +381,39 @@ extra copy, experimental) are both rejected. If data ever justifies it, the chea
 clustering column (`ident_bin int`) in a **new** table, dual-written for new jobs and backfilled per job by a
 resumable script - after the drop and after 4.0.
 
-### Ring health: bw16 is under-replicated
+### Ring health: bw16 lost ~5 years of data and nobody noticed (diagnosed 2026-09-26)
+
+**Confirmed by sstable age**, which is the discriminator:
+
+| node | oldest sstable | newest |
+|---|---|---|
+| bw7 | **2016-12-24** | 2026-09-23 |
+| bw16 | **2021-07-24** | 2026-09-22 |
+
+bw16 holds **nothing older than July 2021**. Its SSL keystore was regenerated 2021-04-09 (peers: 2016-10-12),
+so it was wiped / re-provisioned around then, rejoined **owning its full 18.9% of token ranges with 256
+tokens**, and its historical data was never streamed back. Everything it now holds is post-2021 writes plus
+accumulated read-repair - which is exactly the ~30% of a peer's volume it carries, **uniformly across every
+table** (job_md5s 330 vs 901 GiB, job_lcas 2.1 vs 6.1 GiB, each index 26-31% of peer).
+
+`system.local` reports `bootstrapped = COMPLETED` and `nodetool status` shows normal ownership, so **nothing
+in the cluster surfaces this.** It is invisible to every health check including the new probe, which tests
+liveness, not completeness.
+
+**Consequences for the plan:**
+- Ranges bw16 owns are effectively short a replica, *on top of* bw9 (.75) and bw14 (.82) each owning ~18-19%
+  and being gone entirely. The two dead nodes are **bio-worker9 and bio-worker14** - fleet members, not
+  "foreign" hosts as STATUS.md says - and both are ICMP-down with SSH closed, so `removenode` is the only
+  option, not `decommission`.
+- **A small fraction of ranges may have no complete replica at all** - those whose replica set is
+  {bw16, bw9, bw14}. Rough order of magnitude with 16 ring members at RF=3: ~0.2% of ranges, so single-digit
+  GiB of possibly unrecoverable data. Approximate, and worth confirming rather than trusting.
+- **bw16 must be rebuilt/repaired BEFORE `removenode` of the dead nodes.** `removenode` streams from surviving
+  replicas; if bw16 is one of them carrying five-year gaps, the "restored" replicas inherit those gaps.
+- Fix is `nodetool rebuild` on bw16 (streams all data for its ranges) or a full repair. Either is far cheaper
+  after the indexes are dropped - ~12.5 TiB basis instead of 39.9 TiB, and no index-build-on-receipt.
+
+### Ring health (superseded note)
 bw16 holds **332 GiB of base data against 907-966 GiB** on peers - roughly a third, with 256 vnodes and RF=3
 where ownership should be even. Its index footprint is low for the same reason (679 GiB vs ~2.1 TiB), so this
 is missing **data**, not broken indexes. No index build is running on any node. **The ring has had two dead
