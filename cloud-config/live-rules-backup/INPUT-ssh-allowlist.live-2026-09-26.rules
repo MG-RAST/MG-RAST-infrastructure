@@ -1,0 +1,7 @@
+-A INPUT -s 192.5.200.126/32 -p tcp -m tcp --dport 22 -m comment --comment warehouse13 -j ACCEPT
+-A INPUT -s 140.221.27.0/24 -p tcp -m tcp --dport 22 -m comment --comment Homes-Network -j ACCEPT
+-A INPUT -s 140.221.27.9/32 -p tcp -m tcp --dport 22 -m comment --comment Homes -j ACCEPT
+-A INPUT -s 140.221.6.203/32 -p tcp -m tcp --dport 22 -m comment --comment pamby -j ACCEPT
+-A INPUT -s 140.221.9.203/32 -p tcp -m tcp --dport 22 -m comment --comment namby -j ACCEPT
+-A INPUT -s 140.221.76.0/24 -p tcp -m tcp --dport 22 -m comment --comment bio-worker -j ACCEPT
+-A INPUT -p tcp -m tcp --dport 22 -j DROP
