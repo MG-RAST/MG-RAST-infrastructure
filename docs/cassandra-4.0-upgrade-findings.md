@@ -176,10 +176,52 @@ wants - any realistic query ("identity above 90%") is a range, and a range canno
 degrades to `ALLOW FILTERING`, i.e. a full scan, which is exactly what these indexes were presumably added
 to avoid.
 
-**So before spending anything on them, confirm what the API actually queries.** If it only ever does ranges,
-then 27.38 TiB - 69% of the entire cluster - is serving no purpose and the right action is to drop the three
-indexes and **not** rebuild them. That would take the cluster from 39.9 TiB to ~12.5 TiB on disk and make
-the whole 4.0 migration dramatically cheaper.
+### CONFIRMED against the deployed code: the indexes are unused
+
+Checked the running `api-server-api` container (`/MG-RAST/src/MGRAST/pylib/mgrast_cassandra.py`), the web
+front end, and the load tooling.
+
+**Every** API query against `job_md5s` is partition-key restricted:
+```
+SELECT <fields>      FROM job_md5s WHERE version = ? AND job = ?
+SELECT seek, length  FROM job_md5s WHERE version = ? AND job = ? AND md5 = ?
+```
+Where the API does filter on an indexed column it uses a **range plus ALLOW FILTERING**, inside an
+already-pinned partition (lines 187/193, 208/214, 242/245):
+```
+... WHERE version = ? AND job = ? AND ident_avg >= ? ALLOW FILTERING
+```
+A secondary index cannot serve a range, and is not needed once the partition is pinned - Cassandra just
+filters within it, which is bounded and cheap.
+
+**Proven empirically on the dry ring**, where `len_idx` was dropped and `ident_idx` kept:
+
+| query | index | result |
+|---|---|---|
+| `... AND ident_avg >= 90 ALLOW FILTERING` | present | 400 rows |
+| `... AND len_avg  >= 100 ALLOW FILTERING` | **dropped** | 500 rows |
+
+Identical behaviour. The index contributes nothing.
+
+**Other consumers:** `mgrast/v4-web` contains no reference to cassandra or `job_md5s` - it calls the API over
+HTTP. The `BulkLoader` (`services/cassandra-load/`) references the columns only in CREATE TABLE and INSERT,
+never as a filter.
+
+**Origin:** `services/cassandra-load/mgrast_analysis/job_table.cql` lines 30-32 create all three `job_md5s`
+indexes as part of the schema DDL (and lines 47-49 do the same for `job_lcas`). They were declared up front
+for query patterns that were ultimately implemented as partition-scoped `ALLOW FILTERING` instead.
+
+### Recommendation
+
+**Drop all six secondary indexes and do not rebuild them.** That is 27.38 TiB on disk / ~9.1 TiB logical -
+**69% of the cluster** - reclaimed, the 470-575 GB monster sstables gone, ~2 TiB freed per node, and
+`upgradesstables` reduced from 39.9 TiB to ~12.4 TiB. This is worth more than everything the btrfs balances
+recovered, and it is a win **independently of the 4.0 migration**.
+
+Because rebuilding 27 TiB would be expensive if this is ever wrong, do it deliberately:
+1. Drop the smallest first as a canary - `job_lcas_exp_idx` (~0.1 TiB) - and watch API behaviour and latency.
+2. Then the other two `job_lcas` indexes.
+3. Then the three `job_md5s` indexes, one at a time, reclaiming ~9 TiB each.
 
 **Do NOT trust a rebuild-time extrapolation from this test.** 5 s for 62,000 rows is dominated by fixed
 overhead. Scaling naively to the ~880 GB of `job_md5s` base data per production node gives absurd figures
