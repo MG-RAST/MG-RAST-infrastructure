@@ -85,10 +85,9 @@ Because indexes are derived data, **drop them before `upgradesstables`, not afte
 1. `DROP INDEX` the three `job_md5s` indexes -> frees 27.4 TiB, removes the giant sstables
 2. Apply the yaml changes (§1 + §2), rebuild the image, roll 3.11 -> 4.0 one node at a time
 3. `upgradesstables` -> now only ~12.4 TiB to rewrite instead of 39.9 TiB
-4. Rebuild the indexes on 4.0 (generated natively in the new format)
 
-Doing it the other way round means paying to format-convert 27 TiB of derived data and then discarding it.
-Worth asking at step 4 whether float-column indexes should be recreated at all.
+**Do NOT rebuild the indexes afterwards** - see §7, they are never consulted by any consumer. An earlier
+revision of this section said to rebuild them on 4.0, which contradicted §7; that step has been removed.
 
 ## 6. Rollback: TESTED. Possible, but it is salvage - not a safety net
 
@@ -312,7 +311,109 @@ clustering slice with no scan. That is a schema change plus a reload of 4.1 TiB 
 project from the 4.0 upgrade - but it is the real answer, and the 4.0 migration is a natural moment to
 consider it since the data is being rewritten anyway.
 
-## 9. Not yet tested
+## 9. Independent review (2026-09-26): drop is sound, but for sharper reasons
+
+Reviewed against the resource constraints. Verdict: **sound with caveats**. Corrections and additions:
+
+### The indexes are a standing disk-full risk TODAY - drop sooner, not later
+Index sstables of 470-575 GB under STCS: the next tier merge wants >=4 of them, i.e. ~2 TiB free. bw8 has
+925 GiB. Cassandra will keep shrinking the candidate set ("Not enough space for compaction, reducing scope")
+until it fits, so **the index CFS on the tight nodes is effectively permanently un-compactable** - tombstones
+never purge and sstable count only grows. Combined with `disk_failure_policy: stop`, that is a live
+ENOSPC-to-node-death path, and it is also why `upgradesstables` is impossible on bw8 while the indexes exist
+(a pre-upgrade snapshot pins 2.5 TiB of index files, and rewriting a 575 GB sstable needs 575 GB free).
+**Keeping them is the more dangerous state.**
+
+### Rebuild: plan as irreversible, but not because of disk or heap
+My per-node arithmetic (dropping frees what a rebuild consumes) is right at steady state, and heap is **not**
+a blocker (3.11 index builds are paged; 20 GB CMS will give ugly GC pauses, not OOM). The real blockers:
+- **`concurrent_compactors` unset with one data dir resolves to 2** in 3.11. An index build occupies one of
+  those two threads for its entire duration.
+- **Transient STCS space**: expect a further ~0.5-1 TiB per node late in the build, on top of the steady-state
+  figure - which puts bw8/bw6/bw13 at or below today's already-marginal headroom.
+- **Time**: per node per index, a full read of ~0.85 TiB of base data plus ~2-3 TiB of compaction writes at
+  16 MB/s is on the order of **2 days per index**; three indexes require three separate full base scans
+  (`CREATE INDEX` cannot batch them). Order of magnitude: **one to two weeks of degraded cluster**, all 14
+  nodes at once, page cache thrashed, API reads slow throughout.
+- **Non-resumable**: a node restart mid-build restarts that node's build from zero. The mandatory cert-driven
+  rolling restart makes that concrete.
+- **No observability**: no metrics, `slow_query_log_timeout_in_ms` at 5000, so this would run blind.
+
+**Verdict: achievable in principle, not achievable by this team at acceptable risk. Treat the drop as a
+one-way door** - which is acceptable, because the only capability behind that door is global equality lookup
+on a computed float average, which no consumer needs and which is scientifically meaningless.
+
+### Dropping also makes streaming ~3x cheaper - a benefit not previously stated
+2i cost on every path, not just SELECT: writes fan out to three index memtables, base compaction runs an
+index cleanup transaction, and **every sstable received by streaming is index-built on receipt**. So
+`removenode` of the two dead ring members, any repair, and any wipe-and-re-bootstrap recovery all get
+dramatically cheaper once the indexes are gone. That directly shortens recovery inside the mixed-version
+upgrade window.
+
+### Canary must test the REBUILD, not just the drop
+The operator's fear is the rebuild, so the canary has to measure it: **drop `job_lcas_exp_idx` (~7-8 GiB per
+node), wait, `CREATE INDEX` it back and measure per-node wall time, `compactionstats` progress, GC warnings
+and API latency, then drop it again.** That converts the rebuild cost from a fear into a number. Scale by
+rows not bytes (job_lcas partitions are much smaller than job_md5s) and treat the extrapolation as
+optimistic. Use `cqlsh --request-timeout=300` for every schema statement - a timed-out DROP may still have
+applied, so check `system_schema.indexes` rather than retrying blindly.
+
+### Middle options: all rejected
+- Keep one of three on `job_md5s`: retains ~640 GiB per node and the un-compactable monster CFS, buys only
+  float-equality on one column. Reject.
+- Snapshot before drop: `nodetool snapshot` hardlinks the index CFS too, so it reclaims **nothing** while it
+  exists, and restoring an index from snapshot files means hand-editing `system.IndexInfo`. Not a real option.
+- Nothing cheaper preserves optionality; optionality and free space are in direct opposition here.
+
+### The schema redesign is NOT advisable now, and my proposed key was wrong
+`PRIMARY KEY ((version, job), ident_avg, md5)` **breaks the point lookup** `WHERE version=? AND job=? AND
+md5=?` that the API uses to fetch `seek, length`. So the original table must stay: **minimum 2x base storage**
+(~25 TiB on disk) for one filtered attribute, and three attributes as three clustered copies would be ~37 TiB
+- more than the indexes just removed. Only one clustering column can be sliced; the other two stay as
+within-slice filtering.
+
+Worse, **selectivity is an unverified premise**. The 40/1500 example is synthetic. MG-RAST's default
+evalue/identity/length cutoffs may pass almost every hit, in which case the "scan" *is* the result set and no
+key change helps at all. That cannot be measured today. **Fix observability first** - lower
+`slow_query_log_timeout_in_ms` from 5000 toward 500 at the next restart - then decide with data.
+SASI (experimental, disabled by default in 4.0, OOM-prone on large partitions) and materialized views (a full
+extra copy, experimental) are both rejected. If data ever justifies it, the cheapest route is a quantised
+clustering column (`ident_bin int`) in a **new** table, dual-written for new jobs and backfilled per job by a
+resumable script - after the drop and after 4.0.
+
+### Ring health: bw16 is under-replicated
+bw16 holds **332 GiB of base data against 907-966 GiB** on peers - roughly a third, with 256 vnodes and RF=3
+where ownership should be even. Its index footprint is low for the same reason (679 GiB vs ~2.1 TiB), so this
+is missing **data**, not broken indexes. No index build is running on any node. **The ring has had two dead
+token owners for years and needs a repair before any major upgrade.**
+
+### Never run a schema change in the mixed-version window
+3.11<->4.0 schema propagation is explicitly the thing not to exercise. All DROP INDEX work must complete
+before the first node is upgraded.
+
+### Recommended order
+1. Disable the `CREATE INDEX` statements in `job_table.cql` (done) and fix this document (done).
+2. Verify the real index list in `system_schema.indexes`; investigate bw16's deficit.
+3. Canary: drop + rebuild + drop `job_lcas_exp_idx` to get a measured rebuild rate.
+4. Drop the remaining five, `job_md5s` one at a time, 24-48 h apart, watching API latency.
+5. Cert-driven rolling restart (already mandatory) - doubles as validation that nodes start clean without the
+   index CFS. No `CREATE INDEX` running during it.
+6. `nodetool removenode` .75/.82 - after the drop (smaller streams, no index build on receipt), before the
+   upgrade (must not be mixed-version).
+7. Repair (`-pr`, per node) so the ring is genuinely healthy before a major upgrade.
+8. Snapshot, roll 3.11 -> 4.0 quickly (§1 and §2 fixes), then `upgradesstables`, then clear snapshots.
+
+### Smaller corrections
+- `exp_avg` is an e-value exponent, so the API filter is probably `<=` rather than `>=`. Still a range;
+  conclusion unaffected.
+- The IN-clause + index restriction is verified on **3.11 only**; assume but do not claim it for 4.0.
+- Per-node figures in this document are **GiB**, not GB.
+- At production scale a `DROP INDEX` returns in seconds but btrfs unlinks 500 GB files asynchronously, so
+  `df` may lag by minutes. Do not panic if space does not appear immediately.
+- `BulkLoader.sh` runs at `-Xmx20G` alongside Cassandra's fixed 20 GB heap - 40 of 71 GB - relevant only if a
+  co-located reload is ever attempted.
+
+## 10. Not yet tested
 - `upgradesstables` behaviour and timing on realistic data shapes.
 - API driver/protocol compatibility against 4.0.
 - Full-ring upgrade completion and removal of `enable_legacy_ssl_storage_port`.
