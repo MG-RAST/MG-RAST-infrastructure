@@ -262,7 +262,57 @@ scan, so it is not cheap. If the indexes turn out to be needed, **measure the re
 dataset before committing to a maintenance window** - it may well cost more than the `upgradesstables` it
 was meant to avoid.
 
-## 8. Not yet tested
+## 8. The range queries ARE full partition scans - and production is tuned to tolerate it
+
+Measured on the dry ring (`TRACING ON`), partition `job=1` with 1500 rows and random `ident_avg`:
+
+| | |
+|---|---|
+| rows in partition | 1500 |
+| rows matching `ident_avg >= 99` | **40** |
+| live rows actually **read** | **3000** (1500 x 2 replicas) |
+
+So a range filter reads the **entire partition** and discards ~97% of it. Correctness is fine; cost is
+bounded by partition size rather than table size.
+
+**Production partition sizes make that expensive** (`nodetool tablehistograms mgrast_abundance job_md5s`):
+
+| percentile | partition size | cells |
+|---|---|---|
+| 50% | 219 KB | 17,084 |
+| 75% | 8.4 MB | 654,949 |
+| 95% | 108 MB | 7,007,506 |
+| 99% | **224 MB** | **17,436,917** |
+| max | **387 MB** | **30,130,992** |
+
+The median partition is harmless. But a p99 query scans **17.4 million cells**, and the worst partition
+**30 million**, to return a subset.
+
+**The configuration already admits this.** Every relevant timeout in `run_cassandra.sh` is **10x the
+Cassandra default**, with the defaults left in the comments:
+
+```
+read_request_timeout_in_ms   = 50000    # default 5000
+range_request_timeout_in_ms  = 100000   # default 10000
+request_timeout_in_ms        = 100000   # default 10000
+slow_query_log_timeout_in_ms = 5000     # default 500
+compaction_large_partition_warning_threshold_mb = 256   # default 100
+```
+
+That is the fingerprint of exactly this problem: the cluster was tuned to *tolerate* full-partition scans
+instead of avoiding them. Note `slow_query_log_timeout_in_ms = 5000` means nothing is logged as a slow query
+until it exceeds 5 seconds, so the slowness is largely invisible in the logs.
+
+**The secondary indexes were the attempted fix and they cannot work**, because a standard 2i serves only
+equality while every one of these filters is a range. Dropping them costs nothing in query capability.
+
+**What would actually fix it** is a data-model change - putting the filtered attribute into the clustering
+key, e.g. `PRIMARY KEY ((version, job), ident_avg, md5)`, which turns `ident_avg >= x` into an efficient
+clustering slice with no scan. That is a schema change plus a reload of 4.1 TiB logical, so it is a separate
+project from the 4.0 upgrade - but it is the real answer, and the 4.0 migration is a natural moment to
+consider it since the data is being rewritten anyway.
+
+## 9. Not yet tested
 - `upgradesstables` behaviour and timing on realistic data shapes.
 - API driver/protocol compatibility against 4.0.
 - Full-ring upgrade completion and removal of `enable_legacy_ssl_storage_port`.
