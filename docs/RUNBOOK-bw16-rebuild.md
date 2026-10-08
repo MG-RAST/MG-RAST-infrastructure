@@ -43,8 +43,44 @@ Correct order:
 
 `/media/ephemeral/cassandra-simple-aux` is **2.6 TiB** and exists on bw16 only (five peers checked, none
 have it). It is the pre-reprovision data directory: 49,518 `*-Data.db` spanning 2016-10-12 to 2021-04-09.
-Ranges whose replica set was {bw16, bw9, bw14} may have **no other surviving copy**. If it has to go,
-rsync it to mgrast-01 first — 2.6 TiB, ~8 h at the measured 95 MB/s.
+Ranges whose replica set was {bw16, bw9, bw14} may have **no other surviving copy** — and those two
+nodes are gone for good: ICMP down, SSH closed, `generation:0 heartbeat:0 TOKENS: not present` in gossip,
+absent from fleet, and still pinned at the superseded schema `44bb01fe-...` in `system.peers` while the
+14 live nodes are on `2248d57a-...`.
+
+**But only ~745 GiB of the 2.6 TiB is irreplaceable.** Measured breakdown:
+
+| inside aux | size | keep? |
+|---|---|---|
+| `job_md5s` base data | **~737 GiB** | **yes** |
+| `job_md5s` `.job_md5s_{len,ident,exp}_idx` | 1,735 GiB | no — derived, and being dropped anyway |
+| `job_md5s` snapshots | 88 GiB | no |
+| `job_lcas` base | ~5 GiB | yes |
+| `job_lcas` indexes + snapshots | 31 GiB | no |
+| `job_info` | 20 MiB | yes |
+| `system` + `system_schema` | 1.7 GiB | yes — old token/schema provenance |
+| `m5nr_v1`, `m5nr_v12` | 26 GiB | no — reference DBs, reloadable |
+
+So the backup is **~745 GiB, ~2.3 h**, using 0.8 TB of mgrast-01's 5.8 TB:
+
+```bash
+ssh 140.221.31.93 'mkdir -p /local/cassandra/bw16-aux && nohup rsync -rlptD --no-o --no-g \
+  --partial --bwlimit=60000 --info=stats2 \
+  --rsync-path="sudo rsync" \
+  --exclude="snapshots/" --exclude=".job_md5s_*_idx/" --exclude=".job_lcas_*_idx/" \
+  --exclude="m5nr_v1/" --exclude="m5nr_v12/" \
+  core@140.221.76.12:/media/ephemeral/cassandra-simple-aux/ /local/cassandra/bw16-aux/ \
+  > /local/cassandra/bw16-aux-rsync.log 2>&1 &'
+```
+`--rsync-path="sudo rsync"` because parts of the tree are root-owned; `--no-o --no-g` because the
+receiving side is unprivileged; `--bwlimit=60000` to keep read I/O off a live node's back; `--partial`
+so a 2.3 h transfer is resumable.
+
+**Second route to the space.** Deleting aux's index directories and snapshots alone frees **1.82 TiB**
+without touching any base data, taking bw16 from 1.41 TiB to ~3.2 TiB free — enough for the full
+2.23 TiB rebuild even without dropping the live indexes first. Those are derived data and the same
+indexes are being dropped cluster-wide regardless, so this is low-risk; still, do the base-data backup
+above before any deletion.
 
 ## Preconditions (verify each before starting)
 
