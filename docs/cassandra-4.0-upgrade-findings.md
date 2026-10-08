@@ -404,6 +404,19 @@ tokens**, and its historical data was never streamed back. Everything it now hol
 accumulated read-repair - which is exactly the ~30% of a peer's volume it carries, **uniformly across every
 table** (job_md5s 330 vs 901 GiB, job_lcas 2.1 vs 6.1 GiB, each index 26-31% of peer).
 
+> **Correction 2026-10-08: the old data was never deleted — it was moved aside.** bw16 (and only bw16;
+> five peers checked have no such directory) carries `/media/ephemeral/cassandra-simple-aux`, **2.6 TiB**,
+> dated `Apr 9 2021`. It is the pre-reprovision Cassandra data directory: 49,518 `*-Data.db` files spanning
+> **2016-10-12 to 2021-04-09**, generations `mb`/`mc`/`md`, with `mgrast_abundance`, `m5nr_v1`, `m5nr_v12`
+> and the old `system` keyspace. Nothing runs out of it.
+>
+> **Do not delete it to make room.** Ranges whose replica set was {bw16, bw9, bw14} have no surviving
+> complete replica anywhere else, so this directory may hold their only copy. If it must go, rsync it to
+> mgrast-01 first (2.6 TiB, ~8 h at the measured 95 MB/s) — which is now possible, see the firewall README.
+>
+> It also explains bw16's disk: 4.0 TiB used for 1,010 GiB of live load.
+
+
 `system.local` reports `bootstrapped = COMPLETED` and `nodetool status` shows normal ownership, so **nothing
 in the cluster surfaces this.** It is invisible to every health check including the new probe, which tests
 liveness, not completeness.
