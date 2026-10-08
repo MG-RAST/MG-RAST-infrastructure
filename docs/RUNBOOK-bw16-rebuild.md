@@ -82,6 +82,67 @@ without touching any base data, taking bw16 from 1.41 TiB to ~3.2 TiB free — e
 indexes are being dropped cluster-wide regardless, so this is low-risk; still, do the base-data backup
 above before any deletion.
 
+## Disk safety — the real risk is compaction, not the inbound volume
+
+`disk_failure_policy: stop` halts the node on a full disk, so this gets its own section.
+
+Streamed sstables arrive as **new** files and are then compacted against the existing ones by STCS, so
+transient demand is roughly the sum of a compaction's inputs — not the net data gained. Measured
+sstable sizes (base data, index subdirs excluded):
+
+| | bw16 | bw7 (healthy peer) |
+|---|---|---|
+| largest | 146.4 GiB | **541.3 GiB** |
+| next three | 87.6 / 54.7 / 34.4 GiB | 74.7 / 49.7 / 41.7 GiB |
+| count | 19 | |
+
+As bw16 converges on peer shape it will grow sstables of that order, so plan for a compaction with
+several hundred GiB of inputs.
+
+**Free space by stage.** The two space-freeing steps already ahead of the rebuild are what make it safe:
+
+| stage | bw16 free | inbound needed | verdict |
+|---|---|---|---|
+| today | 1.41 TiB | 2.23 TiB | **impossible** |
+| after deleting aux indexes + snapshots (+1.82 TiB) | ~3.23 TiB | 2.23 TiB | thin |
+| after also dropping the 5 live indexes (+679 GiB) | **~3.9 TiB** | **652 GiB** | ~6x headroom |
+
+Do not start the rebuild before both. Then:
+
+1. **`btrfs balance` after the deletes.** Freeing files does *not* return `Device unallocated` — bw16 is
+   at 707.88 GiB unallocated against 4.57 TiB allocated. New *metadata* chunks come only from
+   unallocated space, which is the route to btrfs ENOSPC while `df` still looks fine. Judge from
+   `btrfs filesystem usage`, never `df`:
+   ```bash
+   ssh core@140.221.76.12 "sudo btrfs balance start -dusage=50 --background /media/ephemeral"
+   ssh core@140.221.76.12 "sudo btrfs balance status /media/ephemeral"
+   ```
+   Budget ~1 h per 350 chunks (~6 chunks/min observed).
+
+2. **Rebuild in bounded token slices.** 3.11 `nodetool rebuild` accepts `-ks` and `-ts`, so the inbound
+   volume per step is capped and the work is resumable:
+   ```bash
+   ssh core@140.221.76.12 "sudo docker exec cassandra-simple nodetool rebuild \
+     -ks mgrast_abundance -ts '(start_token,end_token]' datacenter1"
+   ```
+   Get the ranges from `nodetool ring`. Between slices: let compaction settle
+   (`nodetool compactionstats`), re-check free space, then continue. Slice sizing of ~100 GiB inbound
+   keeps the worst-case compaction well inside headroom.
+
+3. **Do not `disableautocompaction` to save space.** It defers the cost into one larger compaction later,
+   which is the failure mode you are trying to avoid.
+
+4. **Arm a hard-stop watch on free space** for the duration, because the node will not warn you:
+   ```bash
+   while true; do
+     ssh core@140.221.76.12 "df --output=pcent /media/ephemeral | tail -1" 
+     sleep 300
+   done
+   ```
+   If it crosses ~90%, stop streaming (restart the container — there is no `nodetool stop STREAM` for
+   rebuild in 3.11), let compaction drain, reassess. Streamed-but-uncompacted sstables are not lost;
+   rebuild is additive and re-runnable.
+
 ## Preconditions (verify each before starting)
 
 ```bash
