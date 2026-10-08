@@ -86,3 +86,33 @@ sudo tcpdump -nni any 'host 140.221.31.93 and tcp port 22' -c 20 -t
 
 A completed handshake is SYN / SYN-ACK / ACK and roughly 5 packets / 268 bytes on the counter — which
 is easy to misread as SYN retransmissions. Read the capture, not the counter alone.
+
+### Rolled out 2026-10-08, and measured
+
+All 15 reachable nodes carry the rule, live and persisted, `iptables-restore --test` ok, ACCEPT at
+line 1 and the DROP at line 8. Verified by real logins from mgrast-01 to all 15, not port probes.
+
+Capability check on the path (so the backup plan rests on measurements, not assumptions):
+
+| item | value |
+|---|---|
+| `rsync` present | yes, `/usr/bin/rsync` on both the nodes and mgrast-01 |
+| data dir as `core` | readable — `drwxr-xr-x 999:root /media/ephemeral/cassandra-simple/data` |
+| passwordless sudo on nodes | yes, if a path ever needs it |
+| free space on mgrast-01 `/local` | 5.8 TB of 17 TB |
+| **measured throughput** | **95 MB/s** sustained (2.15 GB sstable in 21.97 s) |
+
+**The transfer is 1 GbE-bound, not 10 GbE.** `ip route get 140.221.31.93` from a node resolves to
+`via 140.221.76.1 dev enp2s0f0` — the 1 g gateway, not the 10 g fabric, and the conduit routes through
+the campus core (6 hops). 95 MB/s implies:
+
+- ~3.2 h per TiB
+- **~10 h to stage one whole 3.16 TiB node**
+- ~2.8 h for `job_md5s` alone (901 GiB on a healthy peer)
+
+With 5.8 TB free, **only one node fits at a time** (nodes hold 2.74-3.40 TiB). Plan a single-node
+stage, verify, then clear it before the next.
+
+Also worth knowing: the live keyspace is **`mgrast_abundance`** (tables `job_info`, `job_lcas`,
+`job_md5s`). The repo directory `services/cassandra-load/mgrast_analysis/` does **not** match the
+keyspace name — do not derive paths from the repo layout.
