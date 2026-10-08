@@ -3,7 +3,15 @@
 Produced 2026-09-25 on a 3-node dry-run ring on **mgrast-01** (`/local/cassandra/dryrun/`), using the
 **real** `config/services/cassandra/cassandra.yaml`, the **real** `ssl.sh`, the production
 `mgrast/cassandra:3.11` image, and internode TLS from a CA built to match the production CA's exact shape
-(v1, no extensions, same subject DN). Nothing production was touched; mgrast-01 cannot reach the cluster.
+(v1, no extensions, same subject DN). Nothing production was touched; at the time mgrast-01 could not
+reach the cluster at all.
+
+> **Update 2026-10-08:** the network conduit is now open. mgrast-01 (140.221.31.93) can SSH into the
+> bio-workers (verified: `ssh core@140.221.76.73 hostname -f` -> `bio-worker7-10g.mcs.anl.gov`, key auth,
+> `BatchMode=yes`), so rsync-over-SSH of a node's data to mgrast-01 is possible. See
+> `cloud-config/live-rules-backup/README` for the host-level allowlist entry this requires.
+> The conduit is **one-directional**: the cluster still cannot initiate to mgrast-01 (`:22` and `:873`
+> blocked outbound from a bio-worker), so pull from mgrast-01 -- never push from a node, and no rsync daemon.
 
 ## 1. BLOCKER: 4.0 refuses to start on the current yaml
 

@@ -42,3 +42,47 @@ dependency that blocks making the monitoring ssh key durable (see `scripts/READM
 sudo iptables-restore --noflush < INPUT-ssh-allowlist.live-2026-09-26.rules
 ```
 Order matters: the catch-all DROP must remain last in the chain. Check with `sudo iptables -S INPUT` first.
+
+## 2026-10-08: mgrast-01 added
+
+The upstream network conduit for mgrast-01 was opened (ticket to CELS systems). mgrast-01 can now
+initiate SSH to the bio-workers; verified with a real login from mgrast-01:
+
+```
+$ ssh core@140.221.76.73 hostname -f
+bio-worker7-10g.mcs.anl.gov
+```
+
+The conduit is **one-directional**. A bio-worker still cannot reach `140.221.31.93:22` or `:873`
+outbound, so any data movement must be **pulled from mgrast-01**; do not design a push-from-node
+step or an rsync daemon.
+
+Each node needs this host-level allowlist entry, which must sit **before** the catch-all DROP:
+
+```
+-A INPUT -p tcp -s 140.221.31.93 --dport 22 -j ACCEPT -m comment --comment "mgrast-01"
+```
+
+Live insert (note `-I INPUT 1`, not append — appending lands it after the DROP and is inert):
+
+```
+sudo iptables -I INPUT 1 -p tcp -s 140.221.31.93 --dport 22 -m comment --comment 'mgrast-01' -j ACCEPT
+```
+
+Persist by inserting the same line into `/var/lib/iptables/rules-save` before its DROP line.
+That file is loaded by `iptables-restore.service` at boot and is hand-maintained (filter table only,
+no Docker chains) — do **not** regenerate it with a bare `iptables-save`, which would capture
+Docker's chains.
+
+**Diagnosing whether a block is ours or upstream.** Do not infer it from other ports: the upstream ACL
+is default-deny with a port-22-only conduit, so `9042`/`4001`/`7199` are blocked even from the
+workstation despite the hosts' own INPUT chain dropping **only** port 22. The reliable method is the
+per-rule packet counter plus a capture:
+
+```
+sudo iptables -L INPUT -n -v --line-numbers | head -3      # pkts on the ACCEPT rule
+sudo tcpdump -nni any 'host 140.221.31.93 and tcp port 22' -c 20 -t
+```
+
+A completed handshake is SYN / SYN-ACK / ACK and roughly 5 packets / 268 bytes on the counter — which
+is easy to misread as SYN retransmissions. Read the capture, not the counter alone.
