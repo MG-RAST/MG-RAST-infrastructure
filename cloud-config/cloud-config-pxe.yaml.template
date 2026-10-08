@@ -124,9 +124,12 @@ write_files:
         :FORWARD ACCEPT [0:0]
         :OUTPUT ACCEPT [0:0]
         -A INPUT -p tcp -s 192.5.200.126 --dport 22 -j ACCEPT -m comment --comment "warehouse13"
+        -A INPUT -p tcp -s 140.221.27.0/24 --dport 22 -j ACCEPT -m comment --comment "Homes-Network"
+        -A INPUT -p tcp -s 140.221.27.9 --dport 22 -j ACCEPT -m comment --comment "Homes"
         -A INPUT -p tcp -s 140.221.6.203 --dport 22 -j ACCEPT -m comment --comment "pamby"
         -A INPUT -p tcp -s 140.221.9.203 --dport 22 -j ACCEPT -m comment --comment "namby"
-        -A INPUT -p tcp -s 140.221.76.2 --dport 22 -j ACCEPT -m comment --comment "bio-infra1"
+        -A INPUT -p tcp -s 140.221.76.0/24 --dport 22 -j ACCEPT -m comment --comment "bio-worker"
+        -A INPUT -p tcp -s 140.221.31.93 --dport 22 -j ACCEPT -m comment --comment "mgrast-01"
         -A INPUT -p tcp -s 0.0.0.0/0 --dport 22 -j DROP
         COMMIT
         # last line needs to have this comment

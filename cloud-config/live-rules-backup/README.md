@@ -116,3 +116,33 @@ stage, verify, then clear it before the next.
 Also worth knowing: the live keyspace is **`mgrast_abundance`** (tables `job_info`, `job_lcas`,
 `job_md5s`). The repo directory `services/cassandra-load/mgrast_analysis/` does **not** match the
 keyspace name — do not derive paths from the repo layout.
+
+## 2026-10-08: the PXE template lockout is fixed
+
+`cloud-config/cloud-config-pxe.yaml.template` has been brought in line with the live rules, so the
+"reconcile before the next reprovision" warning above is **resolved for this checkout**. It previously
+wrote only warehouse13 / pamby / namby / bio-infra1 / DROP, meaning a reprovisioned node came back with
+**no SSH access from the operator workstation**. Added:
+
+```
+-A INPUT -p tcp -s 140.221.27.0/24 --dport 22 -j ACCEPT -m comment --comment "Homes-Network"
+-A INPUT -p tcp -s 140.221.27.9   --dport 22 -j ACCEPT -m comment --comment "Homes"
+-A INPUT -p tcp -s 140.221.76.0/24 --dport 22 -j ACCEPT -m comment --comment "bio-worker"
+-A INPUT -p tcp -s 140.221.31.93  --dport 22 -j ACCEPT -m comment --comment "mgrast-01"
+```
+
+`140.221.76.0/24` supersedes the single `140.221.76.2` (bio-infra1). The DROP remains last.
+
+Two deliberate choices:
+
+- The source is written as the **numeric CIDR `140.221.27.0/24`**, not as the hostname
+  `t2-firewall-idv1527.net.anl.gov/24` that the live `rules-save` carries. A hostname with a prefix length
+  is resolved once by `iptables-restore` at boot, so it silently depends on DNS being up at exactly that
+  moment. The numeric form removes that dependency.
+- The template is **not valid YAML on its own** (line 13 holds a `%` interpolation placeholder) and never
+  was — `update_cloud_config_pxe.sh` fills it in first. Verified the parse failure is byte-identical
+  before and after this change, so do not "fix" it.
+
+**Still open:** `update_cloud_config_pxe.sh` builds the real PXE config from `~/git/MG-RAST-infrastructure/`
+and `~/git/mgrast-config/`, not from this checkout. The fix above only takes effect once it reaches the
+path that script reads. See the mgrast-config note in `docs/RUNBOOK-bw16-rebuild.md`.
