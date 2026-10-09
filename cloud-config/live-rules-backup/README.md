@@ -145,4 +145,4 @@ Two deliberate choices:
 
 **Still open:** `update_cloud_config_pxe.sh` builds the real PXE config from `~/git/MG-RAST-infrastructure/`
 and `~/git/mgrast-config/`, not from this checkout. The fix above only takes effect once it reaches the
-path that script reads. See the mgrast-config note in `docs/RUNBOOK-bw16-rebuild.md`.
+path that script reads. See `docs/mgrast-config-recovery.md`.
