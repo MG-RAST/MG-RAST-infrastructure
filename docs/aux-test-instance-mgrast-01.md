@@ -92,3 +92,101 @@ bash /local/cassandra/auxtest_when_free.sh     # waits for the budget, starts, t
 It polls `/proc/meminfo` until `Committed_AS < CommitLimit` (or freyja exits), starts the container, waits
 for JMX, then prints `nodetool info`, the keyspace list from the 2021 schema, and a real read out of the
 aux sstables.
+
+---
+
+# WORKING 2026-10-09 — and the real blocker was not memory
+
+## Root cause: 48,860 sstables in aux's system keyspaces
+
+The repeated `Native memory allocation (mmap) failed to map N bytes` was **map-area exhaustion, not RAM**:
+
+| keyspace in the aux copy | files | `Data.db` |
+|---|---|---|
+| `system` | 185,184 | **23,148** |
+| `system_schema` | 205,696 | **25,712** |
+| `mgrast_abundance` | 96 | 12 |
+
+391,016 files total. Cassandra mmaps each sstable's data/index/summary at startup, blowing straight
+through `vm.max_map_count = 65530`. That is why it failed identically at 12G, 4G, 2G and 1G heaps, with
+minimal thread pools, and still failed once `Committed_AS` had dropped well below `CommitLimit` with 51 GB
+available. The memory pressure from `freyja` was real but **incidental** — it sent me down the wrong path
+for several attempts.
+
+The old bw16 had tens of thousands of never-compacted system sstables. That is a pathology in its own
+right and may be related to why it was re-provisioned in 2021.
+
+## The fix: fresh system keyspaces, schema created explicitly, sstables refreshed in
+
+Do **not** reuse aux's `system`/`system_schema`. Instead:
+
+```bash
+# 1. start with an EMPTY data dir so Cassandra builds its own system keyspaces
+# 2. create the schema by hand (from production DESCRIBE TABLE)
+docker exec aux-test bash -c 'printf "[connection]\nhostname = 127.0.0.1\nport = 9042\n" > /tmp/q.rc'
+docker exec aux-test cqlsh --cqlshrc=/tmp/q.rc -e "
+CREATE KEYSPACE IF NOT EXISTS mgrast_abundance WITH replication =
+  {'class': 'SimpleStrategy', 'replication_factor': 1};
+CREATE TABLE IF NOT EXISTS mgrast_abundance.job_lcas (
+    version int, job int, lca text, abundance int, exp_avg float,
+    ident_avg float, len_avg float, level int, md5s int,
+    PRIMARY KEY ((version, job), lca)
+) WITH CLUSTERING ORDER BY (lca ASC);"
+
+# 3. copy the aux sstables INTO the new table dir -- it has a NEW uuid
+#    (aux: job_lcas-e5c4d650...  new: job_lcas-fcff8b00...), top-level files only,
+#    no .job_lcas_*_idx subdirs and no snapshots
+# 4. chown 999:999, then:
+docker exec aux-test nodetool refresh mgrast_abundance job_lcas
+```
+
+This trades the "table UUIDs must match" problem for a `nodetool refresh`, which is the better deal.
+
+Two more traps: the image's **shipped `cqlshrc` enables SSL and points at a certfile that does not
+exist**, so cqlsh fails with `IOError(2, 'No such file or directory')` — write a fresh one, exactly as
+`config/services/cassandra/health_probe.sh` does. And `sudo` needs a tty on mgrast-01, so the copy and
+chown must run in a `--user 0` container; note the tree is owned by 999, so host-side `mkdir` fails.
+
+## Verified working
+
+```
+nodetool status  ->  UN 127.0.0.1  Load 4.88 GiB  256 tokens  owns 100.0%
+```
+All 64 `job_lcas` sstables are **`md` generation** — 3.11-native and 4.0-readable, so no generation
+problem for a later recovery. Partition enumeration works: `SELECT DISTINCT version, job ... LIMIT 15`
+returns immediately.
+
+### First real comparison: aux vs production, and all 15 sampled jobs match
+
+| job | aux rows | production rows | | job | aux | prod |
+|---|---|---|---|---|---|---|
+| 174229 | 460 | 460 | | 126570 | 6271 | 6271 |
+| 290677 | 1859 | 1859 | | 6298 | 1074 | 1074 |
+| 173159 | 63 | 63 | | 299681 | 2277 | 2277 |
+| 233561 | 885 | 885 | | 416230 | 387 | 387 |
+| 197475 | 55 | 55 | | 20600 | 180 | 180 |
+| 26046 | 176 | 176 | | 78130 | 124 | 124 |
+| 94500 | 606 | 606 | | 167226 | 58 | 58 |
+| 386560 | 264 | 264 | | | | |
+
+**Do not over-read this.** The at-risk fraction is only ~1% of bw16's ranges, so a 15-job sample has
+roughly a 0.99^15 ≈ 86% chance of containing no at-risk job at all. "All match" is the *expected* result
+whether or not gaps exist. It validates the method, not the absence of gaps.
+
+## IMPORTANT correction to the gap-measurement plan
+
+The plan said: query the live cluster per job and collect the ones returning **zero rows**. That is wrong
+for the ranges that actually matter.
+
+For a range whose replica set was {bw16, bw9, bw14}, only bw16 is up — so a **QUORUM read cannot be
+satisfied at all** and fails with `Unavailable`/timeout. It does **not** return `count = 0`.
+
+So the gap scan must:
+
+1. Read at **`CONSISTENCY ONE`** to get whatever survives, and compare the count against the aux instance.
+   A zero or short count then means a genuine gap.
+2. Treat an **`Unavailable` at QUORUM** as its own signal — that *is* the "two replicas dead" set, and it
+   is the population to compare against aux first.
+
+Both must happen **before `removenode`**, because afterwards those ranges are reassigned and stream from
+bw16, so QUORUM starts succeeding while silently serving incomplete data — the failure becomes invisible.
