@@ -211,3 +211,43 @@ concurrently with an index drop or a `removenode`.
   wedged (bw6, 2.5 months), so ring status alone is not liveness.
 - bw9 (.75) and bw14 (.82) are ICMP-down and SSH-closed, so `removenode` is the only option for them,
   never `decommission`.
+
+## DONE 2026-10-08: aux base data backed up and verified
+
+The backup step is complete. bw16 was only read from; nothing on it was modified.
+
+```
+destination : mgrast-01:/local/cassandra/bw16-aux/
+files       : 391,883 (reg 391,670, dir 211, link 2)
+bytes       : 822,357,089,176  (766 GiB)
+created     : 391,882     deleted: 0
+matched     : 0 bytes     speedup: 1.00     (all literal, nothing skipped)
+rate        : 59.88 MB/s  (the --bwlimit=60000 ceiling)  -> 3.8 h
+mgrast-01   : /local 5.8 T -> 5.1 T free
+```
+
+| landed | size |
+|---|---|
+| `data/mgrast_abundance` (base tables only) | 766 GiB |
+| `data/system` — old token/schema provenance | 825 MiB |
+| `data/system_schema` | 926 MiB |
+| `mgrast-config` | 8.3 MB, `git fsck` clean, HEAD `25efa44` |
+| `ssl/`, `commitlog/`, `hints/`, `saved_caches/` | small |
+
+**Verification performed**, not assumed: a second `--dry-run` pass over all 391,883 files reported one
+file, `mgrast-config/.git/index`, flagged `>f..t......` — `t` only, no `s`, so identical size. Cause was
+self-inflicted: running `git log`/`fsck`/`status` on the *destination* rewrites git's index stat cache.
+Confirmed by md5 (source `b608d987…` vs copy `d0d6b64d…`), then repaired with a `--checksum` resync, after
+which both sides read `b608d987…` and a `--checksum --dry-run` over the subtree reports no differences.
+
+**Do not run git commands against the backup copy** — it mutates `.git/index` and makes the backup diverge
+from the source. Inspect a clone instead.
+
+A full `--checksum` pass over the 766 GiB was deliberately *not* run: it would mean re-reading every byte
+on a live node for little gain, since rsync already verifies a whole-file checksum per transferred file
+and the sstables are immutable once written.
+
+### Next step, and what it does not risk
+
+Deleting aux's index directories and snapshots frees **1.82 TiB** on bw16. Base data stays, so even
+afterwards the irreplaceable part exists in two places — bw16 and mgrast-01.
