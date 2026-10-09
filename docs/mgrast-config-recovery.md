@@ -72,3 +72,62 @@ test -f mgrast-config/.git/shallow && echo SHALLOW || echo "full history"
 **It must not be pushed to this repository or any other public remote** — it holds `ssh_key/` and
 `auth/`. A private remote, or the private `config` repo, are the options; that is an operator decision,
 not something to default into.
+
+## DONE 2026-10-08: rehomed to the workstation
+
+Pulled from the verified-clean source to the path the generator actually reads:
+
+```
+bio-worker17:/media/ephemeral/confd/mgrast-config/  ->  ~/git/mgrast-config/
+```
+
+396 files / 7,810,672 bytes. Verified at content level, not by `git status`:
+
+| check | result |
+|---|---|
+| commits | 1468 |
+| HEAD | `a57cddc` 2022-07-28 "Merge branch 'wilke/edit-access' into 'master'" |
+| shallow | no — full history |
+| branches | `master`, `origin/master`, `origin/wilke/edit-access`, `origin/wilke/neon` |
+| `git fsck` | clean |
+| `git write-tree` vs `HEAD^{tree}` | **both `9bc92e109985681c425b45def56ee68df1c1476e`** |
+
+Note the trap: immediately after rsync, `git diff-index --quiet HEAD` reported **MODIFIED**. That is a
+stale stat cache — rsync preserves mtime but inodes and ctimes change. `git update-index --refresh`
+cleared it, and the tree-hash comparison above is the real proof. Use `write-tree` vs `HEAD^{tree}`, not
+`git status`, to verify a copied checkout.
+
+A bare mirror also exists at `~/git/mgrast-config.git` (2.7 MB, all 5 refs, 1469 commits reachable,
+`fsck` clean), because the upstream remote is dead and a single working copy is not a backup.
+
+## The monitoring-key durability gap: confirmed open, and NOT a one-line fix
+
+`cloud-config/keys.yaml` holds **7 keys**, and the `cassandra-health` key is **absent** — so the gap in
+`scripts/README-cassandra-health.md` is real: a PXE reprovision drops the monitoring key.
+
+How the key list reaches a node (`update_cloud_config_pxe.sh`):
+
+```sh
+PUBLIC_KEYS=$(cat ${CONFIG}cloud-config/keys.yaml | sed ':a;N;$!ba;s/\n/\\n/g')
+${SED_CMD} -e "s;%ssh_authorized_keys%;${PUBLIC_KEYS};g" ... ${TEMPLATE} > cloud-config-pxe.yaml
+```
+`keys.yaml` is slurped verbatim into the template's top-level `ssh_authorized_keys:` block.
+
+**Two reasons not to just append the key there:**
+
+1. **It would be a security downgrade.** All 7 existing entries are plain, unrestricted `ssh-rsa` keys
+   (operator workstations plus `root@warehouse13`). The `cassandra-health` key is deliberately
+   **passphraseless** and is restricted on the live hosts to a single forced command
+   (`command="…",no-pty,restrict` — a read-only etcd GET). Dropping it into this list unrestricted would
+   hand a passphraseless key full shell access on every node.
+2. **Option preservation through this path is unverified.** `coreos-cloudinit` hands
+   `ssh_authorized_keys` entries to `update-ssh-keys`. Whether `command="…"` prefixes survive that path
+   intact has **not** been tested here, and it must not be assumed. The substitution itself looks safe —
+   `sed` uses `;` as its delimiter and the forced command contains no `;`, `&` or backslash — but that is
+   only the generator, not `update-ssh-keys`.
+
+**Preferred fix instead:** have the template write a dedicated
+`/home/core/.ssh/authorized_keys.d/cassandra-health` via `write_files`, which reproduces the restricted
+line byte-for-byte and keeps it out of the shared human-key list. The key itself is a *public* key, but it
+should still live in `mgrast-config`, not in this public repository. **Not implemented — needs an operator
+decision**, since it changes how production nodes grant SSH.
