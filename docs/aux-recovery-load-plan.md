@@ -110,3 +110,72 @@ check free disk on the receiving nodes between files.
 Re-run the range-scoped comparison from `bw16-rebuild-result-and-data-gap.md`, but per job via the
 batched `cqlsh -f` pattern, comparing against the per-job counts in the container at `/tmp/per_job.txt`.
 Only after that: `removenode` the two dead nodes, `nodetool cleanup`, then a full repair.
+
+---
+
+# DONE 2026-10-11/12 — 54,315,470 rows recovered, 0 skipped
+
+| table | rows imported | time | skipped |
+|---|---|---|---|
+| `job_lcas` r2 | 88,127 | 5.7 s | 0 |
+| `job_lcas` r3 | 308,623 | 16.0 s | 0 |
+| `job_md5s` r2 | 10,867,765 | 9 m 04 s | 0 |
+| `job_md5s` r3 | 43,050,955 | 35 m 53 s | 0 |
+| **total** | **54,315,470** | ~46 min | **0** |
+
+All at `CONSISTENCY ONE`. `COPY FROM` **does** honour the session consistency level — verified by the
+trial succeeding where QUORUM returns `NoHostAvailable`. That was the one unverified assumption.
+
+## Verification
+
+**`job_lcas`, by range** — the after-counts correctly exceed aux's own totals, because production held
+post-2021 rows aux lacks, so the result is the union:
+
+| range | before | aux | after | union check |
+|---|---|---|---|---|
+| …911495 | 38,400 | 88,127 | **120,274** | 88,127 + 32,147 = 120,274 |
+| …464690 | 111,890 | 308,623 | **390,831** | 308,623 + 82,208 = 390,831 |
+
+**`job_md5s`, per job** (range-scoped `count(*)` is unusable on this table — it exceeds
+`range_request_timeout_in_ms`):
+
+| job | before | after | aux |
+|---|---|---|---|
+| 7279 (public, "WT4") | 15,000 (truncated) | **76,791** | 76,791 |
+| 124039 | 10,000 (truncated) | **1,163,162** | 1,163,162 |
+| 100560 | 4,519 (truncated) | **5,163** | 5,163 |
+| 125892 | absent | **247** | 247 |
+| 329293 | absent | **15,724** | 15,724 |
+| 183631 | absent | **199,889** | 199,889 |
+| 472199 (largest) | absent | **3,217,858** | 3,217,858 |
+
+Cluster throughout and after: 14 UN, one schema version, **0 dropped mutations**, 14/14 health probes
+`ok`, 0 pending compactions, bw16 1.17 TiB load / 1.3 T free.
+
+## Transport note
+
+The 4.08 GB of CSV went **mgrast-01 -> bw7 directly over the conduit at 111 MB/s** (~89% of 1 GbE line
+rate), skipping the workstation. First production use of the firewall opening.
+
+## Two process lessons
+
+**A silently mangled command looked like success.** The first `job_lcas` attempt produced no output and
+no error, because the filename quoting through `ssh -> docker exec -> cqlsh -e` was malformed. It was
+caught only by re-checking the range counts and seeing them unchanged. Fix: put the CQL in a file and run
+`cqlsh -f`. Never infer success from the absence of an error through a multi-layer quoting chain.
+
+**Verify by re-measuring the thing itself.** Every check above is a before/after count against an
+independent source, not an inspection of the tool's own report. `0 skipped` from `COPY FROM` was
+necessary but not sufficient.
+
+## STILL OUTSTANDING — the recovered data is single-copy
+
+These partitions have **one live replica**. Everything just recovered exists in exactly one copy, on
+bw16, at RF=1 in practice. Until the sequence below completes, a bw16 failure loses it again:
+
+1. `removenode` bio-worker9 (.75) and bio-worker14 (.82)
+2. `nodetool cleanup`
+3. **full repair** — this is what actually restores RF=3 for these ranges
+
+**Do not delete `cassandra-simple-aux` on bw16, and keep the mgrast-01 backup `chmod -R a-w`, until the
+repair has completed and been verified.**
