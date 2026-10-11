@@ -190,3 +190,49 @@ So the gap scan must:
 
 Both must happen **before `removenode`**, because afterwards those ranges are reassigned and stream from
 bw16, so QUORUM starts succeeding while silently serving incomplete data — the failure becomes invisible.
+
+---
+
+# Copy discipline: three copies, and the backup is now read-only
+
+**2026-10-11.** The aux data is the only source of ~246,000 confirmed-missing `job_lcas` rows (see
+`bw16-rebuild-result-and-data-gap.md`), so it must never be the thing an experiment operates on.
+
+| # | location | role | protection |
+|---|---|---|---|
+| 1 | `bw16:/media/ephemeral/cassandra-simple-aux` | the original, 2.6 TiB | leave alone; do **not** delete for disk space |
+| 2 | `mgrast-01:/local/cassandra/bw16-aux` | the backup, 768 GiB | **`chmod -R a-w`** — dirs and files |
+| 3 | `mgrast-01:/local/cassandra/aux-test/data` | the working copy the test instance mounts | freely disposable |
+
+Copies 1 and 2 agree: both show `job_md5s` at 693 GB across 39 top-level `Data.db`.
+
+To restore write access to the backup deliberately: `chmod -R u+w /local/cassandra/bw16-aux`.
+
+**Why this is enforced rather than merely intended.** The backup *had* already been written to once — a
+`--checksum` resync to restore `mgrast-config/.git/index` after a `git status` run against the
+destination dirtied it. That was a benign repair, but it proves good intentions are not a protection
+mechanism. Separately, an earlier `rm -rf .../aux-test/data/*` ran even though the staging step that was
+supposed to precede it had failed on permissions, destroying a staged copy. It only cost a re-copy
+because the backup existed; pointed at the backup it would have been unrecoverable.
+
+**Never let Cassandra's data directory point at copy 1 or copy 2.** Cassandra deletes sstables after
+compaction, and `nodetool refresh`/`cleanup` rewrite them.
+
+**Do not use hardlinks for the working copy.** It is tempting — instant and free, and sstables are
+immutable so compaction only unlinks — but `chown` acts on the **inode**, which hardlinks share, so
+chowning the working copy to uid 999 silently changes the backup's ownership too. A real copy costs
+693 GiB of 5.1 TB free and removes the whole class of problem.
+
+**`cp -a` is wrong here.** It preserves the read-only mode from the protected backup, and Cassandra then
+cannot delete those sstables after compaction. Copy without `-a`, then set ownership and modes
+explicitly:
+
+```bash
+docker run --rm -v /local/cassandra:/c --user 0 --entrypoint bash mgrast/cassandra:3.11 -c '
+  find /c/bw16-aux/data/mgrast_abundance/job_md5s-d8bd4410961911e6ae7529ff21047bb5 \
+       -maxdepth 1 -type f -exec cp {} /c/aux-test/data/mgrast_abundance/job_md5s-<NEW-UUID>/ \;
+  chown -R 999:999 /c/aux-test/data/mgrast_abundance/job_md5s-<NEW-UUID>
+  chmod -R u+rw      /c/aux-test/data/mgrast_abundance/job_md5s-<NEW-UUID>'
+```
+`-maxdepth 1 -type f` is what excludes the `.job_md5s_*_idx` subdirectories and `snapshots/`. The
+destination UUID is the **new** one from `CREATE TABLE`, not aux's `d8bd4410…`.
