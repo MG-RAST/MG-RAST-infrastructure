@@ -106,3 +106,68 @@ Caveats, stated honestly:
    not a measurement. A full repair after `removenode` remains the right closing step.
 4. Keep `cassandra-simple-aux` on bw16. It is not redundant with the mgrast-01 backup — it is the second
    copy of the only source of this data.
+
+---
+
+# job_md5s scan (2026-10-11): 146 of 152 jobs missing, >=7.74M rows
+
+Run against a **third** copy of aux, with the backup `chmod -R a-w` — see the copy-discipline section of
+`aux-test-instance-mgrast-01.md`. 693 GB / 39 sstables copied in, `nodetool refresh` took the test
+instance from 4.88 GiB to **697.58 GiB**.
+
+## Method correction: range-scoped `count(*)` does not scale
+
+`SELECT count(*) ... WHERE token(...) > X AND token(...) <= Y` worked fine on `job_lcas` (6.5 GB) but
+returns nothing on `job_md5s` (693 GB): it exceeds Cassandra's server-side `range_request_timeout_in_ms`
+regardless of the cqlsh `--request-timeout`. Do not raise the client timeout and assume it will work.
+
+What does work, and is cheap:
+1. `SELECT DISTINCT version, job ... WHERE token(...)` — partition-key-only scan, returns immediately.
+2. A **batched** presence probe: one cqlsh session with 152 single-partition
+   `SELECT job ... WHERE version=1 AND job=N LIMIT 1;` statements via `cqlsh -f`. One connection, not 152.
+
+## Result
+
+| | `job_lcas` | `job_md5s` |
+|---|---|---|
+| jobs in the 3 at-risk ranges | 152 | 152 (same jobs) |
+| present in aux | 152 | **152** |
+| present in production | 10 | **6** |
+| **missing from production** | **142** | **146** |
+| rows to recover | ~246,000 | **>=7,738,561** |
+| largest single job | 11,405 rows | **644,945 rows** |
+| mean per missing job | ~1,700 rows | 58,185 rows |
+
+**13 of the 146 counts did not return** (single-partition `count(*)` timed out), and those are
+presumably the largest partitions, so **>=7.74M is a floor, not a total** — realistically 8-12M rows.
+
+Total recovery scope across both tables: **~8M rows / 146 job partitions**, which is a few hundred MB of
+actual data. Small in bytes; the difficulty is entirely in doing it safely. `job_info` has not been
+checked yet.
+
+## The load is now gated on MySQL, not on capacity
+
+Rows absent from production must be inserted with a **current** timestamp, not the original one —
+otherwise a surviving tombstone could mask them. But that is exactly what makes the operation
+irreversible in the wrong case: **if any of these 146 jobs was deliberately deleted, inserting it
+resurrects it permanently.** `gc_grace_seconds` is 864000 (10 days), so every tombstone from a deletion
+since 2021 is long compacted away and cannot be distinguished from "never existed".
+
+So the authoritative job list must be consulted first. **`JobDB` on bio-worker19 (140.221.76.65)** is the
+source of truth; the 146 job ids must each be confirmed as still-expected before loading. MySQL there is
+reachable **only** via `docker exec` (3306 is blocked from everywhere, including bw19's own loopback).
+
+**Do not load, and do not `removenode`, until that check is done.**
+
+## Recommended load mechanism
+
+Not `sstableloader`: it would stream all 693 GB of aux's `job_md5s`, resurrecting every job deleted since
+2021. Instead export the confirmed-good partitions only:
+
+```sql
+-- on the aux test instance, per job
+COPY mgrast_abundance.job_md5s (version, job, md5, abundance, exp_avg, ident_avg, len_avg, length, seek)
+  TO '/tmp/job_<N>.csv' WHERE version=1 AND job=<N>;
+```
+then `COPY ... FROM` against production. ~8M rows is well within cqlsh `COPY` range. Verify per job by
+comparing the row count against the aux count recorded above before moving to the next.
