@@ -216,3 +216,36 @@ Single-partition `count(*)` works but is slow on the large partitions (job 47219
 Note the loader's own contract, from `services/cassandra-load/BulkLoader/BulkLoader.java`: `job_info`
 takes `version, job, updated_on, md5s, lcas, loaded`, where `updated_on` is **text** in the loader's
 schema but `timestamp` in the live table.
+
+## RESOLVED: null `job_info` does NOT block serving
+
+Traced through the API rather than inferred. The read path is Perl -> `Inline::Python` ->
+`$Conf::pylib_dir` = `/MG-RAST/site/lib/pylib`, where `mgrast_cassandra.py` is the Cassandra layer.
+(Note `Analysis.pm` also queries a `job_info` table with `loaded IS TRUE`, but that is **PostgreSQL**
+via `DBI:Pg` — `Analysis.pm` has no Cassandra references at all. Easy to misread as relevant; it is not.)
+
+Relevant functions in `mgrast_cassandra.py`:
+
+| function | behaviour on our restored jobs |
+|---|---|
+| `has_job()` — `SELECT * FROM job_info` | **returns 1** — a row exists, even all-null |
+| `is_loaded()` — `SELECT loaded`, truthy test | returns 0 (`loaded` is null) |
+| `get_info_count()` — returns `job_info.md5s` | returns **null** (healthy jobs return a number) |
+| `get_data_count()` — `SELECT COUNT(*) FROM job_md5s` | correct, reads the data table |
+
+**`is_loaded()` has no callers.** The only `job_info` consumers are in `resources/job.pm` (~lines
+1010-1062), an admin load-status endpoint, where `has_job()` already passes. So the serving path
+(`profile`, `matrix`, `annotation`) never consults `loaded`.
+
+**Confirmed empirically:** `/annotation/similarity/mgm4447449.3?source=RefSeq&type=function&identity=80`
+returns real rows — md5sums, identity, alignment length, annotations — for restored job 7279 ("WT4",
+public). The data is live to users.
+
+So `job_info` is **inconsistent metadata, not a blocker**. Fixing it is still correct: use the module's
+own semantics, `UPDATE job_info SET md5s = ?, lcas = ?, loaded = true, updated_on = ?`, with counts from
+`SELECT COUNT(*)` on the data tables (slow on the large partitions). Lower priority than the repair.
+
+Unrelated observation: `/profile/<mgm>` submissions sit at `status: processing, rows: 0` indefinitely for
+both restored and untouched jobs, so the async profile worker looks stuck independently of this work.
+Also `/metagenome?limit=N` returns `total_count: 0` while direct ID lookups work, so the search index is
+broken. Both predate the recovery and are worth separate attention.
