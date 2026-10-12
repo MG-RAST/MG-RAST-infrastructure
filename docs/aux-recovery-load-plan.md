@@ -179,3 +179,40 @@ bw16, at RF=1 in practice. Until the sequence below completes, a bw16 failure lo
 
 **Do not delete `cassandra-simple-aux` on bw16, and keep the mgrast-01 backup `chmod -R a-w`, until the
 repair has completed and been verified.**
+
+---
+
+# INCOMPLETE: `job_info` was never repaired
+
+The row data is restored, but `mgrast_abundance.job_info` — the per-job index — is still empty for these
+jobs. It was overlooked: the aux test instance was only ever given `job_lcas` and `job_md5s`, so
+`job_info` (6.4 MB in the backup) was never loaded or examined.
+
+```
+job_info ((version, job)) -> updated_on, md5s int, lcas int, loaded boolean
+```
+
+On a healthy job the values are accurate — job 174229 reads `md5s=2467, lcas=460, loaded=True`, matching
+its real row counts exactly. For the at-risk jobs the partition exists but **every column is null**:
+
+| | |
+|---|---|
+| at-risk jobs with a `job_info` row | 271 of 273 |
+| rows with all columns null | **271** |
+| rows with `loaded = True` | **0** |
+
+**Whether this blocks the API is unresolved.** `/profile/<mgm>` is asynchronous; a submission for the
+restored job 7279 (`mgm4447449.3`) was still `processing` with `rows: 0` after ten polls over ~3 minutes,
+and the untouched control behaves the same way, so the test distinguishes nothing. Do not assume either
+way.
+
+**Repair cannot be a copy from aux.** Aux's counts are the 2021 values, but production now holds the
+union of aux's rows and post-2021 rows that aux never had — the `job_lcas` ranges went to 120,274 and
+390,831 against aux's 88,127 and 308,623. So the correct `md5s`/`lcas` values must be **counted from
+production after the load**, per job, then written with `loaded = true` and a current `updated_on`.
+Single-partition `count(*)` works but is slow on the large partitions (job 472199 at 3.2M rows needed a
+550 s timeout), so budget for a long pass.
+
+Note the loader's own contract, from `services/cassandra-load/BulkLoader/BulkLoader.java`: `job_info`
+takes `version, job, updated_on, md5s, lcas, loaded`, where `updated_on` is **text** in the loader's
+schema but `timestamp` in the live table.
