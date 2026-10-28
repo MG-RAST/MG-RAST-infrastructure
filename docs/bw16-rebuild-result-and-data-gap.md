@@ -155,7 +155,9 @@ since 2021 is long compacted away and cannot be distinguished from "never existe
 
 So the authoritative job list must be consulted first. **`JobDB` on bio-worker19 (140.221.76.65)** is the
 source of truth; the 146 job ids must each be confirmed as still-expected before loading. MySQL there is
-reachable **only** via `docker exec` (3306 is blocked from everywhere, including bw19's own loopback).
+reachable from the workstation **only** via `docker exec` on bw19 (3306 is dropped from the Homes
+workstation; it is reachable from the other bio-workers and from bw19's own loopback — an earlier version
+of this line said otherwise because it relied on a `/dev/tcp` probe, which does not work on CoreOS bash).
 
 **Do not load, and do not `removenode`, until that check is done.**
 

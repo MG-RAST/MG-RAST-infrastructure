@@ -146,3 +146,20 @@ Two deliberate choices:
 **Still open:** `update_cloud_config_pxe.sh` builds the real PXE config from `~/git/MG-RAST-infrastructure/`
 and `~/git/mgrast-config/`, not from this checkout. The fix above only takes effect once it reaches the
 path that script reads. See `docs/mgrast-config-recovery.md`.
+
+### Re-verified 2026-10-28, and a probe that does NOT work on the bio-workers
+
+The "one-directional" finding stands: from bio-worker7, `curl` to mgrast-01 ports 22 and 873 hits the 4 s
+connect timeout (dropped), while a control to a peer bio-worker's sshd connects in 17 ms and a control to a
+closed local port is refused in 7 ms.
+
+But the **original evidence for it was invalid.** It used `bash -c 'echo > /dev/tcp/<host>/<port>'` run on the
+bio-workers, and **CoreOS's bash (4.3.48, `cros-linux-gnu`) has no `/dev/tcp`** — every such call fails
+instantly with `No such file or directory`, whatever the network does. The conclusion happened to be right.
+A probe that cannot return "open" proves nothing, so run a known-open control first. On a bio-worker use:
+
+```bash
+curl -s -o /dev/null --connect-timeout 4 -m 6 http://HOST:PORT/ ; echo rc=$?
+# 7 = refused (RST) · 28 at ~4s = dropped · anything else = TCP connected
+# 28 at ~6s (the -m limit) = connected but no reply
+```
