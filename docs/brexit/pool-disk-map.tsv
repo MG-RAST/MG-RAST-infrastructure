@@ -1,0 +1,151 @@
+vdev	wwn	serial	model	zstate	R	W	CK	note	sas3ircu_2025(ctl:encl:slot)	sysfs_now(encl slot-label)	dm	dm_slaves	sd_now(hctl,state)
+raidz3-0	5000cca26a4d2c5c	2THBERAD	HUH721010AL5200	UNAVAIL	0	0	0	was /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d2c5c	ctl0:encl2:slot52 ctl3:encl2:slot52	10:0:60:0 SLOT 52,2THBERAD; 6:0:61:0 SLOT 52,2THBERAD	-	-	NO SD NOW
+raidz3-0	5000cca26a4e0068	2THBWV3D	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot0 ctl3:encl2:slot0	10:0:60:0 SLOT 00,2THBWV3D; 6:0:61:0 SLOT 00,2THBWV3D	dm-0	sdig	sda(6:0:62:0,running) sdly(10:0:61:0,running)
+raidz3-0	5000cca26a4cf4c4	2THBA0KD	HUH721010AL5200	ONLINE	3	17	0		ctl0:encl2:slot51 ctl3:encl2:slot51	10:0:60:0 SLOT 51,2THBA0KD; 6:0:61:0 SLOT 51,2THBA0KD	dm-37	sdjw	NO SD NOW
+raidz3-0	5000cca26a4f6dc4	2THDP5DD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot35 ctl3:encl2:slot35	6:0:61:0 SLOT 35,2THDP5DD	dm-19	sdjg	sdlk(6:0:87:0,running)
+raidz3-0	5000cca26a48dec8	2TH92B3D	HUH721010AL5200	ONLINE	3	12	0		ctl0:encl2:slot10 ctl3:encl2:slot10	10:0:60:0 SLOT 10,2TH92B3D; 6:0:61:0 SLOT 10,2TH92B3D	dm-57	sdkm	NO SD NOW
+raidz3-0	5000cca26a4f184c	2THDHGYD	HUH721010AL5200	ONLINE	3	12	0		ctl0:encl2:slot4 ctl3:encl2:slot4	10:0:60:0 SLOT 04,2THDHGYD; 6:0:61:0 SLOT 04,2THDHGYD	dm-51	sdkg	NO SD NOW
+raidz3-0	5000cca26a4c02ac	2THATWSD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot50 ctl3:encl2:slot50	10:0:60:0 SLOT 50,2THATWSD; 6:0:61:0 SLOT 50,2THATWSD	dm-36	sdjv	NO SD NOW
+raidz3-0	5000cca26a3a8994	2TH15ZZD	HUH721010AL5200	ONLINE	3	5	0		ctl0:encl2:slot31 ctl3:encl2:slot31	6:0:61:0 SLOT 31,2TH15ZZD	dm-15	sdjc	sdlg(6:0:83:0,running)
+raidz3-0	5000cca26a4fc8dc	2THDW7GD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot27 ctl3:encl2:slot27	6:0:61:0 SLOT 27,2THDW7GD	dm-10	sdiy	sdld(6:0:80:0,running)
+raidz3-0	5000cca26a4fed70	2THDYNZD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot2 ctl3:encl2:slot2	10:0:60:0 SLOT 02,2THDYNZD; 6:0:61:0 SLOT 02,2THDYNZD	dm-1	sdih	sdb(6:0:63:0,running) sdlz(10:0:62:0,running)
+raidz3-1	5000cca26a4fc958	2THDW8GD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot46 ctl3:encl2:slot46	10:0:60:0 SLOT 46,2THDW8GD; 6:0:61:0 SLOT 46,2THDW8GD	dm-31	sdjr	NO SD NOW
+raidz3-1	5000cca26a4d2cb4	2THBES1D	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot32 ctl3:encl2:slot32	6:0:61:0 SLOT 32,2THBES1D	dm-16	sdjd	sdlh(6:0:84:0,running)
+raidz3-1	5000cca26a4da424	2THBPPMD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot28 ctl3:encl2:slot28	6:0:61:0 SLOT 28,2THBPPMD	dm-11	sdiz	sdle(6:0:81:0,running)
+raidz3-1	5000cca26a4cc480	2THB6TXD	HUH721010AL5200	ONLINE	3	5	0		ctl0:encl2:slot34 ctl3:encl2:slot34	6:0:61:0 SLOT 34,2THB6TXD	dm-18	sdjf	sdlj(6:0:86:0,running)
+raidz3-1	5000cca26a4eba24	2THD96KD	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot18 ctl3:encl2:slot18	10:0:60:0 SLOT 18,2THD96KD; 6:0:61:0 SLOT 18,2THD96KD	dm-48	sdip	sdku(6:0:71:0,running) sdmh(10:0:70:0,running)
+raidz3-1	5000cca26a4c1e8c	2THAVS9D	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot40 ctl3:encl2:slot40	10:0:60:0 SLOT 40,2THAVS9D; 6:0:61:0 SLOT 40,2THAVS9D	dm-25	sdjl	NO SD NOW
+raidz3-1	5000cca26a4714d4	2TH82VND	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot12 ctl3:encl2:slot12	10:0:60:0 SLOT 12,2TH82VND; 6:0:61:0 SLOT 12,2TH82VND	dm-23	sdij	sdar(6:0:65:0,running) sdmb(10:0:64:0,running)
+raidz3-1	5000cca26a4d3a54	2THBGN5D	HUH721010AL5200	ONLINE	3	14	0		ctl0:encl2:slot9 ctl3:encl2:slot9	10:0:60:0 SLOT 09,2THBGN5D; 6:0:61:0 SLOT 09,2THBGN5D	dm-56	sdkl	NO SD NOW
+raidz3-1	5000cca26a4e9180	2THD6HND	HUH721010AL5200	ONLINE	3	4	0		ctl0:encl2:slot11 ctl3:encl2:slot11	10:0:60:0 SLOT 11,2THD6HND; 6:0:61:0 SLOT 11,2THD6HND	dm-12	sdii	sdma(10:0:63:0,running) sdu(6:0:64:0,running)
+raidz3-1	5000cca26a4e7be4	2THD521D	HUH721010AL5200	ONLINE	3	12	0		ctl0:encl2:slot39 ctl3:encl2:slot39	10:0:60:0 SLOT 39,2THD521D; 6:0:61:0 SLOT 39,2THD521D	dm-24	sdjk	NO SD NOW
+raidz3-2	5000cca26a4fc554	2THDW05D	HUH721010AL5200	ONLINE	3	91	0		ctl0:encl2:slot36 ctl3:encl2:slot36	6:0:61:0 SLOT 36,2THDW05D	dm-20	sdjh	sdll(6:0:88:0,running)
+raidz3-2	5000cca26a4d7d88	2THBM3XD	HUH721010AL5200	ONLINE	3	2	0		ctl0:encl2:slot5 ctl3:encl2:slot5	10:0:60:0 SLOT 05,2THBM3XD; 6:0:61:0 SLOT 05,2THBM3XD	dm-52	sdkh	NO SD NOW
+raidz3-2	5000cca26a4d7f1c	2THBM75D	HUH721010AL5200	ONLINE	3	104	0		ctl0:encl2:slot55 ctl3:encl2:slot55	10:0:60:0 SLOT 55,2THBM75D; 6:0:61:0 SLOT 55,2THBM75D	dm-40	sdka	NO SD NOW
+raidz3-2	5000cca26a3fce40	2TH42UAD	HUH721010AL5200	ONLINE	3	96	0		ctl0:encl2:slot23 ctl3:encl2:slot23	6:0:61:0 SLOT 23,2TH42UAD	dm-6	sdiu	sdkz(6:0:76:0,running)
+raidz3-2	5000cca26a4f65a0	2THDNMLD	HUH721010AL5200	ONLINE	0	131	0		ctl0:encl2:slot14 ctl3:encl2:slot14	10:0:60:0 SLOT 14,2THDNMLD; 6:0:61:0 SLOT 14,2THDNMLD	dm-44	sdil	sdjx(6:0:67:0,running) sdmd(10:0:66:0,running)
+raidz3-2	5000cca26a4e5cc0	2THD2ZSD	HUH721010AL5200	ONLINE	3	126	0		ctl0:encl2:slot47 ctl3:encl2:slot47	10:0:60:0 SLOT 47,2THD2ZSD; 6:0:61:0 SLOT 47,2THD2ZSD	dm-32	sdjs	NO SD NOW
+raidz3-2	5000cca26a4fff78	2THDZW6D	HUH721010AL5200	ONLINE	3	136	0		ctl0:encl2:slot59 ctl3:encl2:slot59	10:0:60:0 SLOT 59,2THDZW6D; 6:0:61:0 SLOT 59,2THDZW6D	dm-43	sdkc	NO SD NOW
+raidz3-2	5000cca26a4cfc18	2THBAHPD	HUH721010AL5200	ONLINE	3	124	0		ctl0:encl2:slot37 ctl3:encl2:slot37	6:0:61:0 SLOT 37,2THBAHPD	dm-21	sdji	sdlm(6:0:89:0,running)
+raidz3-2	5000cca26a4c2570	2THAW6JD	HUH721010AL5200	OFFLINE	172	9.25K	0		ctl0:encl2:slot29 ctl3:encl2:slot29	10:0:60:0 SLOT 29,2THAW6JD; 6:0:61:0 SLOT 29,2THAW6JD	-	-	NO SD NOW
+raidz3-2	5000cca26a4aa70c	2THA1S2D	HUH721010AL5200	ONLINE	3	112	0		ctl0:encl2:slot26 ctl3:encl2:slot26	6:0:61:0 SLOT 26,2THA1S2D	dm-9	sdix	sdlc(6:0:79:0,running)
+raidz3-3	5000cca26a3ba850	2TH1U2YD	HUH721010AL5200	ONLINE	3	121	0		ctl0:encl2:slot53 ctl3:encl2:slot53	10:0:60:0 SLOT 53,2TH1U2YD; 6:0:61:0 SLOT 53,2TH1U2YD	dm-38	sdjy	NO SD NOW
+raidz3-3	5000cca26a4e0128	2THBWWND	HUH721010AL5200	ONLINE	3	129	0		ctl0:encl2:slot56 ctl3:encl2:slot56	10:0:60:0 SLOT 56,2THBWWND; 6:0:61:0 SLOT 56,2THBWWND	dm-41	sdkb	NO SD NOW
+raidz3-3	5000cca26a4e6510	2THD3JXD	HUH721010AL5200	FAULTED	3	0	0	too many errors	ctl0:encl2:slot44 ctl3:encl2:slot44	10:0:60:0 SLOT 44,2THD3JXD; 6:0:61:0 SLOT 44,2THD3JXD	dm-29	sdjp	NO SD NOW
+raidz3-3	5000cca26a4ed2d0	2THDAVHD	HUH721010AL5200	ONLINE	3	119	0		ctl0:encl2:slot30 ctl3:encl2:slot30	6:0:61:0 SLOT 30,2THDAVHD	dm-14	sdjb	sdlf(6:0:82:0,running)
+raidz3-3	5000cca26a4ce6ec	2THB92ZD	HUH721010AL5200	ONLINE	3	132	0		ctl0:encl2:slot24 ctl3:encl2:slot24	6:0:61:0 SLOT 24,2THB92ZD	dm-7	sdiv	sdla(6:0:77:0,running)
+raidz3-3	5000cca26a4c9f3c	2THB49ZD	HUH721010AL5200	ONLINE	3	124	0		ctl0:encl2:slot48 ctl3:encl2:slot48	10:0:60:0 SLOT 48,2THB49ZD; 6:0:61:0 SLOT 48,2THB49ZD	dm-33	sdjt	NO SD NOW
+raidz3-3	5000cca26a4e4d18	2THD1YED	HUH721010AL5200	ONLINE	3	59	0		ctl0:encl2:slot45 ctl3:encl2:slot45	10:0:60:0 SLOT 45,2THD1YED; 6:0:61:0 SLOT 45,2THD1YED	dm-30	sdjq	NO SD NOW
+raidz3-3	5000cca26a4dfc68	2THBWKVD	HUH721010AL5200	ONLINE	3	51	0		ctl0:encl2:slot3 ctl3:encl2:slot3	10:0:60:0 SLOT 03,2THBWKVD; 6:0:61:0 SLOT 03,2THBWKVD	dm-50	sdkf	NO SD NOW
+raidz3-3	5000cca26a4d2cb0	2THBES0D	HUH721010AL5200	ONLINE	3	117	0		ctl0:encl2:slot54 ctl3:encl2:slot54	10:0:60:0 SLOT 54,2THBES0D; 6:0:61:0 SLOT 54,2THBES0D	dm-39	sdjz	NO SD NOW
+raidz3-3	5000cca26a4e0b50	2THBXKMD	HUH721010AL5200	ONLINE	3	137	0		ctl0:encl2:slot41 ctl3:encl2:slot41	10:0:60:0 SLOT 41,2THBXKMD; 6:0:61:0 SLOT 41,2THBXKMD	dm-26	sdjm	NO SD NOW
+raidz3-4	5000cca26a4cc93c	2THB73PD	HUH721010AL5200	ONLINE	3	38	0		ctl0:encl2:slot6 ctl3:encl2:slot6	10:0:60:0 SLOT 06,2THB73PD; 6:0:61:0 SLOT 06,2THB73PD	dm-53	sdki	NO SD NOW
+raidz3-4	5000cca26a4c6954	2THB0RPD	HUH721010AL5200	UNAVAIL	0	0	0	was /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c6954	ctl0:encl2:slot57 ctl3:encl2:slot57	10:0:60:0 SLOT 57,2THB0RPD; 6:0:61:0 SLOT 57,2THB0RPD	-	-	NO SD NOW
+raidz3-4	5000cca26a4d6e1c	2THBL32D	HUH721010AL5200	ONLINE	3	99	0		ctl0:encl2:slot49 ctl3:encl2:slot49	10:0:60:0 SLOT 49,2THBL32D; 6:0:61:0 SLOT 49,2THBL32D	dm-35	sdju	NO SD NOW
+raidz3-4	5000cca26a4a5acc	2TH9WNND	HUH721010AL5200	ONLINE	3	3	0		ctl0:encl2:slot25 ctl3:encl2:slot25	6:0:61:0 SLOT 25,2TH9WNND	dm-8	sdiw	sdlb(6:0:78:0,running)
+raidz3-4	5000cca26a4ce634	2THB91HD	HUH721010AL5200	ONLINE	3	147	0		ctl0:encl2:slot22 ctl3:encl2:slot22	6:0:61:0 SLOT 22,2THB91HD	dm-5	sdit	sdky(6:0:75:0,running)
+raidz3-4	5000cca26a4c3110	2THAWZJD	HUH721010AL5200	ONLINE	3	144	0		ctl0:encl2:slot19 ctl3:encl2:slot19	10:0:60:0 SLOT 19,2THAWZJD; 6:0:61:0 SLOT 19,2THAWZJD	dm-2	sdiq	sdkv(6:0:72:0,running) sdmi(10:0:71:0,running)
+raidz3-4	5000cca26a36e434	2TGZ5V0D	HUH721010AL5200	ONLINE	3	160	0		ctl0:encl2:slot16 ctl3:encl2:slot16	10:0:60:0 SLOT 16,2TGZ5V0D; 6:0:61:0 SLOT 16,2TGZ5V0D	dm-46	sdin	sdks(6:0:69:0,running) sdmf(10:0:68:0,running)
+raidz3-4	5000cca26a4fcfd8	2THDWPWD	HUH721010AL5200	ONLINE	3	139	0		ctl0:encl2:slot7 ctl3:encl2:slot7	10:0:60:0 SLOT 07,2THDWPWD; 6:0:61:0 SLOT 07,2THDWPWD	dm-54	sdkj	NO SD NOW
+raidz3-4	5000cca26a4902b8	2TH94S9D	HUH721010AL5200	ONLINE	3	147	0		ctl0:encl2:slot38 ctl3:encl2:slot38	10:0:60:0 SLOT 38,2TH94S9D; 6:0:61:0 SLOT 38,2TH94S9D	dm-22	sdjj	NO SD NOW
+raidz3-4	5000cca26a495094	2TH99Y1D	HUH721010AL5200	ONLINE	3	140	0		ctl0:encl2:slot20 ctl3:encl2:slot20	10:0:60:0 SLOT 20,2TH99Y1D; 6:0:61:0 SLOT 20,2TH99Y1D	dm-3	sdir	sdkw(6:0:73:0,running) sdmj(10:0:72:0,running)
+raidz3-5	5000cca26a4ca848	2THB4XND	HUH721010AL5200	ONLINE	3	119	0		ctl0:encl2:slot42 ctl3:encl2:slot42	10:0:60:0 SLOT 42,2THB4XND; 6:0:61:0 SLOT 42,2THB4XND	dm-27	sdjn	NO SD NOW
+raidz3-5	5000cca26a4caff4	2THB5EHD	HUH721010AL5200	ONLINE	3	89	0		ctl0:encl2:slot21 ctl3:encl2:slot21	6:0:61:0 SLOT 21,2THB5EHD	dm-4	sdis	sdkx(6:0:74:0,running)
+raidz3-5	5000cca26a4c53b8	2THAZ92D	HUH721010AL5200	ONLINE	3	34	0		ctl0:encl2:slot8 ctl3:encl2:slot8	10:0:60:0 SLOT 08,2THAZ92D; 6:0:61:0 SLOT 08,2THAZ92D	dm-55	sdkk	NO SD NOW
+raidz3-5	5000cca26a4eec40	2THDDK0D	HUH721010AL5200	ONLINE	3	84	0		ctl0:encl2:slot1 ctl3:encl2:slot1	10:0:60:0 SLOT 01,2THDDK0D; 6:0:61:0 SLOT 01,2THDDK0D	dm-49	sdke	NO SD NOW
+raidz3-5	5000cca26a4b307c	2THAAWUD	HUH721010AL5200	ONLINE	3	86	0		ctl0:encl2:slot58 ctl3:encl2:slot58	10:0:60:0 SLOT 58,2THAAWUD; 6:0:61:0 SLOT 58,2THAAWUD	dm-42	sdkd	NO SD NOW
+raidz3-5	5000cca26a4f0dcc	2THDGT8D	HUH721010AL5200	ONLINE	3	26	0		ctl0:encl2:slot15 ctl3:encl2:slot15	10:0:60:0 SLOT 15,2THDGT8D; 6:0:61:0 SLOT 15,2THDGT8D	dm-45	sdim	sdkr(6:0:68:0,running) sdme(10:0:67:0,running)
+raidz3-5	5000cca26a4d7cd4	2THBM2GD	HUH721010AL5200	ONLINE	3	48	0		ctl0:encl2:slot13 ctl3:encl2:slot13	10:0:60:0 SLOT 13,2THBM2GD; 6:0:61:0 SLOT 13,2THBM2GD	dm-34	sdik	sdja(6:0:66:0,running) sdmc(10:0:65:0,running)
+raidz3-5	5000cca26a4bd4fc	2THAPVED	HUH721010AL5200	ONLINE	3	85	0		ctl0:encl2:slot17 ctl3:encl2:slot17	10:0:60:0 SLOT 17,2THAPVED; 6:0:61:0 SLOT 17,2THAPVED	dm-47	sdio	sdkt(6:0:70:0,running) sdmg(10:0:69:0,running)
+raidz3-5	5000cca26a4eaf4c	2THD8H5D	HUH721010AL5200	ONLINE	3	99	0		ctl0:encl2:slot33 ctl3:encl2:slot33	6:0:61:0 SLOT 33,2THD8H5D	dm-17	sdje	sdli(6:0:85:0,running)
+raidz3-5	5000cca26a4ed6bc	2THDB3LD	HUH721010AL5200	ONLINE	3	40	0		ctl0:encl2:slot43 ctl3:encl2:slot43	10:0:60:0 SLOT 43,2THDB3LD; 6:0:61:0 SLOT 43,2THDB3LD	dm-28	sdjo	NO SD NOW
+raidz3-6	5000c500859c40af	Z4D2AYRS	ST6000NM0034	ONLINE	3	22	0		ctl1:encl3:slot28 ctl2:encl3:slot28	8:0:145:0 Slot28; 9:0:52:0 Slot28	dm-81	sdcv sdgh	sdaq(8:0:134:0,running) sdgh(9:0:41:0,running)
+raidz3-6	5000c500859d80cf	Z4D4JLV4	ST6000NM0034	ONLINE	3	58	0		ctl1:encl4:slot32 ctl2:encl4:slot32	8:0:188:0 Slot32; 9:0:92:0 Slot32	dm-125	sdem sdhy	sdhy(9:0:85:0,running) sdnc(8:0:181:0,running)
+raidz3-6	5000c50085994af3	Z4D4KJL7	ST6000NM0034	ONLINE	3	11	0		ctl1:encl3:slot4 ctl2:encl3:slot4	8:0:145:0 Slot04; 9:0:52:0 Slot04	dm-93	sdbx sdfj	sdfj(9:0:17:0,running) sdr(8:0:110:0,running)
+raidz3-6	5000c500859d697b	Z4D3Q97W	ST6000NM0034	ONLINE	3	264	0		ctl1:encl4:slot25 ctl2:encl4:slot25	8:0:188:0 Slot25; 9:0:92:0 Slot25	dm-117	sdef sdhr	sdhr(9:0:78:0,running) sdmv(8:0:174:0,running)
+raidz3-6	5000c500859c4ee3	Z4D4JZ26	ST6000NM0034	ONLINE	3	344	0		ctl1:encl4:slot0 ctl2:encl4:slot0	8:0:188:0 Slot00; 9:0:92:0 Slot00	dm-99	sddg sdgs	sdbc(8:0:146:0,running) sdgs(9:0:53:0,running)
+raidz3-6	5000c500859d467f	Z4D4H040	ST6000NM0034	ONLINE	3	309	0		ctl1:encl4:slot29 ctl2:encl4:slot29	8:0:188:0 Slot29; 9:0:92:0 Slot29	dm-121	sdej sdhv	sdhv(9:0:82:0,running) sdmz(8:0:178:0,running)
+raidz3-6	5000c50085a1d113	Z4D3YAXY	ST6000NM0034	ONLINE	3	339	0		ctl1:encl3:slot23 ctl2:encl3:slot23	8:0:145:0 Slot23; 9:0:52:0 Slot23	dm-77	sdcr sdgc	sdal(8:0:129:0,running) sdgc(9:0:36:0,running)
+raidz3-6	5000c500859d4773	Z4D4FHKR	ST6000NM0034	ONLINE	3	294	0		ctl1:encl3:slot33 ctl2:encl3:slot33	8:0:145:0 Slot33; 9:0:52:0 Slot33	dm-87	sdda sdgm	sdaw(8:0:139:0,running) sdgm(9:0:46:0,running)
+raidz3-6	5000c500859c3707	Z4D42D0L	ST6000NM0034	ONLINE	3	266	0		ctl1:encl4:slot36 ctl2:encl4:slot36	8:0:188:0 Slot36; 9:0:92:0 Slot36	dm-129	sdeq sdic	sdic(9:0:89:0,running) sdng(8:0:185:0,running)
+raidz3-6	5000c500859afb5f	Z4D3NEAF	ST6000NM0034	ONLINE	3	38	0		ctl1:encl4:slot26 ctl2:encl4:slot26	8:0:188:0 Slot26; 9:0:92:0 Slot26	dm-118	sdeg sdhs	sdhs(9:0:79:0,running) sdmw(8:0:175:0,running)
+raidz3-7	5000c5008599b50f	Z4D4KHVM	ST6000NM0034	ONLINE	3	148	0		ctl1:encl4:slot24 ctl2:encl4:slot24	8:0:188:0 Slot24; 9:0:92:0 Slot24	dm-116	sdee sdhq	sdhq(9:0:77:0,running) sdmu(8:0:173:0,running)
+raidz3-7	5000c500859b17e7	Z4D0ZFMY	ST6000NM0034	ONLINE	3	54	0		ctl1:encl2:slot11 ctl2:encl2:slot11	8:0:105:0 Slot11; 9:0:12:0 Slot11	dm-61	sdbs sdfe	sdfe(9:0:11:0,running) sdm(8:0:104:0,running)
+raidz3-7	5000c500859d7c1f	Z4D4HHXW	ST6000NM0034	ONLINE	3	73	0		ctl1:encl4:slot7 ctl2:encl4:slot7	8:0:188:0 Slot07; 9:0:92:0 Slot07	dm-135	sddn sdgz	sdgz(9:0:60:0,running) sdln(8:0:153:0,running)
+raidz3-7	5000c500859d4723	Z4D4FXQF	ST6000NM0034	ONLINE	3	151	0		ctl1:encl4:slot28 ctl2:encl4:slot28	8:0:188:0 Slot28; 9:0:92:0 Slot28	dm-120	sdei sdhu	sdhu(9:0:81:0,running) sdmy(8:0:177:0,running)
+raidz3-7	5000c5008596fb1f	Z4D4KA26	ST6000NM0034	ONLINE	3	61	0		ctl1:encl4:slot21 ctl2:encl4:slot21	8:0:188:0 Slot21; 9:0:92:0 Slot21	dm-113	sdeb sdhn	sdhn(9:0:74:0,running) sdmr(8:0:170:0,running)
+raidz3-7	5000c500859b52c7	Z4D4HSG5	ST6000NM0034	ONLINE	3	1	0		ctl1:encl4:slot2 ctl2:encl4:slot2	8:0:188:0 Slot02; 9:0:92:0 Slot02	dm-111	sddi sdgu	sdbe(8:0:148:0,running) sdgu(9:0:55:0,running)
+raidz3-7	5000c500859d506f	Z4D4JZN8	ST6000NM0034	ONLINE	3	4	0		ctl1:encl3:slot32 ctl2:encl3:slot32	8:0:145:0 Slot32; 9:0:52:0 Slot32	dm-86	sdcz sdgl	sdav(8:0:138:0,running) sdgl(9:0:45:0,running)
+raidz3-7	5000c500859c6fcb	Z4D4DYRC	ST6000NM0034	ONLINE	3	4	0		ctl1:encl3:slot30 ctl2:encl3:slot30	8:0:145:0 Slot30; 9:0:52:0 Slot30	dm-84	sdcx sdgj	sdat(8:0:136:0,running) sdgj(9:0:43:0,running)
+raidz3-7	5000c500859d4f57	Z4D4EE4M	ST6000NM0034	ONLINE	3	5	0		ctl1:encl4:slot18 ctl2:encl4:slot18	8:0:188:0 Slot18; 9:0:92:0 Slot18	dm-109	sddy sdhk	sdhk(9:0:71:0,running) sdmo(8:0:167:0,running)
+raidz3-7	5000c5008599a7f7	Z4D4GVNH	ST6000NM0034	ONLINE	3	5	0		ctl1:encl4:slot15 ctl2:encl4:slot15	8:0:188:0 Slot15; 9:0:92:0 Slot15	dm-106	sddv sdhh	sdhh(9:0:68:0,running) sdlv(8:0:161:0,running)
+raidz3-8	5000c500859d479b	Z4D4J7BP	ST6000NM0034	ONLINE	3	101	0		ctl1:encl3:slot2 ctl2:encl3:slot2	8:0:145:0 Slot02; 9:0:52:0 Slot02	dm-73	sdbv sdfh	sdfh(9:0:15:0,running) sdp(8:0:108:0,running)
+raidz3-8	5000c500859b784b	Z4D4JR0Q	ST6000NM0034	ONLINE	3	95	0		ctl1:encl3:slot18 ctl2:encl3:slot18	8:0:145:0 Slot18; 9:0:52:0 Slot18	dm-72	sdcl sdfx	sdag(8:0:124:0,running) sdfx(9:0:31:0,running)
+raidz3-8	5000c500859a9287	Z4D4JHTM	ST6000NM0034	ONLINE	3	103	0		ctl1:encl3:slot13 ctl2:encl3:slot13	8:0:145:0 Slot13; 9:0:52:0 Slot13	dm-67	sdcg sdfs	sdab(8:0:119:0,running) sdfs(9:0:26:0,running)
+raidz3-8	5000c500859d8033	Z4D4JLVF	ST6000NM0034	ONLINE	3	3	0		ctl1:encl2:slot5 ctl2:encl2:slot5	8:0:105:0 Slot05; 9:0:12:0 Slot05	dm-141	sdbm sdey	sdey(9:0:5:0,running) sdg(8:0:98:0,running)
+raidz3-8	5000c500859d48bb	Z4D4F523	ST6000NM0034	ONLINE	3	112	0		ctl1:encl4:slot19 ctl2:encl4:slot19	8:0:188:0 Slot19; 9:0:92:0 Slot19	dm-110	sddz sdhl	sdhl(9:0:72:0,running) sdmp(8:0:168:0,running)
+raidz3-8	5000c500859d60e3	Z4D4JSL4	ST6000NM0034	ONLINE	3	118	0		ctl1:encl3:slot1 ctl2:encl3:slot1	8:0:145:0 Slot01; 9:0:52:0 Slot01	dm-63	sdbu sdfg	sdfg(9:0:14:0,running) sdo(8:0:107:0,running)
+raidz3-8	5000c5008599a40f	Z4D4DM2H	ST6000NM0034	ONLINE	3	95	0		ctl1:encl2:slot7 ctl2:encl2:slot7	8:0:105:0 Slot07; 9:0:12:0 Slot07	dm-143	sdbo sdfa	sdfa(9:0:7:0,running) sdi(8:0:100:0,running)
+raidz3-8	5000c500859d69df	Z4D3M4E8	ST6000NM0034	ONLINE	3	66	0		ctl1:encl4:slot12 ctl2:encl4:slot12	8:0:188:0 Slot12; 9:0:92:0 Slot12	dm-103	sdds sdhe	sdhe(9:0:65:0,running) sdls(8:0:158:0,running)
+raidz3-8	5000c500859d5093	Z4D4JZM8	ST6000NM0034	ONLINE	3	15	0		ctl1:encl3:slot17 ctl2:encl3:slot17	8:0:145:0 Slot17; 9:0:52:0 Slot17	dm-71	sdck sdfw	sdaf(8:0:123:0,running) sdfw(9:0:30:0,running)
+raidz3-8	5000c5008599b1fb	Z4D4KHXH	ST6000NM0034	UNAVAIL	0	0	0	was /dev/disk/by-id/dm-uuid-mpath-35000c5008599b1fb	ctl1:encl3:slot19 ctl2:encl3:slot19	8:0:145:0 Slot19; 9:0:52:0 Slot19	-	-	sdah(8:0:125:0,running) sdfy(9:0:32:0,running)
+raidz3-9	5000c500859c33f3	Z4D4E61Z	ST6000NM0034	ONLINE	3	38	0		ctl1:encl2:slot10 ctl2:encl2:slot10	8:0:105:0 Slot10; 9:0:12:0 Slot10	dm-60	sdbr sdfd	sdfd(9:0:10:0,running) sdl(8:0:103:0,running)
+raidz3-9	5000c500859a8b77	Z4D4E32E	ST6000NM0034	ONLINE	3	13	0		ctl1:encl4:slot30 ctl2:encl4:slot30	8:0:188:0 Slot30; 9:0:92:0 Slot30	dm-123	sdek sdhw	sdhw(9:0:83:0,running) sdna(8:0:179:0,running)
+raidz3-9	5000c500859a9153	Z4D4D9W6	ST6000NM0034	ONLINE	3	15	0		ctl1:encl4:slot10 ctl2:encl4:slot10	8:0:188:0 Slot10; 9:0:92:0 Slot10	dm-101	sddq sdhc	sdhc(9:0:63:0,running) sdlq(8:0:156:0,running)
+raidz3-9	5000c500859c440b	Z4D4H82W	ST6000NM0034	ONLINE	3	42	0		ctl1:encl4:slot13 ctl2:encl4:slot13	8:0:188:0 Slot13; 9:0:92:0 Slot13	dm-104	sddt sdhf	sdhf(9:0:66:0,running) sdlt(8:0:159:0,running)
+raidz3-9	5000c5008596f757	Z4D4KA69	ST6000NM0034	ONLINE	3	32	0		ctl1:encl3:slot37 ctl2:encl3:slot37	8:0:145:0 Slot37; 9:0:52:0 Slot37	dm-91	sdde sdgq	sdba(8:0:143:0,running) sdgq(9:0:50:0,running)
+raidz3-9	5000c500859c4c8f	Z4D4F8V2	ST6000NM0034	ONLINE	3	27	0		ctl1:encl3:slot21 ctl2:encl3:slot21	8:0:145:0 Slot21; 9:0:52:0 Slot21	dm-75	sdco sdga	sdaj(8:0:127:0,running) sdga(9:0:34:0,running)
+raidz3-9	5000c500859d67b3	Z4D3PDH0	ST6000NM0034	ONLINE	0	0	0		ctl1:encl3:slot25 ctl2:encl3:slot25	8:0:145:0 Slot25; 9:0:52:0 Slot25	dm-79	sdcs sdge	sdan(8:0:131:0,running) sdge(9:0:38:0,running)
+raidz3-9	5000c50097f73783	S4D14FX4	ST6000NM0034	ONLINE	3	28	0		ctl1:encl3:slot20 ctl2:encl3:slot20	8:0:145:0 Slot20; 9:0:52:0 Slot20	dm-74	sdcn sdfz	sdai(8:0:126:0,running) sdfz(9:0:33:0,running)
+raidz3-9	5000c500859d47ff	Z4D4JZMW	ST6000NM0034	ONLINE	3	23	0		ctl1:encl3:slot36 ctl2:encl3:slot36	8:0:145:0 Slot36; 9:0:52:0 Slot36	dm-90	sddd sdgp	sdaz(8:0:142:0,running) sdgp(9:0:49:0,running)
+raidz3-9	5000c500859c706f	Z4D4HKXV	ST6000NM0034	ONLINE	3	6	0		ctl1:encl2:slot9 ctl2:encl2:slot9	8:0:105:0 Slot09; 9:0:12:0 Slot09	dm-145	sdbq sdfc	sdfc(9:0:9:0,running) sdk(8:0:102:0,running)
+raidz3-10	5000c500859d4697	Z4D4JZKJ	ST6000NM0034	ONLINE	3	113	0		ctl1:encl4:slot23 ctl2:encl4:slot23	8:0:188:0 Slot23; 9:0:92:0 Slot23	dm-115	sded sdhp	sdhp(9:0:76:0,running) sdmt(8:0:172:0,running)
+raidz3-10	5000c5008596fc1b	Z4D4KA2P	ST6000NM0034	ONLINE	3	116	0		ctl1:encl3:slot8 ctl2:encl3:slot8	8:0:145:0 Slot08; 9:0:52:0 Slot08	dm-97	sdcb sdfn	sdfn(9:0:21:0,running) sdw(8:0:114:0,running)
+raidz3-10	5000c500859d50ef	Z4D32CXM	ST6000NM0034	ONLINE	3	3	0		ctl1:encl3:slot22 ctl2:encl3:slot22	8:0:145:0 Slot22; 9:0:52:0 Slot22	dm-76	sdcp sdgb	sdak(8:0:128:0,running) sdgb(9:0:35:0,running)
+raidz3-10	5000c500859a9403	Z4D4EKNB	ST6000NM0034	ONLINE	3	3	0		ctl1:encl3:slot6 ctl2:encl3:slot6	8:0:145:0 Slot06; 9:0:52:0 Slot06	dm-95	sdbz sdfl	sdfl(9:0:19:0,running) sdt(8:0:112:0,running)
+raidz3-10	5000c500859b17a7	Z4D12JBZ	ST6000NM0034	ONLINE	3	110	0		ctl1:encl3:slot10 ctl2:encl3:slot10	8:0:145:0 Slot10; 9:0:52:0 Slot10	dm-64	sdcd sdfp	sdfp(9:0:23:0,running) sdy(8:0:116:0,running)
+raidz3-10	5000c50085998c27	Z4D4GAE1	ST6000NM0034	ONLINE	3	115	0		ctl1:encl2:slot2 ctl2:encl2:slot2	8:0:105:0 Slot02; 9:0:12:0 Slot02	dm-138	sdbj sdev	sde(8:0:95:0,running) sdev(9:0:2:0,running)
+raidz3-10	5000c500859c4cd3	Z4D4FVW7	ST6000NM0034	ONLINE	3	120	0		ctl1:encl4:slot31 ctl2:encl4:slot31	8:0:188:0 Slot31; 9:0:92:0 Slot31	dm-124	sdel sdhx	sdhx(9:0:84:0,running) sdnb(8:0:180:0,running)
+raidz3-10	5000c500859cfaa3	Z4D4E174	ST6000NM0034	ONLINE	3	83	0		ctl1:encl4:slot4 ctl2:encl4:slot4	8:0:188:0 Slot04; 9:0:92:0 Slot04	dm-132	sddk sdgw	sdbg(8:0:150:0,running) sdgw(9:0:57:0,running)
+raidz3-10	5000c50085a0e67b	Z4D4K78J	ST6000NM0034	ONLINE	3	127	0		ctl1:encl4:slot17 ctl2:encl4:slot17	8:0:188:0 Slot17; 9:0:92:0 Slot17	dm-108	sddx sdhj	sdhj(9:0:70:0,running) sdlx(8:0:163:0,running)
+raidz3-10	5000c500859c3797	Z4D2E1ZC	ST6000NM0034	ONLINE	3	124	0		ctl1:encl3:slot29 ctl2:encl3:slot29	8:0:145:0 Slot29; 9:0:52:0 Slot29	dm-82	sdcw sdgi	sdas(8:0:135:0,running) sdgi(9:0:42:0,running)
+raidz3-11	5000c5008596fac3	Z4D4KA3Q	ST6000NM0034	ONLINE	3	18	0		ctl1:encl2:slot0 ctl2:encl2:slot0	8:0:105:0 Slot00; 9:0:12:0 Slot00	dm-58	sdbh sdet	sdc(8:0:93:0,running) sdet(9:0:0:0,running)
+raidz3-11	5000c500859abb43	Z4D45PSV	ST6000NM0034	ONLINE	3	237	0		ctl1:encl4:slot5 ctl2:encl4:slot5	8:0:188:0 Slot05; 9:0:92:0 Slot05	dm-133	sddl sdgx	sdcm(8:0:151:0,running) sdgx(9:0:58:0,running)
+raidz3-11	5000c5008597f5a7	Z4D4K6CK	ST6000NM0034	ONLINE	3	132	0		ctl1:encl4:slot27 ctl2:encl4:slot27	8:0:188:0 Slot27; 9:0:92:0 Slot27	dm-119	sdeh sdht	sdht(9:0:80:0,running) sdmx(8:0:176:0,running)
+raidz3-11	5000c500859a8ce3	Z4D41VSG	ST6000NM0034	ONLINE	3	138	0		ctl1:encl4:slot9 ctl2:encl4:slot9	8:0:188:0 Slot09; 9:0:92:0 Slot09	dm-137	sddp sdhb	sdhb(9:0:62:0,running) sdlp(8:0:155:0,running)
+raidz3-11	5000c5008599c253	Z4D4KHNF	ST6000NM0034	ONLINE	3	139	0		ctl1:encl3:slot24 ctl2:encl3:slot24	8:0:145:0 Slot24; 9:0:52:0 Slot24	dm-78	sdcq sdgd	sdam(8:0:130:0,running) sdgd(9:0:37:0,running)
+raidz3-11	5000c500859d47d3	Z4D40QVN	ST6000NM0034	ONLINE	3	139	0		ctl1:encl3:slot12 ctl2:encl3:slot12	8:0:145:0 Slot12; 9:0:52:0 Slot12	dm-66	sdcf sdfr	sdaa(8:0:118:0,running) sdfr(9:0:25:0,running)
+raidz3-11	5000c500859d4f83	Z4D4FXQA	ST6000NM0034	ONLINE	3	134	0		ctl1:encl4:slot20 ctl2:encl4:slot20	8:0:188:0 Slot20; 9:0:92:0 Slot20	dm-112	sdea sdhm	sdhm(9:0:73:0,running) sdmq(8:0:169:0,running)
+raidz3-11	5000c500859d485b	Z4D4BJCY	ST6000NM0034	ONLINE	3	120	0		ctl1:encl3:slot27 ctl2:encl3:slot27	8:0:145:0 Slot27; 9:0:52:0 Slot27	dm-80	sdcu sdgg	sdap(8:0:133:0,running) sdgg(9:0:40:0,running)
+raidz3-11	5000c500859d49cb	Z4D4AXKG	ST6000NM0034	ONLINE	3	120	0		ctl1:encl2:slot6 ctl2:encl2:slot6	8:0:105:0 Slot06; 9:0:12:0 Slot06	dm-142	sdbn sdez	sdez(9:0:6:0,running) sdh(8:0:99:0,running)
+raidz3-11	5000c500859c33ab	Z4D4FVE4	ST6000NM0034	ONLINE	0	0	0		ctl1:encl4:slot11 ctl2:encl4:slot11	8:0:188:0 Slot11; 9:0:92:0 Slot11	dm-102	sddr sdhd	sdhd(9:0:64:0,running) sdlr(8:0:157:0,running)
+raidz3-12	5000c50085a1d10f	Z4D3YBC1	ST6000NM0034	ONLINE	3	46	0		ctl1:encl3:slot3 ctl2:encl3:slot3	8:0:145:0 Slot03; 9:0:52:0 Slot03	dm-83	sdbw sdfi	sdfi(9:0:16:0,running) sdq(8:0:109:0,running)
+raidz3-12	5000c500859d46e7	Z4D4F58A	ST6000NM0034	ONLINE	3	48	0		ctl1:encl3:slot16 ctl2:encl3:slot16	8:0:145:0 Slot16; 9:0:52:0 Slot16	dm-70	sdcj sdfv	sdae(8:0:122:0,running) sdfv(9:0:29:0,running)
+raidz3-12	5000c500859d50c3	Z4D4JZMM	ST6000NM0034	ONLINE	3	43	0		ctl1:encl3:slot15 ctl2:encl3:slot15	8:0:145:0 Slot15; 9:0:52:0 Slot15	dm-69	sdci sdfu	sdad(8:0:121:0,running) sdfu(9:0:28:0,running)
+raidz3-12	5000c500859c37d3	Z4D43Y4T	ST6000NM0034	ONLINE	3	165	0		ctl1:encl4:slot3 ctl2:encl4:slot3	8:0:188:0 Slot03; 9:0:92:0 Slot03	dm-122	sddj sdgv	sdbf(8:0:149:0,running) sdgv(9:0:56:0,running)
+raidz3-12	5000c500859b2293	Z4D135HE	ST6000NM0034	ONLINE	3	31	0		ctl1:encl4:slot8 ctl2:encl4:slot8	8:0:188:0 Slot08; 9:0:92:0 Slot08	dm-136	sddo sdha	sdha(9:0:61:0,running) sdlo(8:0:154:0,running)
+raidz3-12	5000c500859c36e7	Z4D4GR88	ST6000NM0034	ONLINE	0	0	0		ctl1:encl3:slot38 ctl2:encl3:slot38	8:0:145:0 Slot38; 9:0:52:0 Slot38	dm-92	sddf sdgr	sdbb(8:0:144:0,running) sdgr(9:0:51:0,running)
+raidz3-12	5000c500b6e64347	S4D1FYJY	ST6000NM0034	ONLINE	0	0	0		ctl1:encl2:slot4 ctl2:encl2:slot4	8:0:105:0 Slot04; 9:0:12:0 Slot04	dm-140	sdbl sdex	sdex(9:0:4:0,running) sdmn(8:0:166:0,running)
+raidz3-12	5000c500859d4777	Z4D4J7EY	ST6000NM0034	ONLINE	3	27	0		ctl1:encl4:slot6 ctl2:encl4:slot6	8:0:188:0 Slot06; 9:0:92:0 Slot06	dm-134	sddm sdgy	sdct(8:0:152:0,running) sdgy(9:0:59:0,running)
+raidz3-12	5000c500859c40c3	Z4D4HSTD	ST6000NM0034	ONLINE	3	38	0		ctl1:encl4:slot14 ctl2:encl4:slot14	8:0:188:0 Slot14; 9:0:92:0 Slot14	dm-105	sddu sdhg	sdhg(9:0:67:0,running) sdlu(8:0:160:0,running)
+raidz3-12	5000c500859d6837	Z4D3Q972	ST6000NM0034	ONLINE	3	35	0		ctl1:encl3:slot9 ctl2:encl3:slot9	8:0:145:0 Slot09; 9:0:52:0 Slot09	dm-98	sdcc sdfo	sdfo(9:0:22:0,running) sdx(8:0:115:0,running)
+raidz3-13	5000c500859abe4f	Z4D4DWRP	ST6000NM0034	ONLINE	3	310	0		ctl1:encl2:slot1 ctl2:encl2:slot1	8:0:105:0 Slot01; 9:0:12:0 Slot01	dm-59	sdbi sdeu	sdd(8:0:94:0,running) sdeu(9:0:1:0,running)
+raidz3-13	5000c5008599a53b	Z4D4HEKJ	ST6000NM0034	UNAVAIL	0	0	0	was /dev/disk/by-id/dm-uuid-mpath-35000c5008599a53b	ctl1:encl3:slot26 ctl2:encl3:slot26	8:0:145:0 Slot26; 9:0:52:0 Slot26	-	-	sdao(8:0:132:0,running) sdgf(9:0:39:0,running)
+raidz3-13	5000c500859d488b	Z4D4GR8D	ST6000NM0034	ONLINE	3	287	0		ctl1:encl4:slot38 ctl2:encl4:slot38	8:0:188:0 Slot38; 9:0:92:0 Slot38	dm-131	sdes sdie	sdie(9:0:91:0,running) sdni(8:0:187:0,running)
+raidz3-13	5000c500859d507b	Z4D4JY88	ST6000NM0034	ONLINE	3	387	0		ctl1:encl4:slot35 ctl2:encl4:slot35	8:0:188:0 Slot35; 9:0:92:0 Slot35	dm-128	sdep sdib	sdib(9:0:88:0,running) sdnf(8:0:184:0,running)
+raidz3-13	5000c500859d7fd7	Z4D4JLQ1	ST6000NM0034	ONLINE	3	355	0		ctl1:encl3:slot5 ctl2:encl3:slot5	8:0:145:0 Slot05; 9:0:52:0 Slot05	dm-94	sdby sdfk	sdfk(9:0:18:0,running) sds(8:0:111:0,running)
+raidz3-13	5000c500859cfa77	Z4D4E0E6	ST6000NM0034	ONLINE	3	29	0		ctl1:encl3:slot34 ctl2:encl3:slot34	8:0:145:0 Slot34; 9:0:52:0 Slot34	dm-88	sddb sdgn	sdax(8:0:140:0,running) sdgn(9:0:47:0,running)
+raidz3-13	5000c50085a1d133	Z4D3QWBV	ST6000NM0034	ONLINE	3	271	0		ctl1:encl3:slot0 ctl2:encl3:slot0	8:0:145:0 Slot00; 9:0:52:0 Slot00	dm-62	sdbt sdff	sdff(9:0:13:0,running) sdn(8:0:106:0,running)
+raidz3-13	5000c5008599b2c3	Z4D4KHWF	ST6000NM0034	ONLINE	3	283	0		ctl1:encl4:slot33 ctl2:encl4:slot33	8:0:188:0 Slot33; 9:0:92:0 Slot33	dm-126	sden sdhz	sdhz(9:0:86:0,running) sdnd(8:0:182:0,running)
+raidz3-13	5000c500859b5113	Z4D4HSLY	ST6000NM0034	ONLINE	3	328	0		ctl1:encl4:slot22 ctl2:encl4:slot22	8:0:188:0 Slot22; 9:0:92:0 Slot22	dm-114	sdec sdho	sdho(9:0:75:0,running) sdms(8:0:171:0,running)
+raidz3-13	5000c5008596fb8f	Z4D4KA1R	ST6000NM0034	ONLINE	3	315	0		ctl1:encl3:slot7 ctl2:encl3:slot7	8:0:145:0 Slot07; 9:0:52:0 Slot07	dm-96	sdca sdfm	sdfm(9:0:20:0,running) sdv(8:0:113:0,running)
+raidz3-14	5000c500859c4dc7	Z4D4FE8P	ST6000NM0034	ONLINE	3	1.06K	0		ctl1:encl3:slot31 ctl2:encl3:slot31	8:0:145:0 Slot31; 9:0:52:0 Slot31	dm-85	sdcy sdgk	sdau(8:0:137:0,running) sdgk(9:0:44:0,running)
+raidz3-14	5000c500859b75ef	Z4D4JBW3	ST6000NM0034	ONLINE	3	1.36K	0		ctl1:encl2:slot8 ctl2:encl2:slot8	8:0:105:0 Slot08; 9:0:12:0 Slot08	dm-144	sdbp sdfb	sdfb(9:0:8:0,running) sdj(8:0:101:0,running)
+raidz3-14	5000c500859a8dc3	Z4D4J2WQ	ST6000NM0034	ONLINE	3	1.09K	0		ctl1:encl2:slot3 ctl2:encl2:slot3	8:0:105:0 Slot03; 9:0:12:0 Slot03	dm-139	sdbk sdew	sdew(9:0:3:0,running) sdf(8:0:96:0,running)
+raidz3-14	5000c500859ab097	Z4D4DD1B	ST6000NM0034	ONLINE	3	1.28K	0		ctl1:encl4:slot37 ctl2:encl4:slot37	8:0:188:0 Slot37; 9:0:92:0 Slot37	dm-130	sder sdid	sdid(9:0:90:0,running) sdnh(8:0:186:0,running)
+raidz3-14	5000c500859d508f	Z4D4JZPB	ST6000NM0034	ONLINE	3	724	0		ctl1:encl4:slot1 ctl2:encl4:slot1	8:0:188:0 Slot01; 9:0:92:0 Slot01	dm-100	sddh sdgt	sdbd(8:0:147:0,running) sdgt(9:0:54:0,running)
+raidz3-14	5000c500859d48bf	Z4D4GQY7	ST6000NM0034	ONLINE	3	1.09K	0		ctl1:encl4:slot34 ctl2:encl4:slot34	8:0:188:0 Slot34; 9:0:92:0 Slot34	dm-127	sdeo sdia	sdia(9:0:87:0,running) sdne(8:0:183:0,running)
+raidz3-14	5000c500859a8953	Z4D4ESPD	ST6000NM0034	ONLINE	3	745	0		ctl1:encl3:slot11 ctl2:encl3:slot11	8:0:145:0 Slot11; 9:0:52:0 Slot11	dm-65	sdce sdfq	sdfq(9:0:24:0,running) sdz(8:0:117:0,running)
+raidz3-14	5000c500859d4993	Z4D4AXL8	ST6000NM0034	ONLINE	3	853	0		ctl1:encl4:slot16 ctl2:encl4:slot16	8:0:188:0 Slot16; 9:0:92:0 Slot16	dm-107	sddw sdhi	sdhi(9:0:69:0,running) sdlw(8:0:162:0,running)
+raidz3-14	5000c500859d4843	Z4D4JZMR	ST6000NM0034	ONLINE	3	1.02K	0		ctl1:encl3:slot14 ctl2:encl3:slot14	8:0:145:0 Slot14; 9:0:52:0 Slot14	dm-68	sdch sdft	sdac(8:0:120:0,running) sdft(9:0:27:0,running)
+raidz3-14	5000c500859b50b3	Z4D4HSTE	ST6000NM0034	ONLINE	3	1016	0		ctl1:encl3:slot35 ctl2:encl3:slot35	8:0:145:0 Slot35; 9:0:52:0 Slot35	dm-89	sddc sdgo	sday(8:0:141:0,running) sdgo(9:0:48:0,running)

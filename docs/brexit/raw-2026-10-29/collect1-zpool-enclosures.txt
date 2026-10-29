@@ -1,0 +1,872 @@
+
+########## date/host
+2026-10-29T18:33:50Z
+brexit
+5.4.0-166-generic
+ 18:33:50 up 35 days, 46 min,  2 users,  load average: 108.00, 107.83, 106.77
+
+########## zpool status -P (pool boristore)
+  pool: boristore
+ state: SUSPENDED
+status: One or more devices are faulted in response to IO failures.
+action: Make sure the affected devices are connected, then run 'zpool clear'.
+   see: http://zfsonlinux.org/msg/ZFS-8000-HC
+  scan: resilvered 8.43M in 0 days 00:04:48 with 0 errors on Fri Sep 25 20:18:29 2026
+config:
+
+	NAME                                                 STATE     READ WRITE CKSUM
+	boristore                                            DEGRADED     0     0     0
+	  raidz3-0                                           DEGRADED     8     8     0
+	    16412815620806915001                             UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d2c5c
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e0068  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4cf4c4  ONLINE       3    17     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4f6dc4  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a48dec8  ONLINE       3    12     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4f184c  ONLINE       3    12     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c02ac  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a3a8994  ONLINE       3     5     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4fc8dc  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4fed70  ONLINE       3     4     0
+	  raidz3-1                                           ONLINE      10     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4fc958  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d2cb4  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4da424  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4cc480  ONLINE       3     5     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4eba24  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c1e8c  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4714d4  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d3a54  ONLINE       3    14     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e9180  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e7be4  ONLINE       3    12     0
+	  raidz3-2                                           DEGRADED     2   170     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4fc554  ONLINE       3    91     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d7d88  ONLINE       3     2     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d7f1c  ONLINE       3   104     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a3fce40  ONLINE       3    96     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4f65a0  ONLINE       0   131     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e5cc0  ONLINE       3   126     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4fff78  ONLINE       3   136     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4cfc18  ONLINE       3   124     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c2570  OFFLINE    172 9.25K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4aa70c  ONLINE       3   112     0
+	  raidz3-3                                           DEGRADED     2   197     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a3ba850  ONLINE       3   121     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e0128  ONLINE       3   129     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e6510  FAULTED      3     0     0  too many errors
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4ed2d0  ONLINE       3   119     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4ce6ec  ONLINE       3   132     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c9f3c  ONLINE       3   124     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e4d18  ONLINE       3    59     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4dfc68  ONLINE       3    51     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d2cb0  ONLINE       3   117     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4e0b50  ONLINE       3   137     0
+	  raidz3-4                                           DEGRADED     2   168     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4cc93c  ONLINE       3    38     0
+	    8294580992004053476                              UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c6954
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d6e1c  ONLINE       3    99     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4a5acc  ONLINE       3     3     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4ce634  ONLINE       3   147     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c3110  ONLINE       3   144     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a36e434  ONLINE       3   160     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4fcfd8  ONLINE       3   139     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4902b8  ONLINE       3   147     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a495094  ONLINE       3   140     0
+	  raidz3-5                                           ONLINE       0    79     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4ca848  ONLINE       3   119     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4caff4  ONLINE       3    89     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c53b8  ONLINE       3    34     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4eec40  ONLINE       3    84     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4b307c  ONLINE       3    86     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4f0dcc  ONLINE       3    26     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d7cd4  ONLINE       3    48     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4bd4fc  ONLINE       3    85     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4eaf4c  ONLINE       3    99     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000cca26a4ed6bc  ONLINE       3    40     0
+	  raidz3-6                                           ONLINE       0   239     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c40af  ONLINE       3    22     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d80cf  ONLINE       3    58     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50085994af3  ONLINE       3    11     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d697b  ONLINE       3   264     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c4ee3  ONLINE       3   344     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d467f  ONLINE       3   309     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50085a1d113  ONLINE       3   339     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4773  ONLINE       3   294     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c3707  ONLINE       3   266     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859afb5f  ONLINE       3    38     0
+	  raidz3-7                                           ONLINE       0    33     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008599b50f  ONLINE       3   148     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b17e7  ONLINE       3    54     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d7c1f  ONLINE       3    73     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4723  ONLINE       3   151     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008596fb1f  ONLINE       3    61     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b52c7  ONLINE       3     1     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d506f  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c6fcb  ONLINE       3     4     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4f57  ONLINE       3     5     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008599a7f7  ONLINE       3     5     0
+	  raidz3-8                                           DEGRADED     0    61     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d479b  ONLINE       3   101     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b784b  ONLINE       3    95     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a9287  ONLINE       3   103     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d8033  ONLINE       3     3     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d48bb  ONLINE       3   112     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d60e3  ONLINE       3   118     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008599a40f  ONLINE       3    95     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d69df  ONLINE       3    66     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d5093  ONLINE       3    15     0
+	    9275871513533884583                              UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000c5008599b1fb
+	  raidz3-9                                           ONLINE       0    17     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c33f3  ONLINE       3    38     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a8b77  ONLINE       3    13     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a9153  ONLINE       3    15     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c440b  ONLINE       3    42     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008596f757  ONLINE       3    32     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c4c8f  ONLINE       3    27     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d67b3  ONLINE       0     0     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50097f73783  ONLINE       3    28     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d47ff  ONLINE       3    23     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c706f  ONLINE       3     6     0
+	  raidz3-10                                          ONLINE       0   141     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4697  ONLINE       3   113     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008596fc1b  ONLINE       3   116     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d50ef  ONLINE       3     3     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a9403  ONLINE       3     3     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b17a7  ONLINE       3   110     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50085998c27  ONLINE       3   115     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c4cd3  ONLINE       3   120     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859cfaa3  ONLINE       3    83     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50085a0e67b  ONLINE       3   127     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c3797  ONLINE       3   124     0
+	  raidz3-11                                          ONLINE       0   143     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008596fac3  ONLINE       3    18     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859abb43  ONLINE       3   237     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008597f5a7  ONLINE       3   132     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a8ce3  ONLINE       3   138     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008599c253  ONLINE       3   139     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d47d3  ONLINE       3   139     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4f83  ONLINE       3   134     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d485b  ONLINE       3   120     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d49cb  ONLINE       3   120     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c33ab  ONLINE       0     0     0
+	  raidz3-12                                          ONLINE       0    45     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50085a1d10f  ONLINE       3    46     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d46e7  ONLINE       3    48     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d50c3  ONLINE       3    43     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c37d3  ONLINE       3   165     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b2293  ONLINE       3    31     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c36e7  ONLINE       0     0     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500b6e64347  ONLINE       0     0     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4777  ONLINE       3    27     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c40c3  ONLINE       3    38     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d6837  ONLINE       3    35     0
+	  raidz3-13                                          DEGRADED     0   493     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859abe4f  ONLINE       3   310     0
+	    4850650417779228465                              UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000c5008599a53b
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d488b  ONLINE       3   287     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d507b  ONLINE       3   387     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d7fd7  ONLINE       3   355     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859cfa77  ONLINE       3    29     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c50085a1d133  ONLINE       3   271     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008599b2c3  ONLINE       3   283     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b5113  ONLINE       3   328     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c5008596fb8f  ONLINE       3   315     0
+	  raidz3-14                                          ONLINE       0 2.07K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859c4dc7  ONLINE       3 1.06K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b75ef  ONLINE       3 1.36K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a8dc3  ONLINE       3 1.09K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859ab097  ONLINE       3 1.28K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d508f  ONLINE       3   724     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d48bf  ONLINE       3 1.09K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859a8953  ONLINE       3   745     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4993  ONLINE       3   853     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859d4843  ONLINE       3 1.02K     0
+	    /dev/disk/by-id/dm-uuid-mpath-35000c500859b50b3  ONLINE       3  1016     0
+
+errors: 3915 data errors, use '-v' for a list
+
+########## zpool status -L
+  pool: boristore
+ state: SUSPENDED
+status: One or more devices are faulted in response to IO failures.
+action: Make sure the affected devices are connected, then run 'zpool clear'.
+   see: http://zfsonlinux.org/msg/ZFS-8000-HC
+  scan: resilvered 8.43M in 0 days 00:04:48 with 0 errors on Fri Sep 25 20:18:29 2026
+config:
+
+	NAME                                 STATE     READ WRITE CKSUM
+	boristore                            DEGRADED     0     0     0
+	  raidz3-0                           DEGRADED     8     8     0
+	    16412815620806915001             UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000cca26a4d2c5c
+	    dm-0                             ONLINE       3     4     0
+	    dm-37                            ONLINE       3    17     0
+	    dm-19                            ONLINE       3     4     0
+	    dm-57                            ONLINE       3    12     0
+	    dm-51                            ONLINE       3    12     0
+	    dm-36                            ONLINE       3     4     0
+	    dm-15                            ONLINE       3     5     0
+	    dm-10                            ONLINE       3     4     0
+	    dm-1                             ONLINE       3     4     0
+	  raidz3-1                           ONLINE      10     4     0
+	    dm-31                            ONLINE       3     4     0
+	    dm-16                            ONLINE       3     4     0
+	    dm-11                            ONLINE       3     4     0
+	    dm-18                            ONLINE       3     5     0
+	    dm-48                            ONLINE       3     4     0
+	    dm-25                            ONLINE       3     4     0
+	    dm-23                            ONLINE       3     4     0
+	    dm-56                            ONLINE       3    14     0
+	    dm-12                            ONLINE       3     4     0
+	    dm-24                            ONLINE       3    12     0
+	  raidz3-2                           DEGRADED     2   170     0
+	    dm-20                            ONLINE       3    91     0
+	    dm-52                            ONLINE       3     2     0
+	    dm-40                            ONLINE       3   104     0
+	    dm-6                             ONLINE       3    96     0
+	    dm-44                            ONLINE       0   131     0
+	    dm-32                            ONLINE       3   126     0
+	    dm-43                            ONLINE       3   136     0
+	    dm-21                            ONLINE       3   124     0
+	    dm-uuid-mpath-35000cca26a4c2570  OFFLINE    172 9.25K     0
+	    dm-9                             ONLINE       3   112     0
+	  raidz3-3                           DEGRADED     2   197     0
+	    dm-38                            ONLINE       3   121     0
+	    dm-41                            ONLINE       3   129     0
+	    dm-29                            FAULTED      3     0     0  too many errors
+	    dm-14                            ONLINE       3   119     0
+	    dm-7                             ONLINE       3   132     0
+	    dm-33                            ONLINE       3   124     0
+	    dm-30                            ONLINE       3    59     0
+	    dm-50                            ONLINE       3    51     0
+	    dm-39                            ONLINE       3   117     0
+	    dm-26                            ONLINE       3   137     0
+	  raidz3-4                           DEGRADED     2   168     0
+	    dm-53                            ONLINE       3    38     0
+	    8294580992004053476              UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000cca26a4c6954
+	    dm-35                            ONLINE       3    99     0
+	    dm-8                             ONLINE       3     3     0
+	    dm-5                             ONLINE       3   147     0
+	    dm-2                             ONLINE       3   144     0
+	    dm-46                            ONLINE       3   160     0
+	    dm-54                            ONLINE       3   139     0
+	    dm-22                            ONLINE       3   147     0
+	    dm-3                             ONLINE       3   140     0
+	  raidz3-5                           ONLINE       0    79     0
+	    dm-27                            ONLINE       3   119     0
+	    dm-4                             ONLINE       3    89     0
+	    dm-55                            ONLINE       3    34     0
+	    dm-49                            ONLINE       3    84     0
+	    dm-42                            ONLINE       3    86     0
+	    dm-45                            ONLINE       3    26     0
+	    dm-34                            ONLINE       3    48     0
+	    dm-47                            ONLINE       3    85     0
+	    dm-17                            ONLINE       3    99     0
+	    dm-28                            ONLINE       3    40     0
+	  raidz3-6                           ONLINE       0   239     0
+	    dm-81                            ONLINE       3    22     0
+	    dm-125                           ONLINE       3    58     0
+	    dm-93                            ONLINE       3    11     0
+	    dm-117                           ONLINE       3   264     0
+	    dm-99                            ONLINE       3   344     0
+	    dm-121                           ONLINE       3   309     0
+	    dm-77                            ONLINE       3   339     0
+	    dm-87                            ONLINE       3   294     0
+	    dm-129                           ONLINE       3   266     0
+	    dm-118                           ONLINE       3    38     0
+	  raidz3-7                           ONLINE       0    33     0
+	    dm-116                           ONLINE       3   148     0
+	    dm-61                            ONLINE       3    54     0
+	    dm-135                           ONLINE       3    73     0
+	    dm-120                           ONLINE       3   151     0
+	    dm-113                           ONLINE       3    61     0
+	    dm-111                           ONLINE       3     1     0
+	    dm-86                            ONLINE       3     4     0
+	    dm-84                            ONLINE       3     4     0
+	    dm-109                           ONLINE       3     5     0
+	    dm-106                           ONLINE       3     5     0
+	  raidz3-8                           DEGRADED     0    61     0
+	    dm-73                            ONLINE       3   101     0
+	    dm-72                            ONLINE       3    95     0
+	    dm-67                            ONLINE       3   103     0
+	    dm-141                           ONLINE       3     3     0
+	    dm-110                           ONLINE       3   112     0
+	    dm-63                            ONLINE       3   118     0
+	    dm-143                           ONLINE       3    95     0
+	    dm-103                           ONLINE       3    66     0
+	    dm-71                            ONLINE       3    15     0
+	    9275871513533884583              UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000c5008599b1fb
+	  raidz3-9                           ONLINE       0    17     0
+	    dm-60                            ONLINE       3    38     0
+	    dm-123                           ONLINE       3    13     0
+	    dm-101                           ONLINE       3    15     0
+	    dm-104                           ONLINE       3    42     0
+	    dm-91                            ONLINE       3    32     0
+	    dm-75                            ONLINE       3    27     0
+	    dm-79                            ONLINE       0     0     0
+	    dm-74                            ONLINE       3    28     0
+	    dm-90                            ONLINE       3    23     0
+	    dm-145                           ONLINE       3     6     0
+	  raidz3-10                          ONLINE       0   141     0
+	    dm-115                           ONLINE       3   113     0
+	    dm-97                            ONLINE       3   116     0
+	    dm-76                            ONLINE       3     3     0
+	    dm-95                            ONLINE       3     3     0
+	    dm-64                            ONLINE       3   110     0
+	    dm-138                           ONLINE       3   115     0
+	    dm-124                           ONLINE       3   120     0
+	    dm-132                           ONLINE       3    83     0
+	    dm-108                           ONLINE       3   127     0
+	    dm-82                            ONLINE       3   124     0
+	  raidz3-11                          ONLINE       0   143     0
+	    dm-58                            ONLINE       3    18     0
+	    dm-133                           ONLINE       3   237     0
+	    dm-119                           ONLINE       3   132     0
+	    dm-137                           ONLINE       3   138     0
+	    dm-78                            ONLINE       3   139     0
+	    dm-66                            ONLINE       3   139     0
+	    dm-112                           ONLINE       3   134     0
+	    dm-80                            ONLINE       3   120     0
+	    dm-142                           ONLINE       3   120     0
+	    dm-102                           ONLINE       0     0     0
+	  raidz3-12                          ONLINE       0    45     0
+	    dm-83                            ONLINE       3    46     0
+	    dm-70                            ONLINE       3    48     0
+	    dm-69                            ONLINE       3    43     0
+	    dm-122                           ONLINE       3   165     0
+	    dm-136                           ONLINE       3    31     0
+	    dm-92                            ONLINE       0     0     0
+	    dm-140                           ONLINE       0     0     0
+	    dm-134                           ONLINE       3    27     0
+	    dm-105                           ONLINE       3    38     0
+	    dm-98                            ONLINE       3    35     0
+	  raidz3-13                          DEGRADED     0   493     0
+	    dm-59                            ONLINE       3   310     0
+	    4850650417779228465              UNAVAIL      0     0     0  was /dev/disk/by-id/dm-uuid-mpath-35000c5008599a53b
+	    dm-131                           ONLINE       3   287     0
+	    dm-128                           ONLINE       3   387     0
+	    dm-94                            ONLINE       3   355     0
+	    dm-88                            ONLINE       3    29     0
+	    dm-62                            ONLINE       3   271     0
+	    dm-126                           ONLINE       3   283     0
+	    dm-114                           ONLINE       3   328     0
+	    dm-96                            ONLINE       3   315     0
+	  raidz3-14                          ONLINE       0 2.07K     0
+	    dm-85                            ONLINE       3 1.06K     0
+	    dm-144                           ONLINE       3 1.36K     0
+	    dm-139                           ONLINE       3 1.09K     0
+	    dm-130                           ONLINE       3 1.28K     0
+	    dm-100                           ONLINE       3   724     0
+	    dm-127                           ONLINE       3 1.09K     0
+	    dm-65                            ONLINE       3   745     0
+	    dm-107                           ONLINE       3   853     0
+	    dm-68                            ONLINE       3 1.02K     0
+	    dm-89                            ONLINE       3  1016     0
+
+errors: 3915 data errors, use '-v' for a list
+
+########## enclosures: id, vendor/model, slots
+ENCL 10:0:60:0 vendor=HGST model=ScaleApex 4U60  rev=0101 components=60 sg=sg99
+  sas_address=0x5000ccab0400c0fc
+ENCL 6:0:61:0 vendor=HGST model=ScaleApex 4U60  rev=0101 components=60 sg=sg0
+  sas_address=0x5000ccab0400c0bc
+ENCL 8:0:105:0 vendor=SMC946 model=SAS3x48  rev=0701 components=12 sg=sg40
+  sas_address=0x500304800927503d
+ENCL 8:0:145:0 vendor=SMC946 model=SAS3x48  rev=0701 components=39 sg=sg80
+  sas_address=0x500304800927507d
+ENCL 8:0:188:0 vendor=SMC946 model=SAS3x48  rev=0701 components=39 sg=sg137
+  sas_address=0x50030480092750bd
+ENCL 9:0:12:0 vendor=SMC946 model=SAS3x48  rev=0701 components=12 sg=sg165
+  sas_address=0x500304800927513d
+ENCL 9:0:52:0 vendor=SMC946 model=SAS3x48  rev=0701 components=39 sg=sg205
+  sas_address=0x500304800927517d
+ENCL 9:0:92:0 vendor=SMC946 model=SAS3x48  rev=0701 components=39 sg=sg245
+  sas_address=0x50030480092751bd
+
+########## SLOTMAP: encl|slot_label|slot_num|status|fault|locate|sd|wwid|size_bytes|model|serial
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 00,2THBWV3D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 00,2THBWV3D            |||||sdly|naa.5000cca26a4e0068|10000831348736|HUH721010AL5200 |2THBWV3D
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 01,2THDDK0D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 01,2THDDK0D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 02,2THDYNZD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 02,2THDYNZD            |||||sdlz|naa.5000cca26a4fed70|10000831348736|HUH721010AL5200 |2THDYNZD
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 03,2THBWKVD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 03,2THBWKVD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 04,2THDHGYD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 04,2THDHGYD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 05,2THBM3XD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 05,2THBM3XD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 06,2THB73PD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 06,2THB73PD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 07,2THDWPWD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 07,2THDWPWD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 08,2THAZ92D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 08,2THAZ92D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 09,2THBGN5D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 09,2THBGN5D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 10,2TH92B3D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 10,2TH92B3D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 11,2THD6HND: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 11,2THD6HND            |||||sdma|naa.5000cca26a4e9180|10000831348736|HUH721010AL5200 |2THD6HND
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 12,2TH82VND: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 12,2TH82VND            |||||sdmb|naa.5000cca26a4714d4|10000831348736|HUH721010AL5200 |2TH82VND
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 13,2THBM2GD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 13,2THBM2GD            |||||sdmc|naa.5000cca26a4d7cd4|10000831348736|HUH721010AL5200 |2THBM2GD
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 14,2THDNMLD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 14,2THDNMLD            |||||sdmd|naa.5000cca26a4f65a0|10000831348736|HUH721010AL5200 |2THDNMLD
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 15,2THDGT8D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 15,2THDGT8D            |||||sdme|naa.5000cca26a4f0dcc|10000831348736|HUH721010AL5200 |2THDGT8D
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 16,2TGZ5V0D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 16,2TGZ5V0D            |||||sdmf|naa.5000cca26a36e434|10000831348736|HUH721010AL5200 |2TGZ5V0D
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 17,2THAPVED: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 17,2THAPVED            |||||sdmg|naa.5000cca26a4bd4fc|10000831348736|HUH721010AL5200 |2THAPVED
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 18,2THD96KD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 18,2THD96KD            |||||sdmh|naa.5000cca26a4eba24|10000831348736|HUH721010AL5200 |2THD96KD
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 19,2THAWZJD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 19,2THAWZJD            |||||sdmi|naa.5000cca26a4c3110|10000831348736|HUH721010AL5200 |2THAWZJD
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 20,2TH99Y1D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 20,2TH99Y1D            |||||sdmj|naa.5000cca26a495094|10000831348736|HUH721010AL5200 |2TH99Y1D
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 21,2THB5EHD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 21,2THB5EHD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 22,2THB91HD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 22,2THB91HD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 23,2TH42UAD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 23,2TH42UAD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 24,2THB92ZD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 24,2THB92ZD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 25,2TH9WNND: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 25,2TH9WNND            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 26,2THA1S2D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 26,2THA1S2D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 27,2THDW7GD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 27,2THDW7GD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 28,2THBPPMD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 28,2THBPPMD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 29,2THAW6JD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 29,2THAW6JD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 30,2THDAVHD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 30,2THDAVHD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 31,2TH15ZZD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 31,2TH15ZZD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 32,2THBES1D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 32,2THBES1D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 33,2THD8H5D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 33,2THD8H5D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 34,2THB6TXD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 34,2THB6TXD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 35,2THDP5DD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 35,2THDP5DD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 36,2THDW05D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 36,2THDW05D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 37,2THBAHPD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 37,2THBAHPD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 38,2TH94S9D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 38,2TH94S9D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 39,2THD521D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 39,2THD521D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 40,2THAVS9D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 40,2THAVS9D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 41,2THBXKMD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 41,2THBXKMD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 42,2THB4XND: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 42,2THB4XND            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 43,2THDB3LD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 43,2THDB3LD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 44,2THD3JXD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 44,2THD3JXD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 45,2THD1YED: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 45,2THD1YED            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 46,2THDW8GD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 46,2THDW8GD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 47,2THD2ZSD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 47,2THD2ZSD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 48,2THB49ZD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 48,2THB49ZD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 49,2THBL32D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 49,2THBL32D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 50,2THATWSD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 50,2THATWSD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 51,2THBA0KD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 51,2THBA0KD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 52,2THBERAD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 52,2THBERAD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 53,2TH1U2YD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 53,2TH1U2YD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 54,2THBES0D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 54,2THBES0D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 55,2THBM75D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 55,2THBM75D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 56,2THBWWND: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 56,2THBWWND            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 57,2THB0RPD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 57,2THB0RPD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 58,2THAAWUD: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 58,2THAAWUD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/10:0:60:0/SLOT': No such file or directory
+cat: 59,2THDZW6D: No such file or directory
+cat: //status: No such file or directory
+10:0:60:0|SLOT 59,2THDZW6D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 00,2THBWV3D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 00,2THBWV3D            |||||sda|naa.5000cca26a4e0068|10000831348736|HUH721010AL5200 |2THBWV3D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 01,2THDDK0D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 01,2THDDK0D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 02,2THDYNZD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 02,2THDYNZD            |||||sdb|naa.5000cca26a4fed70|10000831348736|HUH721010AL5200 |2THDYNZD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 03,2THBWKVD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 03,2THBWKVD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 04,2THDHGYD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 04,2THDHGYD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 05,2THBM3XD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 05,2THBM3XD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 06,2THB73PD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 06,2THB73PD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 07,2THDWPWD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 07,2THDWPWD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 08,2THAZ92D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 08,2THAZ92D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 09,2THBGN5D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 09,2THBGN5D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 10,2TH92B3D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 10,2TH92B3D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 11,2THD6HND: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 11,2THD6HND            |||||sdu|naa.5000cca26a4e9180|10000831348736|HUH721010AL5200 |2THD6HND
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 12,2TH82VND: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 12,2TH82VND            |||||sdar|naa.5000cca26a4714d4|10000831348736|HUH721010AL5200 |2TH82VND
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 13,2THBM2GD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 13,2THBM2GD            |||||sdja|naa.5000cca26a4d7cd4|10000831348736|HUH721010AL5200 |2THBM2GD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 14,2THDNMLD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 14,2THDNMLD            |||||sdjx|naa.5000cca26a4f65a0|10000831348736|HUH721010AL5200 |2THDNMLD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 15,2THDGT8D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 15,2THDGT8D            |||||sdkr|naa.5000cca26a4f0dcc|10000831348736|HUH721010AL5200 |2THDGT8D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 16,2TGZ5V0D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 16,2TGZ5V0D            |||||sdks|naa.5000cca26a36e434|10000831348736|HUH721010AL5200 |2TGZ5V0D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 17,2THAPVED: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 17,2THAPVED            |||||sdkt|naa.5000cca26a4bd4fc|10000831348736|HUH721010AL5200 |2THAPVED
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 18,2THD96KD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 18,2THD96KD            |||||sdku|naa.5000cca26a4eba24|10000831348736|HUH721010AL5200 |2THD96KD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 19,2THAWZJD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 19,2THAWZJD            |||||sdkv|naa.5000cca26a4c3110|10000831348736|HUH721010AL5200 |2THAWZJD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 20,2TH99Y1D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 20,2TH99Y1D            |||||sdkw|naa.5000cca26a495094|10000831348736|HUH721010AL5200 |2TH99Y1D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 21,2THB5EHD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 21,2THB5EHD            |||||sdkx|naa.5000cca26a4caff4|10000831348736|HUH721010AL5200 |2THB5EHD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 22,2THB91HD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 22,2THB91HD            |||||sdky|naa.5000cca26a4ce634|10000831348736|HUH721010AL5200 |2THB91HD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 23,2TH42UAD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 23,2TH42UAD            |||||sdkz|naa.5000cca26a3fce40|10000831348736|HUH721010AL5200 |2TH42UAD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 24,2THB92ZD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 24,2THB92ZD            |||||sdla|naa.5000cca26a4ce6ec|10000831348736|HUH721010AL5200 |2THB92ZD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 25,2TH9WNND: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 25,2TH9WNND            |||||sdlb|naa.5000cca26a4a5acc|10000831348736|HUH721010AL5200 |2TH9WNND
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 26,2THA1S2D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 26,2THA1S2D            |||||sdlc|naa.5000cca26a4aa70c|10000831348736|HUH721010AL5200 |2THA1S2D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 27,2THDW7GD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 27,2THDW7GD            |||||sdld|naa.5000cca26a4fc8dc|10000831348736|HUH721010AL5200 |2THDW7GD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 28,2THBPPMD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 28,2THBPPMD            |||||sdle|naa.5000cca26a4da424|10000831348736|HUH721010AL5200 |2THBPPMD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 29,2THAW6JD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 29,2THAW6JD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 30,2THDAVHD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 30,2THDAVHD            |||||sdlf|naa.5000cca26a4ed2d0|10000831348736|HUH721010AL5200 |2THDAVHD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 31,2TH15ZZD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 31,2TH15ZZD            |||||sdlg|naa.5000cca26a3a8994|10000831348736|HUH721010AL5200 |2TH15ZZD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 32,2THBES1D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 32,2THBES1D            |||||sdlh|naa.5000cca26a4d2cb4|10000831348736|HUH721010AL5200 |2THBES1D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 33,2THD8H5D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 33,2THD8H5D            |||||sdli|naa.5000cca26a4eaf4c|10000831348736|HUH721010AL5200 |2THD8H5D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 34,2THB6TXD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 34,2THB6TXD            |||||sdlj|naa.5000cca26a4cc480|10000831348736|HUH721010AL5200 |2THB6TXD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 35,2THDP5DD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 35,2THDP5DD            |||||sdlk|naa.5000cca26a4f6dc4|10000831348736|HUH721010AL5200 |2THDP5DD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 36,2THDW05D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 36,2THDW05D            |||||sdll|naa.5000cca26a4fc554|10000831348736|HUH721010AL5200 |2THDW05D
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 37,2THBAHPD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 37,2THBAHPD            |||||sdlm|naa.5000cca26a4cfc18|10000831348736|HUH721010AL5200 |2THBAHPD
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 38,2TH94S9D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 38,2TH94S9D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 39,2THD521D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 39,2THD521D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 40,2THAVS9D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 40,2THAVS9D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 41,2THBXKMD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 41,2THBXKMD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 42,2THB4XND: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 42,2THB4XND            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 43,2THDB3LD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 43,2THDB3LD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 44,2THD3JXD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 44,2THD3JXD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 45,2THD1YED: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 45,2THD1YED            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 46,2THDW8GD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 46,2THDW8GD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 47,2THD2ZSD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 47,2THD2ZSD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 48,2THB49ZD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 48,2THB49ZD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 49,2THBL32D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 49,2THBL32D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 50,2THATWSD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 50,2THATWSD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 51,2THBA0KD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 51,2THBA0KD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 52,2THBERAD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 52,2THBERAD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 53,2TH1U2YD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 53,2TH1U2YD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 54,2THBES0D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 54,2THBES0D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 55,2THBM75D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 55,2THBM75D            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 56,2THBWWND: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 56,2THBWWND            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 57,2THB0RPD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 57,2THB0RPD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 58,2THAAWUD: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 58,2THAAWUD            |||||-|-|-|-|-
+cat: '/sys/class/enclosure/6:0:61:0/SLOT': No such file or directory
+cat: 59,2THDZW6D: No such file or directory
+cat: //status: No such file or directory
+6:0:61:0|SLOT 59,2THDZW6D            |||||-|-|-|-|-
+8:0:105:0|Slot00|0|OK|0|0|sdc|naa.5000c5008596fac3|6001175126016|ST6000NM0034 |Z4D4KA3Q0000R6334YMT
+8:0:105:0|Slot01|1|OK|0|0|sdd|naa.5000c500859abe4f|6001175126016|ST6000NM0034 |Z4D4DWRP0000R633QTH4
+8:0:105:0|Slot02|2|OK|0|0|sde|naa.5000c50085998c27|6001175126016|ST6000NM0034 |Z4D4GAE10000R642JNJ1
+8:0:105:0|Slot03|3|OK|0|0|sdf|naa.5000c500859a8dc3|6001175126016|ST6000NM0034 |Z4D4J2WQ0000R63350S6
+8:0:105:0|Slot04|4|OK|0|0|sdmn|naa.5000c500b6e64347|6001175126016|ST6000NM0034 |S4D1FYJY0000E717HBPG
+8:0:105:0|Slot05|5|OK|0|0|sdg|naa.5000c500859d8033|6001175126016|ST6000NM0034 |Z4D4JLVF0000R631Q57P
+8:0:105:0|Slot06|6|OK|0|0|sdh|naa.5000c500859d49cb|6001175126016|ST6000NM0034 |Z4D4AXKG0000R633RGTX
+8:0:105:0|Slot07|7|OK|0|0|sdi|naa.5000c5008599a40f|6001175126016|ST6000NM0034 |Z4D4DM2H0000R642DBFQ
